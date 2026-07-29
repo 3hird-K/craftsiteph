@@ -33,6 +33,7 @@ import { CreateAccountCard } from "@/components/ui/create-account-card";
 import { FeedbackAvatarsCard } from "@/components/ui/feedback-avatars-card";
 import { AccordionCard } from "@/components/ui/accordion-card";
 import { RecentTransactionsTable } from "@/components/ui/recent-transactions-table";
+import { CraftsiteDashboard } from "@/components/ui/craftsite-dashboard";
 
 // Curated Vibrant Modern Theme Presets
 const THEME_PRESETS = [
@@ -549,7 +550,7 @@ export default function ThemesPage() {
                         onClick={() => applyPreset(preset)}
                         className={`flex items-center justify-between p-3 rounded-2xl border text-xs font-semibold transition-all cursor-pointer ${
                           activePreset === preset.name
-                            ? "border-primary/50 bg-primary/10 text-foreground ring-1 ring-primary/40 shadow-sm"
+                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
                             : "border-border/60 bg-background/60 text-muted-foreground hover:text-foreground hover:bg-muted/40"
                         }`}
                       >
@@ -560,7 +561,7 @@ export default function ThemesPage() {
                           <span className="font-semibold text-xs">{preset.name}</span>
                         </div>
                         {activePreset === preset.name ? (
-                          <Check className="h-4 w-4 text-primary" />
+                          <Check className="h-4 w-4 text-primary-foreground" />
                         ) : null}
                       </button>
                     ))}
@@ -702,8 +703,8 @@ export default function ThemesPage() {
                 {[
                   { id: "cards", label: "Cards" },
                   { id: "dashboard", label: "Dashboard" },
-                  { id: "application", label: "Application" },
-                  { id: "marketing", label: "Marketing" },
+                  { id: "authentication", label: "Authentication" },
+                  { id: "portfolio", label: "Portfolio" },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -752,6 +753,8 @@ export default function ThemesPage() {
                 {/* ROW 4: FULL-WIDTH 3 COLUMNS: Recent Transactions Table */}
                 <RecentTransactionsTable className={`w-full ${cardClass}`} />
               </div>
+            ) : activeTab === "dashboard" ? (
+              <CraftsiteDashboard cardClass={cardClass} />
             ) : (
               <div className="flex flex-col items-center justify-center p-12 py-24 rounded-3xl border border-border/50 bg-card/60 text-center space-y-4 animate-in fade-in duration-300">
                 <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary animate-pulse">
