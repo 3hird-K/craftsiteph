@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const description = typeof body.description === "string" ? body.description : "";
     const components = Array.isArray(body.components) ? body.components : blankProjectComponents();
     const theme = body.theme && typeof body.theme === "object" ? { ...DEFAULT_THEME, ...body.theme } : DEFAULT_THEME;
-    const slug = typeof body.slug === "string" && body.slug ? body.slug : slugify(name);
+    const slug = typeof body.slug === "string" && body.slug ? body.slug : crypto.randomUUID();
 
     const [row] = await db
       .insert(projects)
@@ -58,11 +58,16 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const id = Number(searchParams.get("id"));
-    if (!id) {
+    const param = searchParams.get("id");
+    if (!param) {
       return NextResponse.json({ error: "id required" }, { status: 400 });
     }
-    await db.delete(projects).where(eq(projects.id, id));
+    const numId = Number(param);
+    if (!isNaN(numId)) {
+      await db.delete(projects).where(eq(projects.id, numId));
+    } else {
+      await db.delete(projects).where(eq(projects.slug, param));
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/projects", error);

@@ -17,9 +17,9 @@ type Props = {
 export function ComponentPalette({ onAdd }: Props) {
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-slate-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-900">Components</h2>
-        <p className="mt-0.5 text-xs text-slate-500">Click to add to canvas</p>
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold text-foreground">Components</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">Click to add to canvas</p>
       </div>
       <div className="flex-1 space-y-5 overflow-y-auto p-3">
         {CATEGORIES.map((cat) => {
@@ -27,7 +27,7 @@ export function ComponentPalette({ onAdd }: Props) {
           if (!items.length) return null;
           return (
             <div key={cat.key}>
-              <div className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+              <div className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {cat.label}
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -36,14 +36,14 @@ export function ComponentPalette({ onAdd }: Props) {
                     key={item.type}
                     type="button"
                     onClick={() => onAdd(item.type)}
-                    className="group flex flex-col items-start gap-1 rounded-xl border border-slate-200 bg-white p-2.5 text-left shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-md active:scale-[0.98]"
+                    className="group flex flex-col items-start gap-1 rounded-xl border border-border/80 bg-background p-2.5 text-left shadow-xs transition-all hover:border-primary/40 hover:bg-muted/80 dark:hover:bg-muted/50 active:scale-[0.98] cursor-pointer"
                     title={item.description}
                   >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-sm group-hover:bg-indigo-100">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted text-sm text-foreground transition-colors group-hover:bg-primary/15 group-hover:text-primary">
                       {item.icon}
                     </span>
-                    <span className="text-xs font-semibold text-slate-800">{item.label}</span>
-                    <span className="line-clamp-2 text-[10px] leading-snug text-slate-500">
+                    <span className="text-xs font-semibold text-foreground group-hover:text-foreground">{item.label}</span>
+                    <span className="line-clamp-2 text-[10px] leading-snug text-muted-foreground group-hover:text-muted-foreground">
                       {item.description}
                     </span>
                   </button>

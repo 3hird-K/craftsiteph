@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { toast } from "sonner";
 
 // Lucide Icons
 import {
@@ -62,8 +63,8 @@ export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "published" | "draft">("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Animated Builder Demo State (Strict User-Chosen Color Theme)
   const [sandboxViewport, setSandboxViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
@@ -231,14 +232,16 @@ export function Dashboard() {
       });
       if (!res.ok) throw new Error("Creation failed");
       const project = await res.json();
+      toast.success(`Project "${project.name || "Untitled"}" created!`);
       router.push(`/builder/${project.id}`);
     } catch {
       setError("Failed to create new project.");
+      toast.error("Failed to create new project.");
       setCreating(false);
     }
   };
 
-  const handleOpenProject = (id: number) => {
+  const handleOpenProject = (id: string) => {
     if (!user) {
       openAuthModal();
       return;
@@ -246,14 +249,16 @@ export function Dashboard() {
     router.push(`/builder/${id}`);
   };
 
-  const deleteProject = async (id: number) => {
+  const deleteProject = async (id: string) => {
     setDeletingId(id);
     try {
       const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       setProjects((prev) => prev.filter((p) => p.id !== id));
+      toast.info("Project deleted successfully");
     } catch {
       setError("Failed to delete project.");
+      toast.error("Failed to delete project.");
     } finally {
       setDeletingId(null);
       setConfirmDeleteId(null);
@@ -392,15 +397,12 @@ export function Dashboard() {
               {/* Concise CTAs */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 {/* Main Hero CTA Button */}
-                <button
-                  type="button"
-                  disabled={creating}
-                  onClick={() => void createProject()}
+                <Link
+                  href="/themes"
                   className={`h-11 px-6 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 text-base cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${currentSandboxStyle.primary}`}
                 >
-                  {creating ? <RefreshCw className="h-4 w-4 animate-spin" /> : null}
-                  <span>{creating ? "Creating..." : "Start Building"}</span>
-                </button>
+                  <span>Start Building</span>
+                </Link>
 
                 {/* Secondary Hero CTA Button */}
                 <a
@@ -408,22 +410,7 @@ export function Dashboard() {
                   className={`h-11 px-6 rounded-xl font-semibold flex items-center justify-center border bg-background cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${currentSandboxStyle.outlineText} ${currentSandboxStyle.outlineBorder} ${currentSandboxStyle.buttonHover}`}
                 >
                   Templates ↓
-                </a>
-
-                {/* Theme Studio Button */}
-                <Link
-                  href="/themes"
-                  className={`h-11 px-5 rounded-xl font-semibold flex items-center justify-center gap-2 border bg-background cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${currentSandboxStyle.outlineText} ${currentSandboxStyle.outlineBorder} ${currentSandboxStyle.buttonHover}`}
-                >
-                  <Palette className="h-4 w-4" />
-                  <span>Theme Studio</span>
-                </Link>
-
-                {/* 1-Tap Light/Dark Toggle Button */}
-                <div className="cursor-pointer">
-                  <ThemeToggle />
-                </div>
-              </div>
+                </a>              </div>
 
               {/* Clean Concise Metric Strip */}
               <div className="grid grid-cols-3 gap-6 border-t border-border pt-6 max-w-lg">
@@ -987,15 +974,13 @@ export function Dashboard() {
                   ? "No projects match your current search or filter."
                   : "Create a blank canvas or start from a pre-made template below."}
               </p>
-              <button
-                type="button"
-                disabled={creating}
-                onClick={() => void createProject()}
+              <Link
+                href="/themes"
                 className={`mt-5 h-10 px-5 rounded-lg font-bold text-white flex items-center gap-2 text-sm mx-auto cursor-pointer transition-colors duration-500 ${currentSandboxStyle.primary}`}
               >
                 <Plus className="h-4 w-4" />
                 <span>Create your first project</span>
-              </button>
+              </Link>
             </Card>
           ) : (
             /* Projects Grid */
@@ -1047,7 +1032,7 @@ export function Dashboard() {
                       {/* Editor Link */}
                       <button
                         type="button"
-                        onClick={() => handleOpenProject(p.id)}
+                        onClick={() => handleOpenProject(p.slug || String(p.id))}
                         className={`flex-1 h-9 rounded-md font-semibold text-white text-xs flex items-center justify-center cursor-pointer transition-colors duration-500 ${currentSandboxStyle.primary}`}
                       >
                         Open editor

@@ -29,14 +29,14 @@ export function LayersPanel({
   onDelete,
 }: Props) {
   return (
-    <div className="flex h-full flex-col border-t border-slate-200">
-      <div className="border-b border-slate-200 px-4 py-2.5">
-        <h2 className="text-sm font-semibold text-slate-900">Layers</h2>
-        <p className="text-[11px] text-slate-500">{components.length} blocks</p>
+    <div className="flex h-full flex-col border-t border-border">
+      <div className="border-b border-border px-4 py-2.5">
+        <h2 className="text-sm font-semibold text-foreground">Layers</h2>
+        <p className="text-[11px] text-muted-foreground">{components.length} blocks</p>
       </div>
       <div className="flex-1 space-y-1 overflow-y-auto p-2">
         {components.length === 0 ? (
-          <p className="px-2 py-6 text-center text-xs text-slate-400">
+          <p className="px-2 py-6 text-center text-xs text-muted-foreground">
             No components yet. Add one from the palette.
           </p>
         ) : (
@@ -47,8 +47,8 @@ export function LayersPanel({
                 key={c.id}
                 className={`group flex items-center gap-1 rounded-lg border px-2 py-1.5 transition ${
                   active
-                    ? "border-indigo-300 bg-indigo-50 shadow-sm"
-                    : "border-transparent bg-white hover:border-slate-200 hover:bg-slate-50"
+                    ? "border-primary/50 bg-primary/10 text-foreground font-semibold shadow-xs"
+                    : "border-transparent bg-background hover:border-border hover:bg-muted/60 dark:bg-muted/20"
                 }`}
               >
                 <button
@@ -56,13 +56,13 @@ export function LayersPanel({
                   onClick={() => onSelect(c.id)}
                   className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-100 text-xs">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted text-xs">
                     {iconFor(c.type)}
                   </span>
-                  <span className="truncate text-xs font-medium text-slate-800">
+                  <span className="truncate text-xs font-medium text-foreground">
                     {labelFor(c.type)}
                     {c.props.heading ? (
-                      <span className="font-normal text-slate-400"> · {c.props.heading.slice(0, 18)}</span>
+                      <span className="font-normal text-muted-foreground"> · {c.props.heading.slice(0, 18)}</span>
                     ) : null}
                   </span>
                 </button>
@@ -72,7 +72,7 @@ export function LayersPanel({
                     title="Move up"
                     disabled={index === 0}
                     onClick={() => onMove(c.id, "up")}
-                    className="rounded p-1 text-slate-500 hover:bg-white disabled:opacity-30"
+                    className="rounded p-1 text-muted-foreground hover:bg-background disabled:opacity-30"
                   >
                     ↑
                   </button>
@@ -81,7 +81,7 @@ export function LayersPanel({
                     title="Move down"
                     disabled={index === components.length - 1}
                     onClick={() => onMove(c.id, "down")}
-                    className="rounded p-1 text-slate-500 hover:bg-white disabled:opacity-30"
+                    className="rounded p-1 text-muted-foreground hover:bg-background disabled:opacity-30"
                   >
                     ↓
                   </button>
@@ -89,7 +89,7 @@ export function LayersPanel({
                     type="button"
                     title="Duplicate"
                     onClick={() => onDuplicate(c.id)}
-                    className="rounded p-1 text-slate-500 hover:bg-white"
+                    className="rounded p-1 text-muted-foreground hover:bg-background"
                   >
                     ⎘
                   </button>

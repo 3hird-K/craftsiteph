@@ -18,6 +18,26 @@ import { LayersPanel } from "./LayersPanel";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { Canvas } from "./Canvas";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
+import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type Props = {
   project: Project;
@@ -26,6 +46,39 @@ type Props = {
 export function BuilderEditor({ project }: Props) {
   const router = useRouter();
   const { user, loading: authLoading, openAuthModal, signOut } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "");
+    }
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!displayName.trim() || isSavingProfile) return;
+    setIsSavingProfile(true);
+    try {
+      const supabase = createClient();
+      await supabase.auth.updateUser({
+        data: { full_name: displayName.trim() },
+      });
+      setProfileSuccess(true);
+      toast.success("Profile updated successfully!");
+      setTimeout(() => {
+        setProfileSuccess(false);
+        setIsProfileOpen(false);
+      }, 900);
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -43,7 +96,7 @@ export function BuilderEditor({ project }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [isPublished, setIsPublished] = useState(project.isPublished);
   const [slug, setSlug] = useState(project.slug || "");
-  const [leftTab, setLeftTab] = useState<"components" | "layers">("components");
+  const [leftTab, setLeftTab] = useState<"add" | "layers" | "design">("add");
 
   const selected = useMemo(
     () => components.find((c) => c.id === selectedId) || null,
@@ -61,6 +114,7 @@ export function BuilderEditor({ project }: Props) {
     setSelectedId(next.id);
     setPreviewMode("edit");
     markDirty();
+    toast.success(`Added ${type} component to canvas`);
   };
 
   const moveComponent = (id: string, direction: "up" | "down") => {
@@ -92,12 +146,14 @@ export function BuilderEditor({ project }: Props) {
       return copy;
     });
     markDirty();
+    toast.success("Component duplicated");
   };
 
   const deleteComponent = (id: string) => {
     setComponents((prev) => prev.filter((c) => c.id !== id));
     if (selectedId === id) setSelectedId(null);
     markDirty();
+    toast.info("Component deleted from page");
   };
 
   const changeProps = (id: string, props: Partial<ComponentProps>) => {
@@ -153,10 +209,15 @@ export function BuilderEditor({ project }: Props) {
       setIsPublished(data.isPublished);
       setSlug(data.slug || "");
       setDirty(false);
+      const msg = opts?.publish ? "Website published live!" : opts?.unpublish ? "Website unpublished" : "Project saved successfully!";
       setMessage(opts?.publish ? "Published!" : opts?.unpublish ? "Unpublished" : "Saved");
+      if (opts?.publish) toast.success("Website published live!");
+      else if (opts?.unpublish) toast.info("Website unpublished");
+      else toast.success("Project saved successfully!");
       router.refresh();
     } catch {
       setMessage("Could not save. Try again.");
+      toast.error("Failed to save project. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -175,16 +236,60 @@ export function BuilderEditor({ project }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, components, theme, slug]);
 
+  // Bi-directional synchronization: Ensure canvas theme matches global application theme
+  useEffect(() => {
+    const syncCanvasWithGlobalTheme = () => {
+      const isGlobalDark = document.documentElement.classList.contains("dark");
+      if (isGlobalDark) {
+        // App is in dark mode: if canvas is currently light, switch canvas to dark theme
+        if (theme.backgroundColor === "#ffffff" || !theme.backgroundColor) {
+          changeTheme({
+            backgroundColor: "#09090b",
+            textColor: "#f8fafc",
+            secondaryColor: "#0f172a",
+          });
+        }
+      } else {
+        // App is in light mode: if canvas is currently dark, switch canvas to light theme
+        if (
+          theme.backgroundColor === "#09090b" ||
+          theme.backgroundColor === "#020817" ||
+          theme.backgroundColor === "#000000"
+        ) {
+          changeTheme({
+            backgroundColor: "#ffffff",
+            textColor: "#0f172a",
+            secondaryColor: "#f1f5f9",
+          });
+        }
+      }
+    };
+
+    syncCanvasWithGlobalTheme();
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "class") {
+          syncCanvasWithGlobalTheme();
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme.backgroundColor]);
+
   return (
-    <div className="flex h-screen flex-col bg-slate-100 text-slate-900">
+    <div className="flex h-screen flex-col bg-muted text-foreground">
       {/* Top bar */}
-      <header className="z-30 flex h-14 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-3 shadow-sm">
+      <header className="z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background px-3 shadow-sm">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
           title="Back to Dashboard"
         >
-          <img src="/logo.png" alt="craftsiteph Logo" className="h-8 sm:h-9 w-auto object-contain shrink-0" />
+          <img src="/logo.png" alt="craftsiteph Logo" className="h-10 sm:h-16 md:h-18 w-auto object-contain shrink-0" />
         </Link>
 
         <div className="mx-1 h-6 w-px bg-slate-200" />
@@ -195,7 +300,7 @@ export function BuilderEditor({ project }: Props) {
             setName(e.target.value);
             markDirty();
           }}
-          className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm font-semibold outline-none hover:border-slate-200 focus:border-slate-300 focus:bg-white sm:max-w-xs"
+          className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm font-semibold outline-none hover:border-border focus:border-border focus:bg-background sm:max-w-xs"
         />
 
         {dirty ? (
@@ -205,68 +310,39 @@ export function BuilderEditor({ project }: Props) {
         )}
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
-          
-          {/* Quick Header Theme Selector Dots */}
-          <div className="hidden items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 md:flex">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Theme</span>
-            {[
-              { name: "Coral", primary: "#ea580c", secondary: "#0f172a", accent: "#fdba74" },
-              { name: "Indigo", primary: "#4f46e5", secondary: "#0f172a", accent: "#818cf8" },
-              { name: "Emerald", primary: "#059669", secondary: "#064e3b", accent: "#34d399" },
-              { name: "Violet", primary: "#7c3aed", secondary: "#3b0764", accent: "#c084fc" },
-            ].map((p) => {
-              const isActive = theme.primaryColor === p.primary;
-              return (
-                <button
-                  key={p.name}
-                  type="button"
-                  onClick={() =>
-                    changeTheme({
-                      primaryColor: p.primary,
-                      secondaryColor: p.secondary,
-                      accentColor: p.accent,
-                    })
-                  }
-                  className={`h-4 w-4 rounded-full transition-all cursor-pointer ${
-                    isActive ? "ring-2 ring-slate-500 scale-125" : "opacity-60 hover:opacity-100"
-                  }`}
-                  style={{ backgroundColor: p.primary }}
-                  title={`Switch to ${p.name} Theme`}
-                />
-              );
-            })}
-          </div>
-
           {/* Viewport Controls */}
-          <div className="mr-1 hidden items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 sm:flex">
+          <div className="mr-1 hidden items-center rounded-lg border border-border bg-muted/50 dark:bg-muted/20 p-0.5 sm:flex">
             {(
               [
-                ["desktop", "Desktop"],
-                ["tablet", "Tablet"],
-                ["mobile", "Mobile"],
+                ["desktop", "Desktop", Monitor],
+                ["tablet", "Tablet", Tablet],
+                ["mobile", "Mobile", Smartphone],
               ] as const
-            ).map(([key, label]) => (
+            ).map(([key, label, Icon]) => (
               <button
                 key={key}
                 type="button"
                 onClick={() => setDevice(key)}
-                className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
-                  device === key ? "bg-white text-slate-900 shadow-sm font-semibold" : "text-slate-500 hover:text-slate-800"
+                title={label}
+                className={`rounded-md p-1.5 transition ${
+                  device === key
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {label}
+                <Icon className="h-4 w-4" />
               </button>
             ))}
           </div>
 
-          <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+          <div className="flex items-center rounded-lg border border-border bg-muted/50 dark:bg-muted/20 p-0.5">
             <button
               type="button"
               onClick={() => setPreviewMode("edit")}
               className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
                 previewMode === "edit"
-                  ? "bg-white text-slate-900 shadow-sm font-semibold"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-background text-foreground shadow-sm font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Edit
@@ -279,8 +355,8 @@ export function BuilderEditor({ project }: Props) {
               }}
               className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
                 previewMode === "preview"
-                  ? "bg-white text-slate-900 shadow-sm font-semibold"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-background text-foreground shadow-sm font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Preview
@@ -291,7 +367,7 @@ export function BuilderEditor({ project }: Props) {
             type="button"
             disabled={saving}
             onClick={() => void save()}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+            className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm hover:bg-muted/50 dark:bg-muted/20 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save"}
           </button>
@@ -309,7 +385,7 @@ export function BuilderEditor({ project }: Props) {
                 type="button"
                 disabled={saving}
                 onClick={() => void save({ unpublish: true })}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted/50 dark:bg-muted/20 disabled:opacity-50"
               >
                 Unpublish
               </button>
@@ -327,33 +403,67 @@ export function BuilderEditor({ project }: Props) {
           )}
 
           {/* User Auth Avatar / Google Sign-In */}
-          <div className="ml-1 pl-1 border-l border-slate-200">
+          <div className="ml-1 pl-1 border-l border-border">
             {user ? (
-              <div className="flex items-center gap-2" title={user.email || undefined}>
-                {user.user_metadata?.avatar_url ? (
-                  <img
-                    src={user.user_metadata.avatar_url}
-                    alt={user.user_metadata.full_name || "User Avatar"}
-                    className="h-7 w-7 rounded-full border border-slate-200 object-cover"
-                  />
-                ) : (
-                  <div className="h-7 w-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs">
-                    {user.email?.[0]?.toUpperCase() || "U"}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="h-8 w-8 rounded-full border-2 overflow-hidden cursor-pointer transition-all focus:outline-none flex items-center justify-center bg-muted hover:scale-105 active:scale-95"
+                    style={{
+                      borderColor: `${theme.primaryColor || "#ea580c"}60`,
+                    }}
+                    title={user.email || "User Profile"}
+                  >
+                    {user.user_metadata?.avatar_url ? (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt={user.user_metadata.full_name || "User Avatar"}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="h-full w-full flex items-center justify-center font-bold text-xs"
+                        style={{
+                          backgroundColor: `${theme.primaryColor || "#ea580c"}15`,
+                          color: theme.primaryColor || "#ea580c",
+                        }}
+                      >
+                        {user.email?.[0]?.toUpperCase() || "U"}
+                      </div>
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 rounded-xl p-2 shadow-xl border-border/80 bg-popover">
+                  <div className="px-2 py-1.5 space-y-0.5">
+                    <p className="text-xs font-bold text-foreground truncate">
+                      {user.user_metadata?.full_name || "User Account"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
                   </div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => void signOut()}
-                  className="hidden sm:inline text-[11px] font-semibold text-slate-500 hover:text-rose-600 cursor-pointer"
-                >
-                  Sign out
-                </button>
-              </div>
+                  <DropdownMenuSeparator className="my-1" />
+                  <DropdownMenuItem
+                    onClick={() => setIsProfileOpen(true)}
+                    className="text-xs font-semibold cursor-pointer rounded-lg flex items-center gap-2 py-2 text-foreground focus:bg-muted focus:text-foreground hover:bg-muted transition-colors"
+                  >
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>Edit Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1" />
+                  <DropdownMenuItem
+                    onClick={() => void signOut()}
+                    className="text-xs font-semibold cursor-pointer rounded-lg flex items-center gap-2 py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-500/10"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <button
                 type="button"
                 onClick={() => openAuthModal()}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 cursor-pointer"
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground shadow-xs hover:bg-muted/50 dark:bg-muted/20 cursor-pointer"
                 title="Sign in with Google"
               >
                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
@@ -371,73 +481,95 @@ export function BuilderEditor({ project }: Props) {
 
       {/* Workspace */}
       <div className="flex min-h-0 flex-1">
-        {/* Left sidebar */}
-        <aside className="flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
-          <div className="flex border-b border-slate-200">
+        {/* Unified Left Sidebar */}
+        <aside className="flex w-80 sm:w-84 md:w-88 shrink-0 flex-col border-r border-border bg-background">
+          <div className="flex border-b border-border bg-muted/30 p-1.5 gap-1">
             <button
               type="button"
-              onClick={() => setLeftTab("components")}
-              className={`flex-1 px-3 py-2.5 text-xs font-semibold transition-colors ${
-                leftTab === "components"
-                  ? "border-b-2 font-bold"
-                  : "text-slate-500 hover:text-slate-800"
+              onClick={() => setLeftTab("add")}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                leftTab === "add"
+                  ? "bg-background text-foreground shadow-xs font-bold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               }`}
               style={
-                leftTab === "components"
-                  ? { borderColor: theme.primaryColor || "#ea580c", color: theme.primaryColor || "#ea580c" }
+                leftTab === "add"
+                  ? { color: theme.primaryColor || "#ea580c" }
                   : undefined
               }
             >
-              Add
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add</span>
             </button>
             <button
               type="button"
               onClick={() => setLeftTab("layers")}
-              className={`flex-1 px-3 py-2.5 text-xs font-semibold transition-colors ${
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 leftTab === "layers"
-                  ? "border-b-2 font-bold"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-background text-foreground shadow-xs font-bold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               }`}
               style={
                 leftTab === "layers"
-                  ? { borderColor: theme.primaryColor || "#ea580c", color: theme.primaryColor || "#ea580c" }
+                  ? { color: theme.primaryColor || "#ea580c" }
                   : undefined
               }
             >
-              Layers
+              <Layers className="h-3.5 w-3.5" />
+              <span>Layers</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setLeftTab("design")}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer relative ${
+                leftTab === "design"
+                  ? "bg-background text-foreground shadow-xs font-bold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+              style={
+                leftTab === "design"
+                  ? { color: theme.primaryColor || "#ea580c" }
+                  : undefined
+              }
+            >
+              <Sliders className="h-3.5 w-3.5" />
+              <span>Design</span>
+              {selectedId && (
+                <span
+                  className="h-1.5 w-1.5 rounded-full animate-pulse"
+                  style={{ backgroundColor: theme.primaryColor || "#ea580c" }}
+                />
+              )}
             </button>
           </div>
-          <div className="min-h-0 flex-1">
-            {leftTab === "components" ? (
-              <div className="flex h-full flex-col">
-                <div className="min-h-0 flex-[1.2]">
-                  <ComponentPalette onAdd={addComponent} />
-                </div>
-                <div className="min-h-0 flex-1 border-t border-slate-200">
-                  <LayersPanel
-                    components={components}
-                    selectedId={selectedId}
-                    onSelect={setSelectedId}
-                    onMove={moveComponent}
-                    onDuplicate={duplicateComponent}
-                    onDelete={deleteComponent}
-                  />
-                </div>
-              </div>
-            ) : (
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {leftTab === "add" && <ComponentPalette onAdd={addComponent} />}
+            {leftTab === "layers" && (
               <LayersPanel
                 components={components}
                 selectedId={selectedId}
-                onSelect={setSelectedId}
+                onSelect={(id) => {
+                  setSelectedId(id);
+                  if (id) setLeftTab("design");
+                }}
                 onMove={moveComponent}
                 onDuplicate={duplicateComponent}
                 onDelete={deleteComponent}
               />
             )}
+            {leftTab === "design" && (
+              <PropertiesPanel
+                component={selected}
+                theme={theme}
+                onChangeProps={changeProps}
+                onChangeStyle={changeStyle}
+                onChangeTheme={changeTheme}
+              />
+            )}
           </div>
         </aside>
 
-        {/* Canvas */}
+        {/* Canvas (Full right area) */}
         <main className="min-w-0 flex-1">
           <Canvas
             components={components}
@@ -445,23 +577,132 @@ export function BuilderEditor({ project }: Props) {
             selectedId={selectedId}
             previewMode={previewMode}
             device={device}
-            onSelect={setSelectedId}
+            onSelect={(id) => {
+              setSelectedId(id);
+              if (id) setLeftTab("design");
+            }}
             onMove={moveComponent}
             onDelete={deleteComponent}
           />
         </main>
-
-        {/* Right sidebar */}
-        <aside className="w-72 shrink-0 border-l border-slate-200 bg-white">
-          <PropertiesPanel
-            component={selected}
-            theme={theme}
-            onChangeProps={changeProps}
-            onChangeStyle={changeStyle}
-            onChangeTheme={changeTheme}
-          />
-        </aside>
       </div>
+      {/* Edit Profile Modal Dialog */}
+      <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+        <DialogContent
+          className="sm:max-w-[440px] border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl p-0 overflow-hidden"
+          style={{
+            borderRadius: theme.borderRadius ? `calc(${theme.borderRadius} * 1.5)` : "24px",
+            fontFamily: theme.fontFamily || "inherit",
+          }}
+        >
+          <div
+            className="p-6 pb-4 border-b border-border/50"
+            style={{
+              background: `linear-gradient(to right, ${theme.primaryColor || "#ea580c"}18, ${theme.primaryColor || "#ea580c"}05, transparent)`,
+            }}
+          >
+            <DialogHeader>
+              <div className="flex items-center gap-2 mb-1">
+                <span
+                  className="p-1.5 transition-all flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${theme.primaryColor || "#ea580c"}20`,
+                    color: theme.primaryColor || "#ea580c",
+                    borderRadius: theme.borderRadius || "12px",
+                  }}
+                >
+                  <User className="h-4 w-4" />
+                </span>
+                <DialogTitle className="text-xl font-extrabold tracking-tight">Edit Profile</DialogTitle>
+              </div>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Update your display name and view your account details.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="p-6 space-y-5">
+            {/* Account Info Card */}
+            <div
+              className="flex items-center gap-4 p-3.5 bg-muted/40 border border-border/60 shadow-xs transition-all"
+              style={{
+                borderRadius: theme.borderRadius ? `calc(${theme.borderRadius} * 1.2)` : "16px",
+              }}
+            >
+              {user?.user_metadata?.avatar_url ? (
+                <img
+                  src={user.user_metadata.avatar_url}
+                  alt="Avatar"
+                  className="h-12 w-12 rounded-full border border-border object-cover"
+                />
+              ) : (
+                <div
+                  className="h-12 w-12 rounded-full flex items-center justify-center font-bold text-base"
+                  style={{
+                    backgroundColor: `${theme.primaryColor || "#ea580c"}15`,
+                    color: theme.primaryColor || "#ea580c",
+                  }}
+                >
+                  {user?.email?.[0]?.toUpperCase() || "U"}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-foreground truncate">
+                  {displayName.trim() || user?.user_metadata?.full_name || "User Account"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                <span className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <Shield className="h-3 w-3" /> Google Authenticated
+                </span>
+              </div>
+            </div>
+
+            {/* Display Name Input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Full / Display Name</label>
+              <Input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Enter your name..."
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
+                className="h-10.5 border bg-background/50 text-sm font-medium focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-transparent selection:bg-slate-200 dark:selection:bg-slate-700 selection:text-foreground transition-all"
+                style={{
+                  borderRadius: theme.borderRadius || "12px",
+                  borderColor: isInputFocused ? (theme.primaryColor || "#ea580c") : undefined,
+                  boxShadow: isInputFocused ? `0 0 0 2px ${theme.primaryColor || "#ea580c"}33` : undefined,
+                }}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 pt-0 sm:justify-stretch">
+            <Button
+              type="button"
+              size="default"
+              disabled={isSavingProfile || !displayName.trim()}
+              onClick={handleSaveProfile}
+              className="w-full py-2.5 font-bold text-sm h-10.5 text-white shadow-md cursor-pointer transition-all hover:brightness-110 active:scale-[0.99] disabled:opacity-50"
+              style={{
+                backgroundColor: theme.primaryColor || "#ea580c",
+                borderRadius: theme.borderRadius || "12px",
+              }}
+            >
+              {profileSuccess ? (
+                <>
+                  <Check className="h-4 w-4 mr-1.5" />
+                  <span>Saved!</span>
+                </>
+              ) : isSavingProfile ? (
+                <span>Saving...</span>
+              ) : (
+                <span>Save Changes</span>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

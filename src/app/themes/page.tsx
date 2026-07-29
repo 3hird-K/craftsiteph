@@ -24,6 +24,18 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { blankProjectComponents } from "@/lib/presets";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 // Imported Reusable UI Components from @/components/ui/
 import { ChartBarStacked } from "@/components/ui/bar-chart";
@@ -34,6 +46,7 @@ import { FeedbackAvatarsCard } from "@/components/ui/feedback-avatars-card";
 import { AccordionCard } from "@/components/ui/accordion-card";
 import { RecentTransactionsTable } from "@/components/ui/recent-transactions-table";
 import { CraftsiteDashboard } from "@/components/ui/craftsite-dashboard";
+import { CraftsiteAuthLayout } from "@/components/ui/craftsite-auth-layout";
 
 // Curated Vibrant Modern Theme Presets
 const THEME_PRESETS = [
@@ -168,6 +181,14 @@ function ColorTokenRow({
 }
 
 export default function ThemesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, loading, signInWithGoogle } = useAuth();
+  const [isBuilding, setIsBuilding] = useState(false);
+  const autoBuild =
+    (typeof window !== "undefined" && window.location.search.includes("autoBuild=true")) ||
+    searchParams?.get("autoBuild") === "true";
+
   // Theme Color Token & Style States (Scoped to Theme Studio Page)
   const [primaryBg, setPrimaryBg] = useState("#FF4500");
   const [primaryFg, setPrimaryFg] = useState("#ffffff");
@@ -175,7 +196,73 @@ export default function ThemesPage() {
   const [fontFamily, setFontFamily] = useState("'Plus Jakarta Sans', sans-serif");
   const [shadowStyle, setShadowStyle] = useState("shadow-md");
   const [borderWidth, setBorderWidth] = useState("0px");
-  const [isDark, setIsDark] = useState(true);
+  const [websiteTitle, setWebsiteTitle] = useState("");
+  const [showTitleDialog, setShowTitleDialog] = useState(false);
+
+  // Auto-build after Google Authentication Callback
+  useEffect(() => {
+    const checkPendingBuild = async () => {
+      if (!user || loading) return;
+      const pendingRaw = sessionStorage.getItem("craftsite_pending_theme");
+      if (!pendingRaw && !autoBuild) return;
+
+      setIsBuilding(true);
+      try {
+        let themeData = {
+          websiteTitle,
+          primaryBg,
+          radius,
+          fontFamily,
+          activePreset,
+        };
+
+        if (pendingRaw) {
+          try {
+            themeData = { ...themeData, ...JSON.parse(pendingRaw) };
+          } catch (e) {
+            console.error("Failed to parse pending theme", e);
+          }
+          sessionStorage.removeItem("craftsite_pending_theme");
+        }
+
+        let borderRadiusPx = "12px";
+        if (themeData.radius === 0) borderRadiusPx = "0px";
+        else if (themeData.radius === 0.3) borderRadiusPx = "4px";
+        else if (themeData.radius === 0.5) borderRadiusPx = "8px";
+        else if (themeData.radius === 0.75) borderRadiusPx = "12px";
+        else if (themeData.radius === 1.4) borderRadiusPx = "24px";
+        else borderRadiusPx = `${Math.round((themeData.radius || 0.75) * 16)}px`;
+
+        const res = await fetch("/api/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: (themeData.websiteTitle || "").trim() || `${themeData.activePreset || "Custom"} Theme Project`,
+            description: "Created from Theme Studio",
+            components: blankProjectComponents(),
+            theme: {
+              primaryColor: themeData.primaryBg || "#FF4500",
+              secondaryColor: themeData.activePreset === "Dark Obsidian" ? "#0f172a" : "#f1f5f9",
+              accentColor: themeData.primaryBg || "#FF4500",
+              backgroundColor: themeData.activePreset === "Dark Obsidian" ? "#09090b" : "#ffffff",
+              textColor: themeData.activePreset === "Dark Obsidian" ? "#f8fafc" : "#0f172a",
+              fontFamily: themeData.fontFamily || "'Plus Jakarta Sans', sans-serif",
+              borderRadius: borderRadiusPx,
+            },
+          }),
+        });
+
+        if (!res.ok) throw new Error("Creation failed");
+        const project = await res.json();
+        router.push(`/builder/${project.slug || project.id}`);
+      } catch (err) {
+        console.error("Auto build error:", err);
+        setIsBuilding(false);
+      }
+    };
+
+    void checkPendingBuild();
+  }, [user, loading, autoBuild, router]);
   const [sidebarWidth, setSidebarWidth] = useState(350); // Default customizer width
   const [isResizing, setIsResizing] = useState(false);
   const [customFontInput, setCustomFontInput] = useState("");
@@ -192,49 +279,6 @@ export default function ThemesPage() {
   // Studio Interactive States
   const [activePreset, setActivePreset] = useState("Default Theme");
   const [activeTab, setActiveTab] = useState("cards");
-
-  // Clean root HTML styles on unmount & Initialize theme detection globally
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("craftsite-theme");
-      const initialIsDark = stored
-        ? stored === "dark"
-        : document.documentElement.classList.contains("dark") ||
-          window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-      setIsDark(initialIsDark);
-      
-      const root = document.documentElement;
-      if (initialIsDark) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    }
-
-    return () => {
-      document.documentElement.style.removeProperty("--primary");
-      document.documentElement.style.removeProperty("--primary-foreground");
-      document.documentElement.style.removeProperty("--ring");
-      document.documentElement.style.removeProperty("--accent");
-      document.documentElement.style.removeProperty("--accent-foreground");
-      document.documentElement.style.removeProperty("--radius");
-      document.documentElement.style.removeProperty("--font-sans");
-    };
-  }, []);
-
-  const toggleGlobalTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    localStorage.setItem("craftsite-theme", nextDark ? "dark" : "light");
-
-    const root = document.documentElement;
-    if (nextDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  };
 
   const shuffleThemeColor = () => {
     const defaultColors = [
@@ -305,7 +349,6 @@ export default function ThemesPage() {
         id="themes-page-portal-container"
         className={cn(
           "min-h-screen bg-background text-foreground transition-colors duration-300 flex flex-col font-sans selection:bg-primary selection:text-primary-foreground themes-page-scoped",
-          isDark ? "dark" : "",
           isResizing ? "cursor-col-resize select-none" : ""
         )}
         style={
@@ -457,7 +500,7 @@ export default function ThemesPage() {
         `}</style>
 
         {/* Top Glassmorphism Navigation Header */}
-        <header className="h-16 border-b border-border/60 bg-card/70 backdrop-blur-2xl px-4 sm:px-8 flex items-center justify-between sticky top-0 z-50 transition-colors duration-300">
+        <header className="relative h-16 border-b border-border/60 bg-card/70 backdrop-blur-2xl px-4 sm:px-8 flex items-center justify-between sticky top-0 z-50 transition-colors duration-300">
           <div className="flex items-center gap-0">
             <Link
               href="/"
@@ -478,27 +521,12 @@ export default function ThemesPage() {
           <div className="flex items-center gap-3">
             <Button
               size="sm"
-              asChild
+              disabled={isBuilding}
+              onClick={() => setShowTitleDialog(true)}
               className="h-9 font-bold text-primary-foreground bg-primary hover:opacity-95 shadow-md shadow-primary/25 rounded-xl cursor-pointer transition-all hover:scale-[1.02] text-xs px-5"
             >
-              <Link href="/">
-                <Wrench className="h-3.5 w-3.5 mr-2" />
-                <span>Build Now</span>
-              </Link>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleGlobalTheme}
-              className="h-9 w-9 rounded-xl border-0 outline-none bg-transparent hover:bg-muted/60 focus:ring-0 focus-visible:ring-0 focus-visible:outline-none transition-transform active:scale-90 cursor-pointer"
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4 text-foreground transition-transform rotate-0 dark:rotate-[360deg]" />
-              ) : (
-                <Moon className="h-4 w-4 text-foreground transition-transform" />
-              )}
+              <Wrench className={`h-3.5 w-3.5 mr-2 ${isBuilding ? "animate-spin" : ""}`} />
+              <span>{isBuilding ? "Building..." : "Build Now"}</span>
             </Button>
           </div>
         </header>
@@ -858,6 +886,8 @@ export default function ThemesPage() {
               </div>
             ) : activeTab === "dashboard" ? (
               <CraftsiteDashboard cardClass={cardClass} />
+            ) : activeTab === "authentication" ? (
+              <CraftsiteAuthLayout shadowClass={shadowStyle} />
             ) : (
               <div className="flex flex-col items-center justify-center p-12 py-24 rounded-3xl border border-border/50 bg-card/60 text-center space-y-4 animate-in fade-in duration-300">
                 <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary animate-pulse">
@@ -880,6 +910,110 @@ export default function ThemesPage() {
         </div>
 
       </div>
+
+      {/* Website Title Prompt Dialog */}
+      <Dialog open={showTitleDialog} onOpenChange={setShowTitleDialog}>
+        <DialogContent
+          container={typeof window !== "undefined" ? document.getElementById("themes-page-portal-container") : undefined}
+          className="sm:max-w-[425px] rounded-2xl border-border/80 bg-card/95 backdrop-blur-xl shadow-2xl themes-page-scoped"
+        >
+          <DialogHeader>
+            <DialogTitle className="text-lg font-extrabold tracking-tight">Name Your Website</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Give your new website project a name to continue building.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!websiteTitle.trim() || isBuilding) return;
+
+              setIsBuilding(true);
+              setShowTitleDialog(false);
+
+              if (!user) {
+                sessionStorage.setItem(
+                  "craftsite_pending_theme",
+                  JSON.stringify({ websiteTitle: websiteTitle.trim(), primaryBg, radius, fontFamily, activePreset })
+                );
+                await signInWithGoogle("/themes?autoBuild=true");
+              } else {
+                try {
+                  let borderRadiusPx = "12px";
+                  if (radius === 0) borderRadiusPx = "0px";
+                  else if (radius === 0.3) borderRadiusPx = "4px";
+                  else if (radius === 0.5) borderRadiusPx = "8px";
+                  else if (radius === 0.75) borderRadiusPx = "12px";
+                  else if (radius === 1.4) borderRadiusPx = "24px";
+                  else borderRadiusPx = `${Math.round(radius * 16)}px`;
+
+                  const res = await fetch("/api/projects", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      name: websiteTitle.trim(),
+                      description: "Created from Theme Studio",
+                      components: blankProjectComponents(),
+                      theme: {
+                        primaryColor: primaryBg,
+                        secondaryColor: activePreset === "Dark Obsidian" ? "#0f172a" : "#f1f5f9",
+                        accentColor: primaryBg,
+                        backgroundColor: activePreset === "Dark Obsidian" ? "#09090b" : "#ffffff",
+                        textColor: activePreset === "Dark Obsidian" ? "#f8fafc" : "#0f172a",
+                        fontFamily: fontFamily,
+                        borderRadius: borderRadiusPx,
+                      },
+                    }),
+                  });
+                  if (!res.ok) throw new Error("Creation failed");
+                  const project = await res.json();
+                  toast.success(`Created website "${project.name}"!`);
+                  router.push(`/builder/${project.slug || project.id}`);
+                } catch (err) {
+                  console.error("Failed to create project with theme", err);
+                  toast.error("Failed to create website project");
+                } finally {
+                  setIsBuilding(false);
+                }
+              }
+            }}
+            className="space-y-4 pt-2"
+          >
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-foreground">Website Title</label>
+              <Input
+                type="text"
+                autoFocus
+                value={websiteTitle}
+                onChange={(e) => setWebsiteTitle(e.target.value)}
+                placeholder="e.g., My Portfolio Website"
+                className="h-10 text-sm rounded-xl border-border/80 bg-muted/30 focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowTitleDialog(false)}
+                className="rounded-xl border-border/80"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!websiteTitle.trim() || isBuilding}
+                className="font-bold text-primary-foreground bg-primary hover:opacity-95 shadow-md shadow-primary/25 rounded-xl cursor-pointer"
+              >
+                {isBuilding ? "Building..." : "Build Now"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }

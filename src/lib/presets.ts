@@ -326,13 +326,7 @@ export function createComponent(type: ComponentType): BuilderComponent {
 }
 
 export function blankProjectComponents(): BuilderComponent[] {
-  return [
-    createComponent("navbar"),
-    createComponent("hero"),
-    createComponent("features"),
-    createComponent("cta"),
-    createComponent("footer"),
-  ];
+  return [];
 }
 
 export const SEED_TEMPLATES: {

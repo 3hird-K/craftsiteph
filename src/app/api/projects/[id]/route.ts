@@ -7,14 +7,18 @@ export const dynamic = "force-dynamic";
 
 type Ctx = { params: Promise<{ id: string }> };
 
+function getWhereClause(id: string) {
+  const numId = Number(id);
+  return !isNaN(numId) ? eq(projects.id, numId) : eq(projects.slug, id);
+}
+
 export async function GET(_req: NextRequest, ctx: Ctx) {
   try {
     const { id } = await ctx.params;
-    const projectId = Number(id);
-    if (!projectId) {
+    if (!id) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
-    const [row] = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
+    const [row] = await db.select().from(projects).where(getWhereClause(id)).limit(1);
     if (!row) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -28,8 +32,7 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
 export async function PUT(req: NextRequest, ctx: Ctx) {
   try {
     const { id } = await ctx.params;
-    const projectId = Number(id);
-    if (!projectId) {
+    if (!id) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
@@ -48,7 +51,7 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     const [row] = await db
       .update(projects)
       .set(updates)
-      .where(eq(projects.id, projectId))
+      .where(getWhereClause(id))
       .returning();
 
     if (!row) {
@@ -64,11 +67,10 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
   try {
     const { id } = await ctx.params;
-    const projectId = Number(id);
-    if (!projectId) {
+    if (!id) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
-    await db.delete(projects).where(eq(projects.id, projectId));
+    await db.delete(projects).where(getWhereClause(id));
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/projects/[id]", error);

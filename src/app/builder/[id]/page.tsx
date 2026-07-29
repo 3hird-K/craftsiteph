@@ -11,10 +11,14 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function BuilderPage({ params }: Props) {
   const { id } = await params;
-  const projectId = Number(id);
-  if (!projectId) notFound();
+  if (!id) notFound();
 
-  const [row] = await db.select().from(projects).where(eq(projects.id, projectId)).limit(1);
+  const numId = Number(id);
+  const [row] = await db
+    .select()
+    .from(projects)
+    .where(!isNaN(numId) ? eq(projects.id, numId) : eq(projects.slug, id))
+    .limit(1);
   if (!row) notFound();
 
   const project: Project = {

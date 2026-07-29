@@ -3,6 +3,7 @@
 import type { BuilderComponent, ComponentProps, ComponentStyle, SiteTheme } from "@/lib/types";
 import { FONT_OPTIONS } from "@/lib/types";
 import { PALETTE } from "@/lib/presets";
+import { Sun, Moon } from "lucide-react";
 
 type Props = {
   component: BuilderComponent | null;
@@ -21,14 +22,14 @@ function Field({
 }) {
   return (
     <label className="block space-y-1">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{label}</span>
+      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
       {children}
     </label>
   );
 }
 
 const inputClass =
-  "w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100";
+  "w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm text-foreground outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100";
 
 function TextInput({
   value,
@@ -79,7 +80,7 @@ function ColorInput({
     <div className="flex items-center gap-2">
       <input
         type="color"
-        className="h-9 w-10 cursor-pointer rounded border border-slate-200 bg-white p-0.5"
+        className="h-9 w-10 cursor-pointer rounded border border-border bg-background p-0.5"
         value={value && /^#([0-9a-f]{6})$/i.test(value) ? value : "#000000"}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -102,10 +103,13 @@ function SelectInput({
   onChange: (v: string) => void;
   options: { label: string; value: string }[];
 }) {
+  const hasMatch = value ? options.some((o) => o.value === value) : true;
+  const allOptions = !hasMatch && value ? [{ label: value, value }, ...options] : options;
+
   return (
     <select className={inputClass} value={value ?? ""} onChange={(e) => onChange(e.target.value)}>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
+      {allOptions.map((o, idx) => (
+        <option key={`${o.value}-${idx}`} value={o.value}>
           {o.label}
         </option>
       ))}
@@ -122,9 +126,9 @@ export function PropertiesPanel({
 }: Props) {
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-slate-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-900">Design</h2>
-        <p className="mt-0.5 text-xs text-slate-500">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="text-sm font-semibold text-foreground">Design</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {component
             ? `Editing ${PALETTE.find((p) => p.type === component.type)?.label || component.type}`
             : "Theme & page settings"}
@@ -143,40 +147,9 @@ export function PropertiesPanel({
             </h3>
           </div>
 
-          {/* Quick Theme Preset Dots (Matching Home Page Themes) */}
-          <div className="space-y-1.5 border-b border-slate-200 pb-3">
-            <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
-              Quick Theme Presets
-            </span>
-            <div className="flex items-center gap-2 pt-1">
-              {[
-                { name: "Coral", primary: "#ea580c", secondary: "#0f172a", accent: "#fdba74" },
-                { name: "Indigo", primary: "#4f46e5", secondary: "#0f172a", accent: "#818cf8" },
-                { name: "Emerald", primary: "#059669", secondary: "#064e3b", accent: "#34d399" },
-                { name: "Violet", primary: "#7c3aed", secondary: "#3b0764", accent: "#c084fc" },
-              ].map((p) => {
-                const isActive = theme.primaryColor === p.primary;
-                return (
-                  <button
-                    key={p.name}
-                    type="button"
-                    onClick={() =>
-                      onChangeTheme({
-                        primaryColor: p.primary,
-                        secondaryColor: p.secondary,
-                        accentColor: p.accent,
-                      })
-                    }
-                    className={`h-7 w-7 rounded-full p-0.5 border transition-all cursor-pointer flex items-center justify-center ${
-                      isActive ? "ring-2 ring-offset-1 ring-slate-400 scale-110" : "opacity-75 hover:opacity-100"
-                    }`}
-                    style={{ backgroundColor: p.primary, borderColor: p.secondary }}
-                    title={`Apply ${p.name} Theme`}
-                  />
-                );
-              })}
-            </div>
-          </div>
+
+
+
 
           <Field label="Primary">
             <ColorInput
@@ -230,7 +203,7 @@ export function PropertiesPanel({
         </section>
 
         {!component ? (
-          <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-xs text-slate-500">
+          <div className="rounded-xl border border-dashed border-border bg-muted/50 dark:bg-muted/20 px-4 py-8 text-center text-xs text-muted-foreground">
             Select a component on the canvas to edit its content and styles.
           </div>
         ) : (
@@ -326,7 +299,7 @@ export function PropertiesPanel({
 
               {component.props.links ? (
                 <div className="space-y-2">
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                     Links
                   </div>
                   {component.props.links.map((link, i) => (
@@ -367,16 +340,16 @@ export function PropertiesPanel({
 
               {component.props.items ? (
                 <div className="space-y-3">
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                     Items
                   </div>
                   {component.props.items.map((item, i) => (
                     <div
                       key={i}
-                      className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5"
+                      className="space-y-2 rounded-xl border border-border bg-muted/50 dark:bg-muted/20 p-2.5"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-semibold text-slate-500">Item {i + 1}</span>
+                        <span className="text-[11px] font-semibold text-muted-foreground">Item {i + 1}</span>
                         <button
                           type="button"
                           className="text-xs text-rose-500"
@@ -520,7 +493,6 @@ export function PropertiesPanel({
                     { label: "Roomy", value: "48px 32px" },
                     { label: "Spacious", value: "64px 32px" },
                     { label: "Hero", value: "80px 32px" },
-                    { label: "Custom current", value: component.style.padding || "32px 32px" },
                   ]}
                 />
               </Field>
