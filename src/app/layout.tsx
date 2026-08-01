@@ -6,9 +6,32 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "craftsiteph — Visual Website Builder",
+  title: "craftsiteph — Visual Website Builder & Page Design Studio",
   description:
-    "Customize components and design your own website with a live visual builder.",
+    "Customize components, choose modern layout designs, drag & drop layers, and build your live website with a visual builder.",
+  openGraph: {
+    title: "craftsiteph — Visual Website Builder",
+    description:
+      "Customize components, choose modern layout designs, drag & drop layers, and build your live website with a visual builder.",
+    siteName: "craftsiteph",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "craftsiteph Visual Website Builder",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "craftsiteph — Visual Website Builder",
+    description:
+      "Customize components, choose modern layout designs, drag & drop layers, and build your live website with a visual builder.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
