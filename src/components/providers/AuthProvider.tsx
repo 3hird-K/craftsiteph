@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let url =
       process.env.NEXT_PUBLIC_APP_URL ||
       process.env.NEXT_PUBLIC_VERCEL_URL ||
-      "http://localhost:3000";
+      "https://craftsiteph.vercel.app";
     url = url.startsWith("http") ? url : `https://${url}`;
     return url.replace(/\/$/, "");
   };

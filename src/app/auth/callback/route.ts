@@ -15,6 +15,8 @@ export async function GET(request: Request) {
     origin = `https://${forwardedHost}`;
   } else if (process.env.NEXT_PUBLIC_APP_URL) {
     origin = process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  } else if (!isLocal) {
+    origin = "https://craftsiteph.vercel.app";
   }
 
   if (code) {
