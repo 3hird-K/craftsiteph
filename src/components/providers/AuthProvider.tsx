@@ -91,15 +91,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
   const getURL = () => {
+    if (typeof window !== "undefined") {
+      return window.location.origin;
+    }
     let url =
       process.env.NEXT_PUBLIC_APP_URL ||
-      (typeof window !== "undefined" ? window.location.origin : "");
-    if (!url && process.env.NEXT_PUBLIC_VERCEL_URL) {
-      url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-    }
-    if (!url) {
-      url = "http://localhost:3000";
-    }
+      process.env.NEXT_PUBLIC_VERCEL_URL ||
+      "http://localhost:3000";
     url = url.startsWith("http") ? url : `https://${url}`;
     return url.replace(/\/$/, "");
   };
