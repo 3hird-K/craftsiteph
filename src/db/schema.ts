@@ -45,7 +45,7 @@ export type ComponentProps = {
   variant?: string;
   placeholder?: string;
   logoText?: string;
-  socialLinks?: { platform: string; href: string }[];
+  socialLinks?: { platform: string; href?: string; url?: string }[];
 };
 
 export type BuilderComponent = {

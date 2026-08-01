@@ -1,4 +1,4 @@
-import type { BuilderComponent, ComponentType, SiteTheme } from "./types";
+import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "./types";
 import { DEFAULT_THEME } from "./types";
 
 export function uid(prefix = "c"): string {
@@ -31,11 +31,389 @@ export const PALETTE: PaletteItem[] = [
   { type: "footer", label: "Footer", description: "Links and copyright", icon: "⬇", category: "layout" },
 ];
 
-export function createComponent(type: ComponentType): BuilderComponent {
+export type ComponentVariant = {
+  id: string;
+  name: string;
+  description: string;
+  badge?: string;
+  previewType: "split" | "centered" | "floating" | "minimal" | "grid" | "boxed";
+  applyProps?: Partial<ComponentProps>;
+  applyStyle?: Partial<ComponentStyle>;
+};
+
+export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
+  navbar: [
+    {
+      id: "classic-split",
+      name: "Classic Split Header",
+      description: "Logo left, navigation links middle, CTA button right.",
+      badge: "Popular",
+      previewType: "split",
+      applyProps: {
+        variant: "classic-split",
+        logoText: "Brand",
+        links: [
+          { label: "Home", href: "#" },
+          { label: "Features", href: "#features" },
+          { label: "Pricing", href: "#pricing" },
+          { label: "Contact", href: "#contact" },
+        ],
+        buttons: [{ label: "Get Started", variant: "solid" }],
+      },
+      applyStyle: {
+        paddingY: "16px",
+        paddingX: "32px",
+        marginY: "0px",
+        marginX: "0px",
+      },
+    },
+    {
+      id: "centered-minimal",
+      name: "Centered Minimal & Stacked",
+      description: "Centered logo on top with inline navigation links & CTA below.",
+      badge: "Minimal",
+      previewType: "centered",
+      applyProps: {
+        variant: "centered-minimal",
+        logoText: "CRAFTSITE",
+        links: [
+          { label: "Home", href: "#" },
+          { label: "Showcase", href: "#" },
+          { label: "Pricing", href: "#" },
+          { label: "Contact", href: "#" },
+        ],
+        buttons: [{ label: "Explore Platform", variant: "solid" }],
+      },
+      applyStyle: {
+        paddingY: "20px",
+        paddingX: "32px",
+        textAlign: "center",
+        marginY: "0px",
+        marginX: "0px",
+      },
+    },
+    {
+      id: "floating-glass",
+      name: "Floating Glassmorphism",
+      description: "Pill header bar with subtle backdrop blur and rounded floating container.",
+      badge: "Modern",
+      previewType: "floating",
+      applyProps: {
+        variant: "floating-glass",
+        logoText: "Studio",
+        links: [
+          { label: "Work", href: "#" },
+          { label: "About", href: "#" },
+          { label: "Blog", href: "#" },
+        ],
+        buttons: [{ label: "Sign In", variant: "solid" }],
+      },
+      applyStyle: {
+        paddingY: "12px",
+        paddingX: "28px",
+        marginY: "0px",
+        marginX: "auto",
+        maxWidth: "1120px",
+        borderRadius: "9999px",
+      },
+    },
+    {
+      id: "inline-left",
+      name: "Clean Inline Left",
+      description: "Logo and navigation links grouped together on the left, action button on right.",
+      badge: "Clean",
+      previewType: "split",
+      applyProps: {
+        variant: "inline-left",
+        logoText: "Pulse",
+        links: [
+          { label: "Overview", href: "#" },
+          { label: "Integrations", href: "#" },
+          { label: "Changelog", href: "#" },
+        ],
+        buttons: [{ label: "Launch App", variant: "solid" }],
+      },
+      applyStyle: {
+        paddingY: "16px",
+        paddingX: "32px",
+        marginY: "0px",
+        marginX: "0px",
+      },
+    },
+    {
+      id: "dual-action",
+      name: "Dual Action Header",
+      description: "Logo left, centered navigation, with secondary outline and primary CTA buttons.",
+      badge: "Conversion",
+      previewType: "split",
+      applyProps: {
+        variant: "dual-action",
+        logoText: "Horizon",
+        links: [
+          { label: "Features", href: "#" },
+          { label: "Enterprise", href: "#" },
+          { label: "Pricing", href: "#" },
+        ],
+        buttons: [
+          { label: "Log In", variant: "outline" },
+          { label: "Start Free Trial", variant: "solid" },
+        ],
+      },
+      applyStyle: {
+        paddingY: "16px",
+        paddingX: "32px",
+        marginY: "0px",
+        marginX: "0px",
+      },
+    },
+    {
+      id: "bordered-light",
+      name: "Bordered Light Header",
+      description: "Crisp light background with subtle bottom border and clean typography.",
+      badge: "Sleek",
+      previewType: "split",
+      applyProps: {
+        variant: "bordered-light",
+        logoText: "Vanguard",
+        links: [
+          { label: "Platform", href: "#" },
+          { label: "Developers", href: "#" },
+          { label: "Resources", href: "#" },
+        ],
+        buttons: [{ label: "Book Demo", variant: "solid" }],
+      },
+      applyStyle: {
+        border: "1px solid var(--color-border)",
+        paddingY: "16px",
+        paddingX: "32px",
+        marginY: "0px",
+        marginX: "0px",
+      },
+    },
+  ],
+  hero: [
+    {
+      id: "centered-hero",
+      name: "Centered Big Headline",
+      description: "Centered title, subtitle, CTA buttons, and subtle hero glow.",
+      badge: "Popular",
+      previewType: "centered",
+      applyProps: {
+        variant: "centered-hero",
+        heading: "Build something people love",
+        subheading: "Design beautiful landing pages in minutes. Customize every component, color, and layout.",
+        buttons: [{ label: "Start building free", variant: "solid" }],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+        textAlign: "center",
+      },
+    },
+    {
+      id: "split-image",
+      name: "Split Headline + Showcase Image",
+      description: "Headline & CTA on left, high-res showcase image on right.",
+      badge: "High Conversion",
+      previewType: "split",
+      applyProps: {
+        variant: "split-image",
+        heading: "Turn ideas into live websites",
+        subheading: "Visual page builder with drag-and-drop flexibility for modern teams.",
+        buttons: [{ label: "Explore Platform", variant: "solid" }],
+        imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+        textAlign: "left",
+      },
+    },
+    {
+      id: "minimalist-hero",
+      name: "Minimalist Typography",
+      description: "Clean text-only hero focus with bold typography & subtle CTA.",
+      badge: "Clean",
+      previewType: "minimal",
+      applyProps: {
+        variant: "minimalist-hero",
+        heading: "Simplicity in visual design.",
+        subheading: "Focus on what matters. Minimalist layout for modern creators.",
+        buttons: [{ label: "Get Started →", variant: "solid" }],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "72px",
+        paddingX: "32px",
+        textAlign: "center",
+      },
+    },
+    {
+      id: "app-preview",
+      name: "App Dashboard & Glass Mockup",
+      description: "Modern SaaS hero with title, CTA buttons, and elevated app dashboard mockup.",
+      badge: "Modern",
+      previewType: "centered",
+      applyProps: {
+        variant: "app-preview",
+        heading: "Manage everything in one intuitive workspace",
+        subheading: "Streamline workflows, automate tasks, and collaborate with your team seamlessly.",
+        buttons: [
+          { label: "Start Free Trial", variant: "solid" },
+          { label: "Watch Demo", variant: "outline" },
+        ],
+        imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "88px",
+        paddingX: "32px",
+        textAlign: "center",
+      },
+    },
+    {
+      id: "gradient-glow",
+      name: "Gradient Badge & Dual CTA Hero",
+      description: "Dribbble trending SaaS hero with announcement badge and dual CTA action buttons.",
+      badge: "Trending",
+      previewType: "centered",
+      applyProps: {
+        variant: "gradient-glow",
+        heading: "Build faster with intelligent design components",
+        subheading: "Create, iterate, and deploy modern visual applications without touching complex code.",
+        buttons: [
+          { label: "Get Started Free", variant: "solid" },
+          { label: "Book a Demo", variant: "ghost" },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "84px",
+        paddingX: "32px",
+        textAlign: "center",
+      },
+    },
+    {
+      id: "bento-hero",
+      name: "Bento Feature Grid Hero",
+      description: "Headline and quick action on left paired with interactive feature card previews.",
+      badge: "Bento",
+      previewType: "split",
+      applyProps: {
+        variant: "bento-hero",
+        heading: "Engineered for high-performing digital products",
+        subheading: "Customizable design systems and production-ready code generation built in.",
+        buttons: [{ label: "Explore Features", variant: "solid" }],
+        imageUrl: "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?w=1200&q=80",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+        textAlign: "left",
+      },
+    },
+  ],
+  features: [
+    {
+      id: "3-col-grid",
+      name: "3-Column Icon Grid",
+      description: "Balanced 3-column layout with icon badges & descriptions.",
+      previewType: "grid",
+      applyProps: { columns: 3 },
+      applyStyle: { backgroundColor: "#ffffff", paddingY: "64px", paddingX: "32px" },
+    },
+    {
+      id: "2-col-cards",
+      name: "2-Column Feature Cards",
+      description: "Large feature cards with highlighted borders.",
+      previewType: "boxed",
+      applyProps: { columns: 2 },
+      applyStyle: { backgroundColor: "#f8fafc", paddingY: "64px", paddingX: "32px" },
+    },
+  ],
+  footer: [
+    {
+      id: "dark-multi-column",
+      name: "Multi-Column Links",
+      description: "Logo, multi-column navigation links, social icons, and copyright.",
+      previewType: "split",
+      applyProps: { logoText: "Brand", text: "© 2026 Brand Inc. All rights reserved." },
+      applyStyle: { backgroundColor: "#020617", textColor: "#94a3b8", paddingY: "48px", paddingX: "32px" },
+    },
+    {
+      id: "centered-minimal-footer",
+      name: "Centered Minimal Footer",
+      description: "Centered logo, inline links, and simple copyright line.",
+      previewType: "centered",
+      applyProps: { logoText: "Brand", text: "Designed with CraftSite." },
+      applyStyle: { backgroundColor: "#ffffff", textColor: "#64748b", paddingY: "40px", paddingX: "32px", textAlign: "center" },
+    },
+  ],
+  "card-grid": [
+    {
+      id: "3-col-cards",
+      name: "3-Column Card Grid",
+      description: "Clean 3-column card grid section.",
+      previewType: "grid",
+      applyProps: { columns: 3 },
+      applyStyle: { backgroundColor: "#f8fafc", paddingY: "64px", paddingX: "32px" },
+    },
+    {
+      id: "2-col-elevated",
+      name: "2-Column Elevated Cards",
+      description: "Wide cards with shadow elevation.",
+      previewType: "boxed",
+      applyProps: { columns: 2 },
+      applyStyle: { backgroundColor: "#ffffff", paddingY: "64px", paddingX: "32px" },
+    },
+  ],
+  cta: [
+    {
+      id: "full-width-cta",
+      name: "Full-Width Primary Banner",
+      description: "Bold full-bleed CTA section with primary background.",
+      previewType: "centered",
+      applyProps: {},
+      applyStyle: { backgroundColor: "#4f46e5", textColor: "#ffffff", paddingY: "72px", paddingX: "32px" },
+    },
+    {
+      id: "boxed-cta",
+      name: "Boxed Card CTA",
+      description: "Contained card CTA with rounded corners.",
+      previewType: "boxed",
+      applyProps: {},
+      applyStyle: { backgroundColor: "#0f172a", textColor: "#ffffff", paddingY: "56px", paddingX: "40px", borderRadius: "24px" },
+    },
+  ],
+  stats: [
+    {
+      id: "dark-stats-bar",
+      name: "4-Column Metric Strip",
+      description: "Horizontal metrics bar with numbers & labels.",
+      previewType: "grid",
+      applyProps: { columns: 4 },
+      applyStyle: { backgroundColor: "#0f172a", textColor: "#f8fafc", paddingY: "48px", paddingX: "32px" },
+    },
+    {
+      id: "light-stats-grid",
+      name: "Light Stat Cards",
+      description: "Clean light background metrics grid.",
+      previewType: "boxed",
+      applyProps: { columns: 4 },
+      applyStyle: { backgroundColor: "#ffffff", textColor: "#0f172a", paddingY: "48px", paddingX: "32px" },
+    },
+  ],
+};
+
+export function createComponent(type: ComponentType, variantId?: string): BuilderComponent {
   const id = uid(type);
+  let base: BuilderComponent;
   switch (type) {
     case "navbar":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -52,12 +430,13 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#0f172a",
           textColor: "#f8fafc",
-          padding: "16px 32px",
+          paddingY: "16px", paddingX: "32px",
           fontWeight: "600",
         },
       };
+      break;
     case "hero":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -71,28 +450,29 @@ export function createComponent(type: ComponentType): BuilderComponent {
           imageAlt: "Team collaborating",
         },
         style: {
-          backgroundColor: "#eef2ff",
-          textColor: "#0f172a",
-          padding: "80px 32px",
+          backgroundColor: "transparent",
+          paddingY: "80px", paddingX: "32px",
           textAlign: "center",
           gap: "24px",
         },
       };
+      break;
     case "heading":
-      return {
+      base = {
         id,
         type,
         props: { heading: "Section heading", subheading: "A short supporting line" },
         style: {
           textColor: "#0f172a",
-          padding: "48px 32px 8px",
+          paddingY: "48px", paddingX: "32px",
           textAlign: "center",
           fontSize: "36px",
           fontWeight: "700",
         },
       };
+      break;
     case "text":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -100,30 +480,32 @@ export function createComponent(type: ComponentType): BuilderComponent {
         },
         style: {
           textColor: "#334155",
-          padding: "8px 32px 32px",
+          paddingY: "8px", paddingX: "32px",
           textAlign: "center",
           fontSize: "18px",
           maxWidth: "720px",
           lineHeight: "1.7",
         },
       };
+      break;
     case "button":
-      return {
+      base = {
         id,
         type,
         props: { buttonText: "Click me", buttonHref: "#" },
         style: {
           backgroundColor: "#4f46e5",
           textColor: "#ffffff",
-          padding: "24px 32px",
+          paddingY: "24px", paddingX: "32px",
           borderRadius: "12px",
           textAlign: "center",
           fontWeight: "600",
           fontSize: "16px",
         },
       };
+      break;
     case "image":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -132,14 +514,15 @@ export function createComponent(type: ComponentType): BuilderComponent {
           imageAlt: "Workspace",
         },
         style: {
-          padding: "24px 32px",
+          paddingY: "24px", paddingX: "32px",
           borderRadius: "16px",
           textAlign: "center",
           maxWidth: "960px",
         },
       };
+      break;
     case "features":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -166,12 +549,13 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#ffffff",
           textColor: "#0f172a",
-          padding: "64px 32px",
+          paddingY: "64px", paddingX: "32px",
           gap: "24px",
         },
       };
+      break;
     case "card-grid":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -198,12 +582,13 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#f8fafc",
           textColor: "#0f172a",
-          padding: "64px 32px",
+          paddingY: "64px", paddingX: "32px",
           gap: "20px",
         },
       };
+      break;
     case "stats":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -218,12 +603,13 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#0f172a",
           textColor: "#f8fafc",
-          padding: "48px 32px",
+          paddingY: "48px", paddingX: "32px",
           textAlign: "center",
         },
       };
+      break;
     case "testimonial":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -236,13 +622,14 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#faf5ff",
           textColor: "#3b0764",
-          padding: "64px 32px",
+          paddingY: "64px", paddingX: "32px",
           textAlign: "center",
           borderRadius: "0",
         },
       };
+      break;
     case "cta":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -254,13 +641,14 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#4f46e5",
           textColor: "#ffffff",
-          padding: "72px 32px",
+          paddingY: "72px", paddingX: "32px",
           textAlign: "center",
           borderRadius: "0",
         },
       };
+      break;
     case "form":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -272,31 +660,34 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#ffffff",
           textColor: "#0f172a",
-          padding: "64px 32px",
+          paddingY: "64px", paddingX: "32px",
           textAlign: "center",
           maxWidth: "560px",
         },
       };
+      break;
     case "spacer":
-      return {
+      base = {
         id,
         type,
         props: {},
-        style: { padding: "40px 0", backgroundColor: "transparent" },
+        style: { paddingY: "40px", paddingX: "0px", backgroundColor: "transparent" },
       };
+      break;
     case "divider":
-      return {
+      base = {
         id,
         type,
         props: {},
         style: {
-          padding: "8px 48px",
+          paddingY: "8px", paddingX: "48px",
           backgroundColor: "transparent",
           textColor: "#e2e8f0",
         },
       };
+      break;
     case "footer":
-      return {
+      base = {
         id,
         type,
         props: {
@@ -316,13 +707,24 @@ export function createComponent(type: ComponentType): BuilderComponent {
         style: {
           backgroundColor: "#020617",
           textColor: "#94a3b8",
-          padding: "48px 32px",
+          paddingY: "48px", paddingX: "32px",
           textAlign: "center",
         },
       };
+      break;
     default:
-      return { id, type: "text", props: { text: "New block" }, style: { padding: "16px" } };
+      base = { id, type: "text", props: { text: "New block" }, style: { paddingY: "16px", paddingX: "16px" } };
   }
+
+  if (variantId && COMPONENT_VARIANTS[type]) {
+    const v = COMPONENT_VARIANTS[type].find((v) => v.id === variantId);
+    if (v) {
+      if (v.applyProps) base.props = { ...base.props, ...v.applyProps };
+      if (v.applyStyle) base.style = { ...base.style, ...v.applyStyle };
+    }
+  }
+
+  return base;
 }
 
 export function blankProjectComponents(): BuilderComponent[] {

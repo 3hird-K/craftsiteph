@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -27,7 +27,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { blankProjectComponents } from "@/lib/presets";
-import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -180,7 +179,7 @@ function ColorTokenRow({
   );
 }
 
-export default function ThemesPage() {
+function ThemesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading, signInWithGoogle } = useAuth();
@@ -783,7 +782,7 @@ export default function ThemesPage() {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl border border-border/60 bg-background/80 space-y-3.5 shadow-xs">
+                {/* <div className="p-4 rounded-2xl border border-border/60 bg-background/80 space-y-3.5 shadow-xs">
                   <div className="text-xs font-bold text-foreground">
                     Border Thickness
                   </div>
@@ -807,7 +806,7 @@ export default function ThemesPage() {
                       </button>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
 
               </div>
@@ -968,11 +967,9 @@ export default function ThemesPage() {
                   });
                   if (!res.ok) throw new Error("Creation failed");
                   const project = await res.json();
-                  toast.success(`Created website "${project.name}"!`);
                   router.push(`/builder/${project.slug || project.id}`);
                 } catch (err) {
                   console.error("Failed to create project with theme", err);
-                  toast.error("Failed to create website project");
                 } finally {
                   setIsBuilding(false);
                 }
@@ -1015,5 +1012,13 @@ export default function ThemesPage() {
         </DialogContent>
       </Dialog>
     </TooltipProvider>
+  );
+}
+
+export default function ThemesPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-background text-muted-foreground text-sm font-medium">Loading Theme Studio...</div>}>
+      <ThemesPageContent />
+    </Suspense>
   );
 }

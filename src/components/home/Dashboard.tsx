@@ -14,26 +14,22 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
   CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { toast } from "sonner";
 
 // Lucide Icons
 import {
   Plus,
   Search,
-  Zap,
   Globe,
   Trash2,
   ExternalLink,
   Layers,
   Database,
   ArrowRight,
-  RefreshCw,
   LayoutGrid,
   Smartphone,
   Tablet,
@@ -44,9 +40,6 @@ import {
   GripVertical,
   ChevronLeft,
   ChevronRight,
-  Code2,
-  LogOut,
-  Palette,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -63,8 +56,8 @@ export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "published" | "draft">("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | number | null>(null);
 
   // Animated Builder Demo State (Strict User-Chosen Color Theme)
   const [sandboxViewport, setSandboxViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
@@ -249,7 +242,7 @@ export function Dashboard() {
     router.push(`/builder/${id}`);
   };
 
-  const deleteProject = async (id: string) => {
+  const deleteProject = async (id: string | number) => {
     setDeletingId(id);
     try {
       const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
@@ -409,8 +402,9 @@ export function Dashboard() {
                   href="#templates"
                   className={`h-11 px-6 rounded-xl font-semibold flex items-center justify-center border bg-background cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${currentSandboxStyle.outlineText} ${currentSandboxStyle.outlineBorder} ${currentSandboxStyle.buttonHover}`}
                 >
-                  Templates ↓
-                </a>              </div>
+                  Templates
+                </a>
+              </div>
 
               {/* Clean Concise Metric Strip */}
               <div className="grid grid-cols-3 gap-6 border-t border-border pt-6 max-w-lg">
@@ -433,7 +427,7 @@ export function Dashboard() {
             <div className="lg:col-span-6 relative">
               
               {/* Browser Window Mockup Container */}
-              <div className="w-full rounded-2xl border border-border bg-card shadow-xl overflow-hidden min-h-[460px] h-[460px] flex flex-col transition-all">
+              <div className="w-full rounded-2xl border border-border bg-card shadow-xl min-h-[520px] h-[520px] flex mt-15 flex-col transition-all overflow-hidden">
                 
                 {/* Clean Browser Window Header with Google Chrome Style */}
                 <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-3 shrink-0">
@@ -563,7 +557,7 @@ export function Dashboard() {
                         <div className="p-1 rounded-md bg-muted/80 border border-border/50 text-muted-foreground flex items-center justify-center cursor-grab active:cursor-grabbing">
                           <GripVertical className="h-3 w-3" />
                         </div>
-                        <img src="/logo.png" alt="craftsiteph Logo" className="w-18 sm:w-32 h-auto scale-125 origin-left object-contain shrink-0 drop-shadow-xs -my-10 -mx-2 sm:-mx-3" />
+                        <img src="/logo.png" alt="craftsiteph Logo" className={`w-12 sm:w-18 h-auto scale-125 origin-left object-contain shrink-0 drop-shadow-xs -my-10 -mx-2 sm:-mx-3 ${sandboxViewport === "mobile" ? `w-24 sm:w-24` : `w-18 sm:w-32`}`} />
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
@@ -593,9 +587,9 @@ export function Dashboard() {
                           handleUserInteraction();
                           setActiveSandboxBlock("hero");
                         }}
-                        className={`group relative cursor-pointer rounded-xl border p-3.5 bg-card flex flex-col justify-between h-[145px] transition-all duration-700 ease-in-out ${
+                        className={`group relative cursor-pointer rounded-xl border p-3.5 bg-card flex flex-col justify-between h-[160px] transition-all duration-700 ease-in-out ${
                           isSwapped
-                            ? "translate-y-[157px] z-20 shadow-xl"
+                            ? `translate-y-[175px] z-20 shadow-xl ${sandboxViewport === "mobile" ? `translate-y-[250px]` : ``}`
                             : "translate-y-0 z-10"
                         } ${
                           activeSandboxBlock === "hero"
@@ -621,19 +615,21 @@ export function Dashboard() {
                             
                             {/* NextGen Builder Badge */}
                             <div className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-semibold transition-colors duration-500 ${currentSandboxStyle.bg} ${currentSandboxStyle.text}`}>
-                              <img src="/logo.png" alt="Logo" className="h-4 w-auto object-contain shrink-0" />
+                              {/* <img src="/logo.png" alt="Logo" className={`h-4 w-auto object-contain shrink-0 ${sandboxViewport === "mobile" ? `sm:hidden` : `sm:inline`}`} /> */}
                               <span>NextGen Builder</span>
                             </div>
                           </div>
 
-                          <Badge variant="outline" className="text-[9px] py-0.5 px-2 font-mono text-muted-foreground">
+                          <Badge variant="outline" className={`text-[9px] py-0.5 px-2 font-mono text-muted-foreground ${sandboxViewport === "mobile" ? `sm:hidden` : `sm:inline`}`}>
                             v2.4 Live
                           </Badge>
                         </div>
 
                         <div>
                           <h4 className="text-xs sm:text-sm font-black text-foreground leading-snug">
-                            Build Fullstack Sites Visually
+                            Build Fullstack Sites <span className={`${
+                                          sandboxViewport === "mobile" ? `sm:hidden` : "sm:inline"
+                                        }`}>Visually</span>
                           </h4>
 
                           <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-1 leading-relaxed mt-0.5">
@@ -666,9 +662,13 @@ export function Dashboard() {
                           handleUserInteraction();
                           setActiveSandboxBlock("features");
                         }}
-                        className={`group relative cursor-pointer rounded-xl border p-3.5 bg-card flex flex-col justify-between h-[145px] transition-all duration-700 ease-in-out ${
+                        className={`group relative cursor-pointer rounded-xl border p-3.5 bg-card flex flex-col justify-between h-[160px] transition-all duration-700 ease-in-out
+                          ${
+                            sandboxViewport === "mobile" ? `h-[240px]` : ``
+                          }
+                          ${
                           isSwapped
-                            ? "-translate-y-[157px] z-20 shadow-xl"
+                            ? "-translate-y-[175px] z-20 shadow-xl"
                             : "translate-y-0 z-10"
                         } ${
                           activeSandboxBlock === "features"
@@ -695,21 +695,27 @@ export function Dashboard() {
                               Engineered Features
                             </span>
                           </div>
-                          <Badge variant="outline" className="text-[8px] py-0 px-1.5">Shadcn UI</Badge>
+                          <Badge variant="outline" className={`text-[8px] py-0 px-1.5 ${sandboxViewport === "mobile" ? `sm:hidden` : `sm:inline`}`}>Shadcn UI</Badge>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className={`grid  gap-2 ${sandboxViewport === "mobile" ? `grid-cols-1` : `grid-cols-2`}`}>
                           <Card className={`p-2.5 border-border shadow-none ${currentSandboxStyle.bg} transition-colors duration-500 rounded-lg cursor-pointer`}>
                             <div className="flex items-center gap-1.5 mb-1">
                               <div className={`p-1 rounded-md bg-background shadow-xs ${currentSandboxStyle.text} transition-colors duration-500`}>
                                 <Layers className="h-3 w-3" />
                               </div>
-                              <CardTitle className={`text-[10px] font-bold ${currentSandboxStyle.text} transition-colors duration-500`}>
+                              <CardTitle className={`text-[10px] font-bold line-clamp-1 ${currentSandboxStyle.text} transition-colors duration-500`}>
                                 Visual Drag-Drop
+                                {/* <span className={`${
+                                          sandboxViewport === "mobile" ? `sm:hidden` : "sm:inline"
+                                        }`}>Drag-Drop</span> */}
                               </CardTitle>
                             </div>
-                            <CardDescription className="text-[8px] sm:text-[9px] leading-tight">
+                            <CardDescription className="text-[8px] sm:text-[9px] leading-tight line-wrap">
                               Live OKLCH theme styling
+                              {/* <span className={`${
+                                          sandboxViewport === "mobile" ? `sm:hidden` : "sm:inline"
+                                        }`}> theme styling</span> */}
                             </CardDescription>
                           </Card>
 
@@ -718,12 +724,17 @@ export function Dashboard() {
                               <div className={`p-1 rounded-md bg-background shadow-xs ${currentSandboxStyle.text} transition-colors duration-500`}>
                                 <Database className="h-3 w-3" />
                               </div>
-                              <CardTitle className={`text-[10px] font-bold ${currentSandboxStyle.text} transition-colors duration-500`}>
-                                Supabase DB
+                              <CardTitle className={`text-[10px] font-bold ${currentSandboxStyle.text} transition-colors duration-500 line-clamp-1`}>
+                                Supabase Database
+                                {/* <span className={`${
+                                          sandboxViewport === "mobile" ? `sm:hidden` : "sm:inline"
+                                        }`}>DB</span> */}
                               </CardTitle>
                             </div>
                             <CardDescription className="text-[8px] sm:text-[9px] leading-tight">
-                              1-Click PostgreSQL sync
+                              <span className={`${
+                                          sandboxViewport === "mobile" ? `sm:hidden` : "sm:inline"
+                                        }`}>1-Click</span> PostgreSQL sync
                             </CardDescription>
                           </Card>
                         </div>
@@ -886,12 +897,12 @@ export function Dashboard() {
           </div>
         </section>
 
+
         {/* Error Alert */}
         {error ? (
           <Card className="mb-6 border-destructive/30 bg-destructive/10 p-4 text-destructive">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <span>⚠️</span>
                 <span>{error}</span>
               </div>
               <Button
@@ -1169,8 +1180,6 @@ export function Dashboard() {
         <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="craftsiteph Logo" className="h-10 sm:h-12 w-auto object-contain shrink-0" />
-            <span>•</span>
-            <span>Built with Shadcn UI, Next.js & Drizzle</span>
           </div>
           <div>© 2026 craftsiteph. All rights reserved.</div>
         </div>

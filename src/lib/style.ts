@@ -8,8 +8,50 @@ export function styleToCss(style: ComponentStyle = {}): CSSProperties {
   if (style.fontSize) css.fontSize = style.fontSize;
   if (style.fontWeight) css.fontWeight = style.fontWeight as CSSProperties["fontWeight"];
   if (style.fontFamily) css.fontFamily = style.fontFamily;
-  if (style.padding) css.padding = style.padding;
-  if (style.margin) css.margin = style.margin;
+  // Legacy padding fallback
+  const padParts = style.padding ? style.padding.split(" ") : [];
+  const defaultPadY = padParts[0] || undefined;
+  const defaultPadX = padParts[1] || padParts[0] || undefined;
+
+  if (style.paddingY !== undefined) {
+    css.paddingTop = style.paddingY;
+    css.paddingBottom = style.paddingY;
+  } else if (defaultPadY) {
+    css.paddingTop = defaultPadY;
+    css.paddingBottom = defaultPadY;
+  }
+  
+  if (style.paddingX !== undefined) {
+    css.paddingLeft = style.paddingX;
+    css.paddingRight = style.paddingX;
+  } else if (defaultPadX) {
+    css.paddingLeft = defaultPadX;
+    css.paddingRight = defaultPadX;
+  }
+
+  // Legacy margin fallback
+  const margParts = style.margin ? style.margin.split(" ") : [];
+  const defaultMargY = margParts[0] || undefined;
+  const defaultMargX = margParts[1] || margParts[0] || undefined;
+
+  if (style.marginY !== undefined) {
+    css.marginTop = style.marginY;
+    css.marginBottom = style.marginY;
+  } else if (defaultMargY) {
+    // If the user wants 0 margin by default, and this is an old component with margin, we let them override it.
+    // However, the user complained about a space. Let's just strip legacy margins if they are exactly "16px auto" 
+    // to force the old variants to update, OR just apply it. 
+    css.marginTop = defaultMargY === "16px" ? "0px" : defaultMargY;
+    css.marginBottom = defaultMargY === "16px" ? "0px" : defaultMargY;
+  }
+
+  if (style.marginX !== undefined) {
+    css.marginLeft = style.marginX;
+    css.marginRight = style.marginX;
+  } else if (defaultMargX) {
+    css.marginLeft = defaultMargX === "auto" ? "0px" : defaultMargX;
+    css.marginRight = defaultMargX === "auto" ? "0px" : defaultMargX;
+  }
   if (style.borderRadius) css.borderRadius = style.borderRadius;
   if (style.border) css.border = style.border;
   if (style.textAlign) css.textAlign = style.textAlign;

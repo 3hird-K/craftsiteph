@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
@@ -12,14 +12,16 @@ import type {
   SiteTheme,
 } from "@/lib/types";
 import { DEFAULT_THEME } from "@/lib/types";
-import { createComponent, uid } from "@/lib/presets";
+import { createComponent, uid, COMPONENT_VARIANTS } from "@/lib/presets";
 import { ComponentPalette } from "./ComponentPalette";
 import { LayersPanel } from "./LayersPanel";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { Canvas } from "./Canvas";
+import { ComponentVariantModal } from "./ComponentVariantModal";
+import { PageSetupModal } from "./PageSetupModal";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders } from "lucide-react";
+import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -97,6 +99,24 @@ export function BuilderEditor({ project }: Props) {
   const [isPublished, setIsPublished] = useState(project.isPublished);
   const [slug, setSlug] = useState(project.slug || "");
   const [leftTab, setLeftTab] = useState<"add" | "layers" | "design">("add");
+  const [selectedTypeForVariants, setSelectedTypeForVariants] = useState<ComponentType | null>(null);
+  const [editingLayoutTargetId, setEditingLayoutTargetId] = useState<string | null>(null);
+  const [showSetupModal, setShowSetupModal] = useState(components.length === 0);
+
+  const handleOpenLayoutModal = (id: string, type: ComponentType) => {
+    setEditingLayoutTargetId(id);
+    setSelectedTypeForVariants(type);
+  };
+
+  // --- Undo/Redo State ---
+  const [history, setHistory] = useState<{components: BuilderComponent[], theme: SiteTheme, name: string}[]>([
+    { components: project.components || [], theme: project.theme || DEFAULT_THEME, name: project.name }
+  ]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const isUndoRedo = useRef(false);
+
+  // --- Auto-Save State ---
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "error" | "unsaved">("saved");
 
   const selected = useMemo(
     () => components.find((c) => c.id === selectedId) || null,
@@ -108,9 +128,31 @@ export function BuilderEditor({ project }: Props) {
     setMessage(null);
   }, []);
 
-  const addComponent = (type: ComponentType) => {
-    const next = createComponent(type);
-    setComponents((prev) => [...prev, next]);
+  const addComponent = (type: ComponentType, variantId?: string) => {
+    const next = createComponent(type, variantId);
+    setComponents((prev) => {
+      const sameTypeCount = prev.filter((c) => c.type === type).length;
+      const autoAnchorId = `${type}-${sameTypeCount + 1}`;
+      next.style = {
+        ...next.style,
+        id: next.style?.id || autoAnchorId,
+      };
+      next.props = {
+        ...next.props,
+        sectionId: next.props?.sectionId || autoAnchorId,
+      };
+
+      if (type === "navbar") {
+        const existingNavIndex = prev.findIndex((c) => c.type === "navbar");
+        if (existingNavIndex >= 0) {
+          const copy = [...prev];
+          copy[existingNavIndex] = next;
+          return copy;
+        }
+        return [next, ...prev];
+      }
+      return [...prev, next];
+    });
     setSelectedId(next.id);
     setPreviewMode("edit");
     markDirty();
@@ -131,14 +173,37 @@ export function BuilderEditor({ project }: Props) {
     markDirty();
   };
 
+  const reorderComponents = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+    setComponents((prev) => {
+      if (fromIndex >= prev.length || toIndex >= prev.length) return prev;
+      const copy = [...prev];
+      const [moved] = copy.splice(fromIndex, 1);
+      copy.splice(toIndex, 0, moved);
+      return copy;
+    });
+    markDirty();
+    toast.success("Reordered section layout");
+  };
+
   const duplicateComponent = (id: string) => {
     setComponents((prev) => {
       const index = prev.findIndex((c) => c.id === id);
       if (index < 0) return prev;
       const original = prev[index];
+      const sameTypeCount = prev.filter((c) => c.type === original.type).length;
+      const autoAnchorId = `${original.type}-${sameTypeCount + 1}`;
       const clone: BuilderComponent = {
         ...structuredClone(original),
         id: uid(original.type),
+        style: {
+          ...original.style,
+          id: autoAnchorId,
+        },
+        props: {
+          ...original.props,
+          sectionId: autoAnchorId,
+        },
       };
       const copy = [...prev];
       copy.splice(index + 1, 0, clone);
@@ -175,9 +240,10 @@ export function BuilderEditor({ project }: Props) {
     markDirty();
   };
 
-  const save = async (opts?: { publish?: boolean; unpublish?: boolean }) => {
+  // --- Save Function ---
+  const save = async (opts?: { publish?: boolean; unpublish?: boolean; auto?: boolean }) => {
     setSaving(true);
-    setMessage(null);
+    if (!opts?.auto) setMessage(null);
     try {
       const payload: Record<string, unknown> = {
         name,
@@ -209,32 +275,120 @@ export function BuilderEditor({ project }: Props) {
       setIsPublished(data.isPublished);
       setSlug(data.slug || "");
       setDirty(false);
-      const msg = opts?.publish ? "Website published live!" : opts?.unpublish ? "Website unpublished" : "Project saved successfully!";
-      setMessage(opts?.publish ? "Published!" : opts?.unpublish ? "Unpublished" : "Saved");
-      if (opts?.publish) toast.success("Website published live!");
-      else if (opts?.unpublish) toast.info("Website unpublished");
-      else toast.success("Project saved successfully!");
-      router.refresh();
+      
+      if (!opts?.auto) {
+        setMessage(opts?.publish ? "Published!" : opts?.unpublish ? "Unpublished" : "Saved");
+        if (opts?.publish) toast.success("Website published live!");
+        else if (opts?.unpublish) toast.info("Website unpublished");
+        else toast.success("Project saved successfully!");
+      }
+      if (opts?.publish || opts?.unpublish) router.refresh();
     } catch {
-      setMessage("Could not save. Try again.");
-      toast.error("Failed to save project. Please try again.");
+      if (!opts?.auto) {
+        setMessage("Could not save. Try again.");
+        toast.error("Failed to save project. Please try again.");
+      }
+      throw new Error("Save failed");
     } finally {
       setSaving(false);
     }
   };
 
+  // --- Undo/Redo Logic & Effect ---
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      const targetIndex = historyIndex - 1;
+      const targetSnapshot = history[targetIndex];
+      if (targetSnapshot) {
+        isUndoRedo.current = true;
+        setComponents(targetSnapshot.components);
+        setTheme(targetSnapshot.theme);
+        setName(targetSnapshot.name);
+        setHistoryIndex(targetIndex);
+        setDirty(true);
+        toast.info("Undo");
+      }
+    }
+  }, [history, historyIndex]);
+
+  const handleRedo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const targetIndex = historyIndex + 1;
+      const targetSnapshot = history[targetIndex];
+      if (targetSnapshot) {
+        isUndoRedo.current = true;
+        setComponents(targetSnapshot.components);
+        setTheme(targetSnapshot.theme);
+        setName(targetSnapshot.name);
+        setHistoryIndex(targetIndex);
+        setDirty(true);
+        toast.info("Redo");
+      }
+    }
+  }, [history, historyIndex]);
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+    if (isUndoRedo.current) {
+      isUndoRedo.current = false;
+      return;
+    }
+    
+    const strNew = JSON.stringify({ components, theme, name });
+    const current = history[historyIndex];
+    const strCurrent = JSON.stringify({ components: current?.components, theme: current?.theme, name: current?.name });
+    
+    if (strCurrent !== strNew) {
+      setHistory((prev) => {
+        const nextHistory = prev.slice(0, historyIndex + 1);
+        return [...nextHistory, { components, theme, name }];
+      });
+      setHistoryIndex(historyIndex + 1);
+    }
+  }, [components, theme, name, history, historyIndex]);
+
+  // --- Keyboard Shortcuts & Auto-Save ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isInput = ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName) || target?.isContentEditable;
+      if (selectedId && (e.key === "Delete" || e.key === "Backspace") && !isInput) {
+        e.preventDefault();
+        deleteComponent(selectedId);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        if (e.shiftKey) {
+          e.preventDefault();
+          handleRedo();
+        } else if (!isInput) {
+          e.preventDefault();
+          handleUndo();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y" && !isInput) {
+        e.preventDefault();
+        handleRedo();
+      } else if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
         void save();
       }
       if (e.key === "Escape") setSelectedId(null);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, components, theme, slug]);
+  }, [handleUndo, handleRedo, name, components, theme, slug, selectedId, deleteComponent]);
+
+  useEffect(() => {
+    if (!dirty) return;
+    
+    setAutoSaveStatus("saving");
+    const timeoutId = setTimeout(() => {
+      save({ auto: true })
+        .then(() => setAutoSaveStatus("saved"))
+        .catch(() => setAutoSaveStatus("error"));
+    }, 1500);
+    
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dirty, components, theme, name]);
 
   // Bi-directional synchronization: Ensure canvas theme matches global application theme
   useEffect(() => {
@@ -286,7 +440,7 @@ export function BuilderEditor({ project }: Props) {
       <header className="z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background px-3 shadow-sm">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-foreground hover:bg-transparent transition-colors"
           title="Back to Dashboard"
         >
           <img src="/logo.png" alt="craftsiteph Logo" className="h-10 sm:h-16 md:h-18 w-auto object-contain shrink-0" />
@@ -303,11 +457,46 @@ export function BuilderEditor({ project }: Props) {
           className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm font-semibold outline-none hover:border-border focus:border-border focus:bg-background sm:max-w-xs"
         />
 
-        {dirty ? (
-          <span className="hidden text-xs text-amber-600 sm:inline">Unsaved</span>
-        ) : (
-          <span className="hidden text-xs text-emerald-600 sm:inline">{message || "Up to date"}</span>
-        )}
+        <div className="flex items-center gap-1 mx-2">
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={historyIndex === 0}
+            className="rounded p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo2 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleRedo}
+            disabled={historyIndex >= history.length - 1}
+            className="rounded p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+            title="Redo (Ctrl+Y)"
+          >
+            <Redo2 className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="hidden sm:flex items-center gap-1.5 text-xs">
+          {autoSaveStatus === "saving" ? (
+            <span className="flex items-center gap-1 text-amber-600">
+              <Loader2 className="h-3 w-3 animate-spin" /> Saving...
+            </span>
+          ) : autoSaveStatus === "error" ? (
+            <span className="flex items-center gap-1 text-rose-500">
+              Auto-save failed
+            </span>
+          ) : dirty ? (
+            <span className="flex items-center gap-1 text-amber-600">
+              Unsaved
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-emerald-600">
+              <CheckCircle2 className="h-3 w-3" /> Auto-saved
+            </span>
+          )}
+        </div>
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
           {/* Viewport Controls */}
@@ -363,14 +552,6 @@ export function BuilderEditor({ project }: Props) {
             </button>
           </div>
 
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => void save()}
-            className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm hover:bg-muted/50 dark:bg-muted/20 disabled:opacity-50"
-          >
-            {saving ? "Saving…" : "Save"}
-          </button>
 
           {isPublished && slug ? (
             <>
@@ -543,7 +724,12 @@ export function BuilderEditor({ project }: Props) {
             </button>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
-            {leftTab === "add" && <ComponentPalette onAdd={addComponent} />}
+            {leftTab === "add" && (
+              <ComponentPalette
+                onAdd={addComponent}
+                onSelectVariant={(type) => setSelectedTypeForVariants(type)}
+              />
+            )}
             {leftTab === "layers" && (
               <LayersPanel
                 components={components}
@@ -553,24 +739,29 @@ export function BuilderEditor({ project }: Props) {
                   if (id) setLeftTab("design");
                 }}
                 onMove={moveComponent}
+                onReorder={reorderComponents}
                 onDuplicate={duplicateComponent}
                 onDelete={deleteComponent}
+                onOpenLayoutModal={handleOpenLayoutModal}
               />
             )}
             {leftTab === "design" && (
               <PropertiesPanel
                 component={selected}
                 theme={theme}
+                components={components}
                 onChangeProps={changeProps}
                 onChangeStyle={changeStyle}
                 onChangeTheme={changeTheme}
+                onDelete={deleteComponent}
+                onOpenLayoutModal={handleOpenLayoutModal}
               />
             )}
           </div>
         </aside>
 
         {/* Canvas (Full right area) */}
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 flex flex-col h-full overflow-hidden">
           <Canvas
             components={components}
             theme={theme}
@@ -582,7 +773,12 @@ export function BuilderEditor({ project }: Props) {
               if (id) setLeftTab("design");
             }}
             onMove={moveComponent}
+            onReorder={reorderComponents}
             onDelete={deleteComponent}
+            onUpdateProps={changeProps}
+            onUpdateStyle={changeStyle}
+            onOpenSetupModal={() => setShowSetupModal(true)}
+            onOpenLayoutModal={handleOpenLayoutModal}
           />
         </main>
       </div>
@@ -703,6 +899,40 @@ export function BuilderEditor({ project }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Component Variant Selection Modal */}
+      <ComponentVariantModal
+        open={Boolean(selectedTypeForVariants)}
+        componentType={selectedTypeForVariants}
+        theme={theme}
+        onClose={() => {
+          setSelectedTypeForVariants(null);
+          setEditingLayoutTargetId(null);
+        }}
+        onSelectLayout={(type, variantId) => {
+          if (editingLayoutTargetId) {
+            const variantPreset = (COMPONENT_VARIANTS[type] || []).find((v) => v.id === variantId);
+            changeProps(editingLayoutTargetId, { variant: variantId, ...(variantPreset?.applyProps || {}) });
+            if (variantPreset?.applyStyle) {
+              changeStyle(editingLayoutTargetId, variantPreset.applyStyle);
+            }
+            toast.success(`Updated ${type} layout design`);
+            setEditingLayoutTargetId(null);
+            setSelectedTypeForVariants(null);
+          } else {
+            addComponent(type, variantId);
+            setSelectedTypeForVariants(null);
+          }
+        }}
+      />
+      {/* Global Page Layout Setup Modal */}
+      <PageSetupModal
+        open={showSetupModal}
+        theme={theme}
+        onClose={() => setShowSetupModal(false)}
+        onConfirm={(width) => {
+          changeTheme({ containerWidth: width });
+        }}
+      />
     </div>
   );
 }

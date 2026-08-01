@@ -5,7 +5,11 @@ export type ComponentStyle = {
   fontWeight?: string;
   fontFamily?: string;
   padding?: string;
+  paddingY?: string;
+  paddingX?: string;
   margin?: string;
+  marginY?: string;
+  marginX?: string;
   borderRadius?: string;
   border?: string;
   textAlign?: "left" | "center" | "right";
@@ -19,23 +23,27 @@ export type ComponentStyle = {
   opacity?: string;
   lineHeight?: string;
   letterSpacing?: string;
+  id?: string;
 };
 
 export type ComponentProps = {
+  sectionId?: string;
   text?: string;
   heading?: string;
   subheading?: string;
   buttonText?: string;
   buttonHref?: string;
+  buttons?: { label: string; href?: string; variant?: "solid" | "outline" | "ghost" }[];
   imageUrl?: string;
   imageAlt?: string;
   items?: { title: string; description: string; icon?: string }[];
-  links?: { label: string; href: string }[];
+  links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string }[];
   columns?: number;
   variant?: string;
   placeholder?: string;
   logoText?: string;
-  socialLinks?: { platform: string; href: string }[];
+  logoHref?: string;
+  socialLinks?: { platform: string; href?: string; url?: string }[];
 };
 
 export type ComponentType =
@@ -70,6 +78,7 @@ export type SiteTheme = {
   textColor: string;
   fontFamily: string;
   borderRadius: string;
+  containerWidth?: string;
 };
 
 export type Project = {
@@ -104,6 +113,7 @@ export const DEFAULT_THEME: SiteTheme = {
   textColor: "#0f172a",
   fontFamily: "Inter, system-ui, sans-serif",
   borderRadius: "12px",
+  containerWidth: "1120px",
 };
 
 export const FONT_OPTIONS = [

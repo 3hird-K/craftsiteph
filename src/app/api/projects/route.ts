@@ -73,4 +73,4 @@ export async function DELETE(req: NextRequest) {
     console.error("DELETE /api/projects", error);
     return NextResponse.json({ error: "Failed to delete project" }, { status: 500 });
   }
-}
+}  

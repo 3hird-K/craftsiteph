@@ -1,0 +1,400 @@
+"use client";
+
+import { ComponentType, SiteTheme } from "@/lib/types";
+import { COMPONENT_VARIANTS, PALETTE, ComponentVariant } from "@/lib/presets";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Layout, Sparkles, Check, ArrowRight } from "lucide-react";
+
+type Props = {
+  open: boolean;
+  componentType: ComponentType | null;
+  theme: SiteTheme;
+  onClose: () => void;
+  onSelectLayout: (type: ComponentType, variantId: string) => void;
+};
+
+export function ComponentVariantModal({
+  open,
+  componentType,
+  theme,
+  onClose,
+  onSelectLayout,
+}: Props) {
+  if (!componentType) return null;
+
+  const itemInfo = PALETTE.find((p) => p.type === componentType);
+  const variants = COMPONENT_VARIANTS[componentType] || [];
+  const typeLabel = itemInfo?.label || componentType;
+
+  return (
+    <Dialog open={open} onOpenChange={(val) => { if (!val) onClose(); }}>
+      <DialogContent
+        className="sm:max-w-[840px] md:max-w-[900px] border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl p-0 overflow-hidden"
+        style={{
+          borderRadius: theme.borderRadius ? `calc(${theme.borderRadius} * 1.5)` : "24px",
+          fontFamily: theme.fontFamily || "inherit",
+        }}
+      >
+        {/* Header */}
+        <div
+          className="p-6 pb-4 border-b border-border/50"
+          style={{
+            background: `linear-gradient(to right, ${theme.primaryColor || "#ea580c"}18, ${theme.primaryColor || "#ea580c"}05, transparent)`,
+          }}
+        >
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-1">
+              <span
+                className="p-2 transition-all flex items-center justify-center"
+                style={{
+                  backgroundColor: `${theme.primaryColor || "#ea580c"}20`,
+                  color: theme.primaryColor || "#ea580c",
+                  borderRadius: theme.borderRadius || "12px",
+                }}
+              >
+                <Layout className="h-5 w-5" />
+              </span>
+              <div>
+                <DialogTitle className="text-xl font-extrabold tracking-tight">
+                  Select {typeLabel} Layout Design
+                </DialogTitle>
+              </div>
+            </div>
+            <DialogDescription className="text-xs text-muted-foreground ml-9">
+              Choose how your {typeLabel.toLowerCase()} section should look on your website.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        {/* Variant Cards Grid */}
+        <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+          <div className="flex items-center justify-between px-1 text-xs text-muted-foreground font-semibold">
+            <span>Choose a layout design template</span>
+            <span className="bg-muted px-2 py-0.5 rounded-full text-[11px] font-bold text-foreground">
+              {variants.length} Layouts Available
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+            {variants.map((v) => (
+              <div
+                key={v.id}
+                onClick={() => {
+                  onSelectLayout(componentType, v.id);
+                  onClose();
+                }}
+                className="group relative flex flex-col justify-between p-4 rounded-2xl border border-border/80 bg-card hover:bg-background hover:border-primary/60 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer overflow-hidden"
+                style={{
+                  borderRadius: theme.borderRadius || "16px",
+                }}
+              >
+                {/* Visual Component Preview Thumbnail (Top) */}
+                <div className="w-full p-2.5 rounded-xl bg-muted/40 border border-border/50 group-hover:border-primary/40 group-hover:bg-muted/60 transition-all flex items-center justify-center min-h-[76px] overflow-hidden mb-3">
+                  <RealisticLayoutPreview variantId={v.id} primaryColor={theme.primaryColor || "#ea580c"} />
+                </div>
+
+                {/* Content Header */}
+                <div className="space-y-1.5 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                      {v.name}
+                    </h3>
+                    {v.badge && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                        style={{
+                          backgroundColor: `${theme.primaryColor || "#ea580c"}15`,
+                          color: theme.primaryColor || "#ea580c",
+                        }}
+                      >
+                        {v.badge}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                    {v.description}
+                  </p>
+                </div>
+
+                {/* Card Action Footer */}
+                <div className="mt-4 flex items-center justify-between pt-2.5 border-t border-border/40 text-xs font-bold text-muted-foreground group-hover:text-primary transition-colors">
+                  <span>Use This Layout</span>
+                  <div className="flex items-center justify-center h-6 w-6 rounded-full bg-muted group-hover:bg-primary group-hover:text-white transition-all">
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function RealisticLayoutPreview({
+  variantId,
+  primaryColor,
+}: {
+  variantId: string;
+  primaryColor: string;
+}) {
+  switch (variantId) {
+    // NAVBAR VARIANTS
+    case "classic-split":
+      return (
+        <div className="w-full bg-slate-900 text-white rounded-lg p-2.5 flex items-center justify-between text-xs">
+          <span className="font-extrabold text-[11px] text-white">Brand</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] text-slate-300">
+            <span>Home</span>
+            <span>Features</span>
+            <span>Pricing</span>
+            <span>Contact</span>
+          </div>
+          <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor }}>
+            Get Started
+          </span>
+        </div>
+      );
+    case "centered-minimal":
+      return (
+        <div className="w-full bg-background text-foreground border border-border/80 rounded-lg p-3 flex flex-col items-center gap-2 text-center">
+          <span className="font-black text-xs tracking-wider text-foreground">CRAFTSITE</span>
+          <div className="flex items-center gap-4 text-[10px] text-muted-foreground font-medium">
+            <span>Home</span>
+            <span>Showcase</span>
+            <span>Pricing</span>
+            <span>Contact</span>
+          </div>
+        </div>
+      );
+    case "floating-glass":
+      return (
+        <div className="w-full py-1">
+          <div className="mx-auto w-11/12 bg-slate-900/90 text-white rounded-full p-2 px-3 flex items-center justify-between border border-slate-700 shadow-sm text-xs">
+            <span className="font-bold text-[11px] text-white">Studio</span>
+            <div className="flex gap-2.5 text-[10px] text-slate-300">
+              <span>Work</span>
+              <span>About</span>
+              <span>Blog</span>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+              Sign In
+            </span>
+          </div>
+        </div>
+      );
+
+    case "inline-left":
+      return (
+        <div className="w-full bg-background border border-border/80 rounded-lg p-2.5 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3">
+            <span className="font-black text-[11px] text-foreground">Pulse</span>
+            <div className="h-3 w-px bg-border" />
+            <div className="hidden sm:flex items-center gap-2.5 text-[10px] text-muted-foreground">
+              <span>Overview</span>
+              <span>Integrations</span>
+              <span>Changelog</span>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            Launch App
+          </span>
+        </div>
+      );
+    case "dual-action":
+      return (
+        <div className="w-full bg-slate-900 text-white rounded-lg p-2.5 flex items-center justify-between text-xs">
+          <span className="font-extrabold text-[11px]">Horizon</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] text-slate-300">
+            <span>Features</span>
+            <span>Enterprise</span>
+            <span>Pricing</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="px-2 py-0.5 rounded text-[9px] font-semibold border border-slate-700 text-slate-200">
+              Log In
+            </span>
+            <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+              Start Free Trial
+            </span>
+          </div>
+        </div>
+      );
+    case "bordered-light":
+      return (
+        <div className="w-full bg-background border-b-2 border-border/90 rounded-lg p-2.5 flex items-center justify-between text-xs">
+          <span className="font-extrabold text-[11px] text-foreground tracking-tight">Vanguard</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] text-muted-foreground">
+            <span>Platform</span>
+            <span>Developers</span>
+            <span>Resources</span>
+          </div>
+          <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            Book Demo
+          </span>
+        </div>
+      );
+
+    // HERO VARIANTS
+    case "centered-hero":
+      return (
+        <div className="w-full p-3.5 bg-background/80 border border-border/80 rounded-xl text-center flex flex-col items-center justify-center gap-1.5">
+          <span className="font-extrabold text-xs text-foreground">Build something people love</span>
+          <span className="text-[10px] text-muted-foreground line-clamp-1">Design landing pages in minutes. Customize every component.</span>
+          <span className="mt-1 px-3 py-1 rounded-lg text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor }}>
+            Start building free
+          </span>
+        </div>
+      );
+    case "split-image":
+      return (
+        <div className="w-full p-3 bg-background/80 border border-border/80 text-foreground rounded-xl flex items-center justify-between gap-3">
+          <div className="flex-1 space-y-1">
+            <span className="font-bold text-[11px] leading-tight block">Turn ideas into live websites</span>
+            <span className="text-[9px] text-muted-foreground block line-clamp-1">Visual page builder with drag-and-drop flexibility.</span>
+            <span className="inline-block mt-1 px-2.5 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+              Explore Platform
+            </span>
+          </div>
+          <div className="w-24 h-14 rounded-md overflow-hidden bg-muted border border-border flex items-center justify-center text-[9px] text-muted-foreground font-semibold shrink-0">
+            Showcase Img
+          </div>
+        </div>
+      );
+    case "minimalist-hero":
+      return (
+        <div className="w-full p-3.5 bg-background/80 border border-border/80 rounded-xl text-center flex flex-col items-center justify-center gap-1">
+          <span className="font-extrabold text-xs tracking-tight text-foreground">Simplicity in visual design.</span>
+          <span className="text-[10px] text-muted-foreground">Minimalist layout for modern creators.</span>
+          <span className="px-3 py-1 rounded-lg text-[10px] font-bold text-white mt-1" style={{ backgroundColor: primaryColor }}>
+            Get Started →
+          </span>
+        </div>
+      );
+    case "app-preview":
+      return (
+        <div className="w-full p-3 bg-background/80 border border-border/80 rounded-xl flex flex-col items-center text-center gap-2">
+          <span className="font-extrabold text-[11px] text-foreground leading-tight">Manage everything in one workspace</span>
+          <div className="flex items-center gap-1.5">
+            <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+              Start Free Trial
+            </span>
+            <span className="px-2 py-0.5 rounded text-[9px] font-semibold border border-border text-foreground">
+              Watch Demo
+            </span>
+          </div>
+          <div className="w-full h-10 rounded-md bg-muted/60 border border-border/60 flex items-center justify-center text-[9px] text-muted-foreground font-bold shadow-inner">
+            App Dashboard Preview
+          </div>
+        </div>
+      );
+    case "gradient-glow":
+      return (
+        <div className="w-full p-3 bg-background/80 border border-border/80 rounded-xl flex flex-col items-center text-center gap-1.5">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-primary/10 text-primary border border-primary/20">
+            Introducing Version 2.0
+          </span>
+          <span className="font-extrabold text-xs text-foreground tracking-tight">Build faster with intelligent components</span>
+          <div className="flex items-center gap-1.5">
+            <span className="px-2.5 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+              Get Started Free
+            </span>
+            <span className="text-[9px] font-semibold text-muted-foreground">
+              Book a Demo
+            </span>
+          </div>
+        </div>
+      );
+    case "bento-hero":
+      return (
+        <div className="w-full p-2.5 bg-background/80 border border-border/80 rounded-xl flex items-center gap-2">
+          <div className="flex-1 space-y-1">
+            <span className="font-extrabold text-[10px] text-foreground leading-tight block">Engineered for digital products</span>
+            <span className="px-2 py-0.5 rounded text-[8px] font-bold text-white inline-block" style={{ backgroundColor: primaryColor }}>
+              Explore Features
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-1 w-24">
+            <div className="p-1 rounded bg-muted/80 text-[8px] font-bold text-center">99.9% Uptime</div>
+            <div className="p-1 rounded bg-muted/80 text-[8px] font-bold text-center">Fast Setup</div>
+          </div>
+        </div>
+      );
+
+    // FEATURES VARIANTS
+    case "3-col-grid":
+      return (
+        <div className="grid grid-cols-3 gap-1.5 p-2 rounded-xl bg-background border border-border/60">
+          <div className="p-1.5 rounded-lg bg-muted/60 text-[9px] space-y-0.5">
+            <span>🎯</span>
+            <p className="font-bold text-foreground truncate">Drag & drop</p>
+          </div>
+          <div className="p-1.5 rounded-lg bg-muted/60 text-[9px] space-y-0.5">
+            <span>🎨</span>
+            <p className="font-bold text-foreground truncate">Live styling</p>
+          </div>
+          <div className="p-1.5 rounded-lg bg-muted/60 text-[9px] space-y-0.5">
+            <span>🚀</span>
+            <p className="font-bold text-foreground truncate">Publishing</p>
+          </div>
+        </div>
+      );
+    case "2-col-cards":
+      return (
+        <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-border/60">
+          <div className="p-2 rounded-lg bg-background border border-border shadow-xs text-[9px]">
+            <span className="font-bold text-foreground block">Pro Builder</span>
+            <span className="text-muted-foreground text-[8px]">Full customization controls</span>
+          </div>
+          <div className="p-2 rounded-lg bg-background border border-border shadow-xs text-[9px]">
+            <span className="font-bold text-foreground block">Live Themes</span>
+            <span className="text-muted-foreground text-[8px]">Instant color presets</span>
+          </div>
+        </div>
+      );
+
+    // FOOTER VARIANTS
+    case "dark-multi-column":
+      return (
+        <div className="w-full p-2.5 bg-slate-950 text-slate-300 rounded-xl flex items-center justify-between text-[9px]">
+          <div>
+            <span className="font-bold text-white block">Brand Inc.</span>
+            <span className="text-[8px] text-slate-500">© 2026 All rights reserved</span>
+          </div>
+          <div className="flex gap-2 text-[8px] text-slate-400">
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Contact</span>
+          </div>
+        </div>
+      );
+    case "centered-minimal-footer":
+      return (
+        <div className="w-full p-2.5 bg-background border border-border/80 rounded-xl text-center text-[9px] space-y-1">
+          <span className="font-bold text-foreground block">Brand</span>
+          <div className="flex justify-center gap-3 text-[8px] text-muted-foreground">
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Contact</span>
+          </div>
+        </div>
+      );
+
+    default:
+      return (
+        <div className="w-full p-3 bg-muted/40 rounded-xl text-center text-[10px]">
+          <span className="font-bold text-foreground">Standard Layout Variant</span>
+        </div>
+      );
+  }
+}
