@@ -90,9 +90,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
+  const getURL = () => {
+    let url =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (typeof window !== "undefined" ? window.location.origin : "");
+    if (!url && process.env.NEXT_PUBLIC_VERCEL_URL) {
+      url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    }
+    if (!url) {
+      url = "http://localhost:3000";
+    }
+    url = url.startsWith("http") ? url : `https://${url}`;
+    return url.replace(/\/$/, "");
+  };
+
   const signInWithGoogle = async (redirectTo?: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/auth/callback${
+      const redirectUrl = `${getURL()}/auth/callback${
         redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : ""
       }`;
       await supabase.auth.signInWithOAuth({

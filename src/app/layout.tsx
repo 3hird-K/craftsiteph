@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://craftsiteph.com"),
   title: "craftsiteph — Visual Website Builder & Page Design Studio",
   description:
     "Customize components, choose modern layout designs, drag & drop layers, and build your live website with a visual builder.",
