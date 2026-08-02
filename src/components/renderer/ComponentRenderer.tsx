@@ -705,14 +705,17 @@ export function ComponentRenderer({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     if (variant === "floating-glass") {
-      css.position = "sticky";
-      css.top = "12px";
+      css.position = "relative";
       css.zIndex = 30;
-      css.marginTop = "0px";
-      css.marginBottom = "-56px";
+      css.marginTop = "16px";
+      css.marginBottom = "24px";
       css.maxWidth = effectiveMaxWidth;
       css.marginLeft = "auto";
       css.marginRight = "auto";
+    } else {
+      if (!style.marginY) {
+        css.marginBottom = "16px";
+      }
     }
 
     const LogoElement = () => {

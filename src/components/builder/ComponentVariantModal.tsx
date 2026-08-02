@@ -284,68 +284,97 @@ function RealisticLayoutPreview({
     // HERO VARIANTS
     case "centered-hero":
       return (
-        <div className="w-full p-3.5 bg-background/80 border border-border/80 rounded-xl text-center flex flex-col items-center justify-center gap-1.5">
-          <span className="font-extrabold text-xs text-foreground">Build something people love</span>
-          <span className="text-[10px] text-muted-foreground line-clamp-1">Design landing pages in minutes. Customize every component.</span>
-          <span className="mt-1 px-3 py-1 rounded-lg text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor }}>
+        <div
+          className={`w-full p-3.5 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-xs" style={{ color: cardTextColor }}>Build something people love</span>
+          <span className="text-[10px] opacity-75 line-clamp-1">Design landing pages in minutes. Customize every component.</span>
+          <span className="mt-1 px-3 py-1 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Start building free
           </span>
         </div>
       );
     case "split-image":
       return (
-        <div className="w-full p-3 bg-background/80 border border-border/80 text-foreground rounded-xl flex items-center justify-between gap-3">
+        <div
+          className={`w-full p-3 border ${borderStyle} flex items-center justify-between gap-3 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
           <div className="flex-1 space-y-1">
-            <span className="font-bold text-[11px] leading-tight block">Turn ideas into live websites</span>
-            <span className="text-[9px] text-muted-foreground block line-clamp-1">Visual page builder with drag-and-drop flexibility.</span>
-            <span className="inline-block mt-1 px-2.5 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            <span className="font-bold text-[11px] leading-tight block" style={{ color: cardTextColor }}>Turn ideas into live websites</span>
+            <span className="text-[9px] opacity-75 block line-clamp-1">Visual page builder with drag-and-drop flexibility.</span>
+            <span className="inline-block mt-1 px-2.5 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Explore Platform
             </span>
           </div>
-          <div className="w-24 h-14 rounded-md overflow-hidden bg-muted border border-border flex items-center justify-center text-[9px] text-muted-foreground font-semibold shrink-0">
+          <div
+            className="w-24 h-14 overflow-hidden bg-muted border border-border flex items-center justify-center text-[9px] font-semibold shrink-0 opacity-80"
+            style={{ borderRadius: navRadius }}
+          >
             Showcase Img
           </div>
         </div>
       );
     case "minimalist-hero":
       return (
-        <div className="w-full p-3.5 bg-background/80 border border-border/80 rounded-xl text-center flex flex-col items-center justify-center gap-1">
-          <span className="font-extrabold text-xs tracking-tight text-foreground">Simplicity in visual design.</span>
-          <span className="text-[10px] text-muted-foreground">Minimalist layout for modern creators.</span>
-          <span className="px-3 py-1 rounded-lg text-[10px] font-bold text-white mt-1" style={{ backgroundColor: primaryColor }}>
+        <div
+          className={`w-full p-3.5 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-xs tracking-tight" style={{ color: cardTextColor }}>Simplicity in visual design.</span>
+          <span className="text-[10px] opacity-75">Minimalist layout for modern creators.</span>
+          <span className="px-3 py-1 text-[10px] font-bold text-white mt-1 shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Get Started →
           </span>
         </div>
       );
     case "app-preview":
       return (
-        <div className="w-full p-3 bg-background/80 border border-border/80 rounded-xl flex flex-col items-center text-center gap-2">
-          <span className="font-extrabold text-[11px] text-foreground leading-tight">Manage everything in one workspace</span>
+        <div
+          className={`w-full p-3 border ${borderStyle} flex flex-col items-center text-center gap-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-[11px] leading-tight" style={{ color: cardTextColor }}>Manage everything in one workspace</span>
           <div className="flex items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            <span className="px-2 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Start Free Trial
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-semibold border border-border text-foreground">
+            <span className="px-2 py-0.5 text-[9px] font-semibold border opacity-80" style={{ borderColor: primaryColor, borderRadius: navRadius }}>
               Watch Demo
             </span>
           </div>
-          <div className="w-full h-10 rounded-md bg-muted/60 border border-border/60 flex items-center justify-center text-[9px] text-muted-foreground font-bold shadow-inner">
+          <div
+            className="w-full h-10 bg-muted/60 border border-border/60 flex items-center justify-center text-[9px] font-bold opacity-80"
+            style={{ borderRadius: navRadius }}
+          >
             App Dashboard Preview
           </div>
         </div>
       );
     case "gradient-glow":
       return (
-        <div className="w-full p-3 bg-background/80 border border-border/80 rounded-xl flex flex-col items-center text-center gap-1.5">
-          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-primary/10 text-primary border border-primary/20">
+        <div
+          className={`w-full p-3 border ${borderStyle} flex flex-col items-center text-center gap-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span
+            className="px-2 py-0.5 text-[9px] font-bold border"
+            style={{
+              backgroundColor: `${primaryColor}15`,
+              borderColor: `${primaryColor}30`,
+              color: primaryColor,
+              borderRadius: navRadius,
+            }}
+          >
             Introducing Version 2.0
           </span>
-          <span className="font-extrabold text-xs text-foreground tracking-tight">Build faster with intelligent components</span>
+          <span className="font-extrabold text-xs tracking-tight" style={{ color: cardTextColor }}>Build faster with intelligent components</span>
           <div className="flex items-center gap-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            <span className="px-2.5 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Get Started Free
             </span>
-            <span className="text-[9px] font-semibold text-muted-foreground">
+            <span className="text-[9px] font-semibold opacity-75">
               Book a Demo
             </span>
           </div>
@@ -353,16 +382,19 @@ function RealisticLayoutPreview({
       );
     case "bento-hero":
       return (
-        <div className="w-full p-2.5 bg-background/80 border border-border/80 rounded-xl flex items-center gap-2">
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center gap-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
           <div className="flex-1 space-y-1">
-            <span className="font-extrabold text-[10px] text-foreground leading-tight block">Engineered for digital products</span>
-            <span className="px-2 py-0.5 rounded text-[8px] font-bold text-white inline-block" style={{ backgroundColor: primaryColor }}>
+            <span className="font-extrabold text-[10px] leading-tight block" style={{ color: cardTextColor }}>Engineered for digital products</span>
+            <span className="px-2 py-0.5 text-[8px] font-bold text-white inline-block shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Explore Features
             </span>
           </div>
           <div className="grid grid-cols-2 gap-1 w-24">
-            <div className="p-1 rounded bg-muted/80 text-[8px] font-bold text-center">99.9% Uptime</div>
-            <div className="p-1 rounded bg-muted/80 text-[8px] font-bold text-center">Fast Setup</div>
+            <div className="p-1 bg-muted/80 text-[8px] font-bold text-center opacity-80" style={{ borderRadius: navRadius }}>99.9% Uptime</div>
+            <div className="p-1 bg-muted/80 text-[8px] font-bold text-center opacity-80" style={{ borderRadius: navRadius }}>Fast Setup</div>
           </div>
         </div>
       );
@@ -370,31 +402,37 @@ function RealisticLayoutPreview({
     // FEATURES VARIANTS
     case "3-col-grid":
       return (
-        <div className="grid grid-cols-3 gap-1.5 p-2 rounded-xl bg-background border border-border/60">
-          <div className="p-1.5 rounded-lg bg-muted/60 text-[9px] space-y-0.5">
+        <div
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-1.5 bg-muted/60 text-[9px] space-y-0.5" style={{ borderRadius: navRadius }}>
             <span>🎯</span>
-            <p className="font-bold text-foreground truncate">Drag & drop</p>
+            <p className="font-bold truncate">Drag & drop</p>
           </div>
-          <div className="p-1.5 rounded-lg bg-muted/60 text-[9px] space-y-0.5">
+          <div className="p-1.5 bg-muted/60 text-[9px] space-y-0.5" style={{ borderRadius: navRadius }}>
             <span>🎨</span>
-            <p className="font-bold text-foreground truncate">Live styling</p>
+            <p className="font-bold truncate">Live styling</p>
           </div>
-          <div className="p-1.5 rounded-lg bg-muted/60 text-[9px] space-y-0.5">
+          <div className="p-1.5 bg-muted/60 text-[9px] space-y-0.5" style={{ borderRadius: navRadius }}>
             <span>🚀</span>
-            <p className="font-bold text-foreground truncate">Publishing</p>
+            <p className="font-bold truncate">Publishing</p>
           </div>
         </div>
       );
     case "2-col-cards":
       return (
-        <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-border/60">
-          <div className="p-2 rounded-lg bg-background border border-border shadow-xs text-[9px]">
-            <span className="font-bold text-foreground block">Pro Builder</span>
-            <span className="text-muted-foreground text-[8px]">Full customization controls</span>
+        <div
+          className={`grid grid-cols-2 gap-2 p-2 border ${borderStyle} transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-2 bg-muted/50 border border-border/50 text-[9px]" style={{ borderRadius: navRadius }}>
+            <span className="font-bold block" style={{ color: cardTextColor }}>Pro Builder</span>
+            <span className="opacity-75 text-[8px]">Full customization controls</span>
           </div>
-          <div className="p-2 rounded-lg bg-background border border-border shadow-xs text-[9px]">
-            <span className="font-bold text-foreground block">Live Themes</span>
-            <span className="text-muted-foreground text-[8px]">Instant color presets</span>
+          <div className="p-2 bg-muted/50 border border-border/50 text-[9px]" style={{ borderRadius: navRadius }}>
+            <span className="font-bold block" style={{ color: cardTextColor }}>Live Themes</span>
+            <span className="opacity-75 text-[8px]">Instant color presets</span>
           </div>
         </div>
       );
@@ -402,12 +440,15 @@ function RealisticLayoutPreview({
     // FOOTER VARIANTS
     case "dark-multi-column":
       return (
-        <div className="w-full p-2.5 bg-slate-950 text-slate-300 rounded-xl flex items-center justify-between text-[9px]">
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between text-[9px] transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
           <div>
-            <span className="font-bold text-white block">Brand Inc.</span>
-            <span className="text-[8px] text-slate-500">© 2026 All rights reserved</span>
+            <span className="font-bold block" style={{ color: cardTextColor }}>Brand Inc.</span>
+            <span className="text-[8px] opacity-60">© 2026 All rights reserved</span>
           </div>
-          <div className="flex gap-2 text-[8px] text-slate-400">
+          <div className="flex gap-2 text-[8px] opacity-75">
             <span>Privacy</span>
             <span>Terms</span>
             <span>Contact</span>
@@ -416,9 +457,12 @@ function RealisticLayoutPreview({
       );
     case "centered-minimal-footer":
       return (
-        <div className="w-full p-2.5 bg-background border border-border/80 rounded-xl text-center text-[9px] space-y-1">
-          <span className="font-bold text-foreground block">Brand</span>
-          <div className="flex justify-center gap-3 text-[8px] text-muted-foreground">
+        <div
+          className={`w-full p-2.5 border ${borderStyle} text-center text-[9px] space-y-1 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-bold block" style={{ color: cardTextColor }}>Brand</span>
+          <div className="flex justify-center gap-3 text-[8px] opacity-75">
             <span>Privacy</span>
             <span>Terms</span>
             <span>Contact</span>
@@ -428,8 +472,11 @@ function RealisticLayoutPreview({
 
     default:
       return (
-        <div className="w-full p-3 bg-muted/40 rounded-xl text-center text-[10px]">
-          <span className="font-bold text-foreground">Standard Layout Variant</span>
+        <div
+          className={`w-full p-3 border ${borderStyle} text-center text-[10px] transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-bold">Standard Layout Variant</span>
         </div>
       );
   }
