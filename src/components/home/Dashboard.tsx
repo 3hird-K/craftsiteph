@@ -206,8 +206,19 @@ export function Dashboard() {
     theme?: Project["theme"];
     description?: string;
   }) => {
+    const targetUrl = "/themes";
     if (!user) {
-      openAuthModal();
+      if (opts) {
+        sessionStorage.setItem(
+          "craftsite_pending_theme",
+          JSON.stringify({
+            websiteTitle: opts.name,
+            primaryBg: opts.theme?.primaryColor,
+            fontFamily: opts.theme?.fontFamily,
+          })
+        );
+      }
+      openAuthModal("/themes?autoBuild=true");
       return;
     }
     setCreating(true);
@@ -226,7 +237,7 @@ export function Dashboard() {
       if (!res.ok) throw new Error("Creation failed");
       const project = await res.json();
       toast.success(`Project "${project.name || "Untitled"}" created!`);
-      router.push(`/builder/${project.id}`);
+      router.push(`/builder/${project.slug || project.id}`);
     } catch {
       setError("Failed to create new project.");
       toast.error("Failed to create new project.");
@@ -235,11 +246,12 @@ export function Dashboard() {
   };
 
   const handleOpenProject = (id: string) => {
+    const targetUrl = `/builder/${id}`;
     if (!user) {
-      openAuthModal();
+      openAuthModal(targetUrl);
       return;
     }
-    router.push(`/builder/${id}`);
+    router.push(targetUrl);
   };
 
   const deleteProject = async (id: string | number) => {

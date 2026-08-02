@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 
 export function AuthModal() {
-  const { isAuthModalOpen, closeAuthModal, signInWithGoogle } = useAuth();
+  const { isAuthModalOpen, closeAuthModal, signInWithGoogle, pendingRedirectUrl } = useAuth();
 
   return (
     <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
@@ -48,7 +48,7 @@ export function AuthModal() {
             {/* Google OAuth Button */}
             <button
               type="button"
-              onClick={() => void signInWithGoogle()}
+              onClick={() => void signInWithGoogle(pendingRedirectUrl)}
               className="group relative w-full h-12 rounded-2xl font-bold flex items-center justify-center gap-3 border border-border/80 bg-background text-foreground shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer overflow-hidden hover:border-primary/50"
             >
               {/* Subtle button hover shine effect */}

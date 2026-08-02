@@ -10,7 +10,8 @@ type AuthContextType = {
   session: Session | null;
   loading: boolean;
   isAuthModalOpen: boolean;
-  openAuthModal: () => void;
+  pendingRedirectUrl?: string;
+  openAuthModal: (redirectTo?: string) => void;
   closeAuthModal: () => void;
   signInWithGoogle: (redirectTo?: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   isAuthModalOpen: false,
+  pendingRedirectUrl: undefined,
   openAuthModal: () => {},
   closeAuthModal: () => {},
   signInWithGoogle: async () => {},
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [pendingRedirectUrl, setPendingRedirectUrl] = useState<string | undefined>(undefined);
   const supabase = createClient();
 
   useEffect(() => {
@@ -87,8 +90,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [supabase]);
 
-  const openAuthModal = () => setIsAuthModalOpen(true);
-  const closeAuthModal = () => setIsAuthModalOpen(false);
+  const openAuthModal = (redirectTo?: string) => {
+    if (redirectTo) {
+      setPendingRedirectUrl(redirectTo);
+    }
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+    setPendingRedirectUrl(undefined);
+  };
 
   const getURL = () => {
     if (typeof window !== "undefined") {
@@ -104,8 +116,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async (redirectTo?: string) => {
     try {
+      const targetUrl = redirectTo || pendingRedirectUrl;
       const redirectUrl = `${getURL()}/auth/callback${
-        redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : ""
+        targetUrl ? `?next=${encodeURIComponent(targetUrl)}` : ""
       }`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -128,6 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setSession(null);
       setIsAuthModalOpen(false);
+      setPendingRedirectUrl(undefined);
       window.location.href = "/";
     } catch (error) {
       console.error("Error signing out:", error);
@@ -141,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         session,
         loading,
         isAuthModalOpen,
+        pendingRedirectUrl,
         openAuthModal,
         closeAuthModal,
         signInWithGoogle,

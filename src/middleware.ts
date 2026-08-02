@@ -2,6 +2,17 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+  const url = request.nextUrl;
+  
+  // Failsafe: If Supabase redirects auth code to root domain (or any non-callback path), forward to /auth/callback
+  if (url.searchParams.has("code") && url.pathname !== "/auth/callback") {
+    const callbackUrl = new URL("/auth/callback", request.url);
+    url.searchParams.forEach((val, key) => {
+      callbackUrl.searchParams.set(key, val);
+    });
+    return NextResponse.redirect(callbackUrl);
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });

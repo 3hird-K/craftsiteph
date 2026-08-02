@@ -20,8 +20,9 @@ import { Canvas } from "./Canvas";
 import { ComponentVariantModal } from "./ComponentVariantModal";
 import { PageSetupModal } from "./PageSetupModal";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { useProjectRealtime } from "@/hooks/useProjectRealtime";
 import { createClient } from "@/lib/supabase/client";
-import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2 } from "lucide-react";
+import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -84,9 +85,9 @@ export function BuilderEditor({ project }: Props) {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/");
+      openAuthModal(`/builder/${project.slug || project.id}`);
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, openAuthModal, project.slug, project.id]);
   const [name, setName] = useState(project.name);
   const [components, setComponents] = useState<BuilderComponent[]>(project.components || []);
   const [theme, setTheme] = useState<SiteTheme>(project.theme || DEFAULT_THEME);
@@ -118,6 +119,26 @@ export function BuilderEditor({ project }: Props) {
   // --- Auto-Save State ---
   const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "error" | "unsaved">("saved");
 
+  // --- Realtime TanStack Query Collaboration Engine ---
+  const isRemoteEdit = useRef(false);
+
+  const handleRemoteUpdate = useCallback(
+    (payload: { components?: BuilderComponent[]; theme?: SiteTheme; name?: string }) => {
+      isRemoteEdit.current = true;
+      if (payload.components) setComponents(payload.components);
+      if (payload.theme) setTheme(payload.theme);
+      if (payload.name) setName(payload.name);
+    },
+    []
+  );
+
+  const {
+    collaborators,
+    isRealtimeConnected,
+    remoteUpdatingUser,
+    broadcastCanvasUpdate,
+  } = useProjectRealtime(project, handleRemoteUpdate);
+
   const selected = useMemo(
     () => components.find((c) => c.id === selectedId) || null,
     [components, selectedId],
@@ -127,6 +148,17 @@ export function BuilderEditor({ project }: Props) {
     setDirty(true);
     setMessage(null);
   }, []);
+
+  // Broadcast local edits to all active collaborators
+  useEffect(() => {
+    if (isRemoteEdit.current) {
+      isRemoteEdit.current = false;
+      return;
+    }
+    if (dirty) {
+      broadcastCanvasUpdate({ components, theme, name });
+    }
+  }, [components, theme, name, dirty, broadcastCanvasUpdate]);
 
   const addComponent = (type: ComponentType, variantId?: string) => {
     const next = createComponent(type, variantId);
@@ -384,55 +416,13 @@ export function BuilderEditor({ project }: Props) {
       save({ auto: true })
         .then(() => setAutoSaveStatus("saved"))
         .catch(() => setAutoSaveStatus("error"));
-    }, 1500);
+    }, 500);
     
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dirty, components, theme, name]);
 
-  // Bi-directional synchronization: Ensure canvas theme matches global application theme
-  useEffect(() => {
-    const syncCanvasWithGlobalTheme = () => {
-      const isGlobalDark = document.documentElement.classList.contains("dark");
-      if (isGlobalDark) {
-        // App is in dark mode: if canvas is currently light, switch canvas to dark theme
-        if (theme.backgroundColor === "#ffffff" || !theme.backgroundColor) {
-          changeTheme({
-            backgroundColor: "#09090b",
-            textColor: "#f8fafc",
-            secondaryColor: "#0f172a",
-          });
-        }
-      } else {
-        // App is in light mode: if canvas is currently dark, switch canvas to light theme
-        if (
-          theme.backgroundColor === "#09090b" ||
-          theme.backgroundColor === "#020817" ||
-          theme.backgroundColor === "#000000"
-        ) {
-          changeTheme({
-            backgroundColor: "#ffffff",
-            textColor: "#0f172a",
-            secondaryColor: "#f1f5f9",
-          });
-        }
-      }
-    };
 
-    syncCanvasWithGlobalTheme();
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === "class") {
-          syncCanvasWithGlobalTheme();
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme.backgroundColor]);
 
   return (
     <div className="flex h-screen flex-col bg-muted text-foreground">
@@ -478,23 +468,70 @@ export function BuilderEditor({ project }: Props) {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1.5 text-xs">
+        <div className="hidden sm:flex items-center gap-2 text-xs">
           {autoSaveStatus === "saving" ? (
-            <span className="flex items-center gap-1 text-amber-600">
+            <span className="flex items-center gap-1 text-amber-600 font-medium">
               <Loader2 className="h-3 w-3 animate-spin" /> Saving...
             </span>
           ) : autoSaveStatus === "error" ? (
-            <span className="flex items-center gap-1 text-rose-500">
+            <span className="flex items-center gap-1 text-rose-500 font-medium">
               Auto-save failed
             </span>
           ) : dirty ? (
-            <span className="flex items-center gap-1 text-amber-600">
+            <span className="flex items-center gap-1 text-amber-600 font-medium">
               Unsaved
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-emerald-600">
+            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
               <CheckCircle2 className="h-3 w-3" /> Auto-saved
             </span>
+          )}
+
+          {/* Realtime Live Collaboration Pill */}
+          <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+            <Radio className={`h-3 w-3 ${isRealtimeConnected ? "animate-pulse text-emerald-500" : "opacity-40"}`} />
+            <span>Realtime</span>
+          </div>
+
+          {/* Remote Update Notification */}
+          {remoteUpdatingUser && (
+            <div className="animate-in fade-in slide-in-from-top-1 flex items-center gap-1 rounded-full bg-primary/10 border border-primary/30 px-2.5 py-0.5 text-xs font-bold text-primary">
+              <Sparkles className="h-3 w-3 animate-spin" />
+              <span>{remoteUpdatingUser} updated canvas</span>
+            </div>
+          )}
+
+          {/* Live Collaborators Avatars */}
+          {collaborators.length > 0 && (
+            <div className="flex items-center -space-x-1.5 pl-1.5 border-l border-border/80">
+              {collaborators.map((c) => (
+                <div
+                  key={c.id}
+                  className="relative group/avatar cursor-pointer"
+                  title={`${c.name} is active on this canvas`}
+                >
+                  {c.avatarUrl ? (
+                    <img
+                      src={c.avatarUrl}
+                      alt={c.name}
+                      className="h-6 w-6 rounded-full border-2 border-background object-cover shadow-xs"
+                    />
+                  ) : (
+                    <div
+                      className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-background text-[9px] font-extrabold text-white uppercase shadow-xs"
+                      style={{ backgroundColor: c.color }}
+                    >
+                      {c.name.slice(0, 2)}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {collaborators.length > 1 && (
+                <span className="pl-2 text-[10px] font-semibold text-muted-foreground">
+                  {collaborators.length} online
+                </span>
+              )}
+            </div>
           )}
         </div>
 

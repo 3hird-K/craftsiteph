@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Script from "next/script";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import { GlobalThemeToggle } from "@/components/ui/global-theme-toggle";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -45,8 +47,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
-        <script
+        <Script
           id="theme-initializer"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               try {
@@ -61,11 +64,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased">
-        <AuthProvider>
-          {children}
-          <GlobalThemeToggle />
-          <Toaster position="bottom-right" richColors />
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+            <GlobalThemeToggle />
+            <Toaster position="bottom-right" richColors />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
