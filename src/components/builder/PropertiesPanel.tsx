@@ -4,7 +4,7 @@ import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, S
 import { FONT_OPTIONS } from "@/lib/types";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
 import { Badge } from "@/components/ui/badge";
-import { Layers, Trash2, LayoutGrid } from "lucide-react";
+import { Layers, Trash2, LayoutGrid, Sun, Moon } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -289,6 +289,48 @@ export function PropertiesPanel({
                   placeholder={`e.g. ${defaultAnchorId} or features`}
                 />
               </Field>
+
+              {component.type === "navbar" && (
+                <div className="space-y-1.5 pb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Navbar Color Theme
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onChangeStyle(component.id, {
+                          backgroundColor: "#ffffff",
+                          textColor: "#0f172a",
+                        })
+                      }
+                      className={`flex items-center justify-center gap-1.5 py-2 px-2 border rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        component.style.backgroundColor === "#ffffff"
+                          ? "bg-white text-slate-900 border-primary shadow-xs ring-1 ring-primary"
+                          : "bg-background text-foreground border-border hover:bg-muted/50"
+                      }`}
+                    >
+                      <Sun className="h-3.5 w-3.5 text-amber-500" /> Light
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onChangeStyle(component.id, {
+                          backgroundColor: "#0f172a",
+                          textColor: "#f8fafc",
+                        })
+                      }
+                      className={`flex items-center justify-center gap-1.5 py-2 px-2 border rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        component.style.backgroundColor === "#0f172a"
+                          ? "bg-slate-900 text-white border-primary shadow-xs ring-1 ring-primary"
+                          : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                      }`}
+                    >
+                      <Moon className="h-3.5 w-3.5 text-blue-400" /> Dark
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <Field label={`${compLabel} Background`}>
                 <ColorInput

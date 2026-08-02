@@ -33,11 +33,11 @@ export type ComponentProps = {
   subheading?: string;
   buttonText?: string;
   buttonHref?: string;
-  buttons?: { label: string; href?: string; variant?: "solid" | "outline" | "ghost" }[];
+  buttons?: { label: string; href?: string; variant?: "solid" | "outline" | "ghost"; icon?: string }[];
   imageUrl?: string;
   imageAlt?: string;
   items?: { title: string; description: string; icon?: string }[];
-  links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string }[];
+  links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string; icon?: string }[];
   columns?: number;
   variant?: string;
   placeholder?: string;

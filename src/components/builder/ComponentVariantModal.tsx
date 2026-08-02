@@ -98,7 +98,7 @@ export function ComponentVariantModal({
               >
                 {/* Visual Component Preview Thumbnail (Top) */}
                 <div className="w-full p-2.5 rounded-xl bg-muted/40 border border-border/50 group-hover:border-primary/40 group-hover:bg-muted/60 transition-all flex items-center justify-center min-h-[76px] overflow-hidden mb-3">
-                  <RealisticLayoutPreview variantId={v.id} primaryColor={theme.primaryColor || "#ea580c"} />
+                  <RealisticLayoutPreview variantId={v.id} theme={theme} />
                 </div>
 
                 {/* Content Header */}
@@ -143,33 +143,53 @@ export function ComponentVariantModal({
 
 function RealisticLayoutPreview({
   variantId,
-  primaryColor,
+  theme,
 }: {
   variantId: string;
-  primaryColor: string;
+  theme: SiteTheme;
 }) {
+  const primaryColor = theme.primaryColor || "#ea580c";
+  const isLightTheme =
+    !theme.backgroundColor ||
+    theme.backgroundColor === "#ffffff" ||
+    theme.backgroundColor === "#fafafa" ||
+    theme.backgroundColor === "#f8fafc" ||
+    theme.backgroundColor === "#f1f5f9" ||
+    (theme.backgroundColor.startsWith("#f") && theme.backgroundColor.length === 7);
+
+  const cardBg = isLightTheme ? "#ffffff" : "#0f172a";
+  const cardTextColor = isLightTheme ? "#0f172a" : "#f8fafc";
+  const navRadius = theme.borderRadius || "12px";
+  const borderStyle = isLightTheme ? "border-slate-200" : "border-slate-800";
+
   switch (variantId) {
     // NAVBAR VARIANTS
     case "classic-split":
       return (
-        <div className="w-full bg-slate-900 text-white rounded-lg p-2.5 flex items-center justify-between text-xs">
-          <span className="font-extrabold text-[11px] text-white">Brand</span>
-          <div className="hidden sm:flex items-center gap-3 text-[10px] text-slate-300">
+        <div
+          className={`w-full p-2.5 flex items-center justify-between text-xs border ${borderStyle} shadow-sm transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-[11px]" style={{ color: cardTextColor }}>Brand</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] opacity-75">
             <span>Home</span>
             <span>Features</span>
             <span>Pricing</span>
             <span>Contact</span>
           </div>
-          <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor }}>
+          <span className="px-2.5 py-1 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Get Started
           </span>
         </div>
       );
     case "centered-minimal":
       return (
-        <div className="w-full bg-background text-foreground border border-border/80 rounded-lg p-3 flex flex-col items-center gap-2 text-center">
-          <span className="font-black text-xs tracking-wider text-foreground">CRAFTSITE</span>
-          <div className="flex items-center gap-4 text-[10px] text-muted-foreground font-medium">
+        <div
+          className={`w-full p-3 flex flex-col items-center gap-2 text-center border ${borderStyle} shadow-sm transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-black text-xs tracking-wider" style={{ color: cardTextColor }}>CRAFTSITE</span>
+          <div className="flex items-center gap-4 text-[10px] opacity-75 font-medium">
             <span>Home</span>
             <span>Showcase</span>
             <span>Pricing</span>
@@ -180,14 +200,21 @@ function RealisticLayoutPreview({
     case "floating-glass":
       return (
         <div className="w-full py-1">
-          <div className="mx-auto w-11/12 bg-slate-900/90 text-white rounded-full p-2 px-3 flex items-center justify-between border border-slate-700 shadow-sm text-xs">
-            <span className="font-bold text-[11px] text-white">Studio</span>
-            <div className="flex gap-2.5 text-[10px] text-slate-300">
+          <div
+            className={`mx-auto w-11/12 p-2 px-3 flex items-center justify-between border ${borderStyle} shadow-md text-xs transition-all`}
+            style={{
+              backgroundColor: isLightTheme ? "rgba(255, 255, 255, 0.9)" : "rgba(15, 23, 42, 0.9)",
+              color: cardTextColor,
+              borderRadius: navRadius,
+            }}
+          >
+            <span className="font-bold text-[11px]" style={{ color: cardTextColor }}>Studio</span>
+            <div className="flex gap-2.5 text-[10px] opacity-75">
               <span>Work</span>
               <span>About</span>
               <span>Blog</span>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            <span className="px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Sign In
             </span>
           </div>
@@ -196,35 +223,41 @@ function RealisticLayoutPreview({
 
     case "inline-left":
       return (
-        <div className="w-full bg-background border border-border/80 rounded-lg p-2.5 flex items-center justify-between text-xs">
+        <div
+          className={`w-full p-2.5 flex items-center justify-between text-xs border ${borderStyle} shadow-sm transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
           <div className="flex items-center gap-3">
-            <span className="font-black text-[11px] text-foreground">Pulse</span>
+            <span className="font-black text-[11px]" style={{ color: cardTextColor }}>Pulse</span>
             <div className="h-3 w-px bg-border" />
-            <div className="hidden sm:flex items-center gap-2.5 text-[10px] text-muted-foreground">
+            <div className="hidden sm:flex items-center gap-2.5 text-[10px] opacity-75">
               <span>Overview</span>
               <span>Integrations</span>
               <span>Changelog</span>
             </div>
           </div>
-          <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+          <span className="px-2.5 py-1 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Launch App
           </span>
         </div>
       );
     case "dual-action":
       return (
-        <div className="w-full bg-slate-900 text-white rounded-lg p-2.5 flex items-center justify-between text-xs">
-          <span className="font-extrabold text-[11px]">Horizon</span>
-          <div className="hidden sm:flex items-center gap-3 text-[10px] text-slate-300">
+        <div
+          className={`w-full p-2.5 flex items-center justify-between text-xs border ${borderStyle} shadow-sm transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-[11px]" style={{ color: cardTextColor }}>Horizon</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] opacity-75">
             <span>Features</span>
             <span>Enterprise</span>
             <span>Pricing</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded text-[9px] font-semibold border border-slate-700 text-slate-200">
+            <span className="px-2 py-0.5 text-[9px] font-semibold border opacity-80" style={{ borderColor: primaryColor, borderRadius: navRadius }}>
               Log In
             </span>
-            <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+            <span className="px-2.5 py-1 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Start Free Trial
             </span>
           </div>
@@ -232,14 +265,17 @@ function RealisticLayoutPreview({
       );
     case "bordered-light":
       return (
-        <div className="w-full bg-background border-b-2 border-border/90 rounded-lg p-2.5 flex items-center justify-between text-xs">
-          <span className="font-extrabold text-[11px] text-foreground tracking-tight">Vanguard</span>
-          <div className="hidden sm:flex items-center gap-3 text-[10px] text-muted-foreground">
+        <div
+          className={`w-full border-b-2 p-2.5 flex items-center justify-between text-xs transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderColor: primaryColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-[11px] tracking-tight" style={{ color: cardTextColor }}>Vanguard</span>
+          <div className="hidden sm:flex items-center gap-3 text-[10px] opacity-75">
             <span>Platform</span>
             <span>Developers</span>
             <span>Resources</span>
           </div>
-          <span className="px-2.5 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+          <span className="px-2.5 py-1 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Book Demo
           </span>
         </div>

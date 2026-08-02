@@ -114,7 +114,6 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         marginY: "0px",
         marginX: "auto",
         maxWidth: "1120px",
-        borderRadius: "9999px",
       },
     },
     {

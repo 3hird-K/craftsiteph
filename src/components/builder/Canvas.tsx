@@ -155,6 +155,39 @@ export function Canvas({
     return () => observer.disconnect();
   }, [device]);
 
+  // Listen to document.documentElement dark mode state for live preview adaptability
+  const [isAppDark, setIsAppDark] = useState<boolean>(false);
+
+  useEffect(() => {
+    const updateDark = () => {
+      setIsAppDark(document.documentElement.classList.contains("dark"));
+    };
+    updateDark();
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.attributeName === "class") {
+          updateDark();
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
+  const canvasBg =
+    theme.backgroundColor && theme.backgroundColor !== "#ffffff" && theme.backgroundColor !== "transparent"
+      ? theme.backgroundColor
+      : isAppDark
+      ? "#09090b"
+      : "#ffffff";
+
+  const canvasTextColor =
+    theme.textColor && theme.textColor !== "#0f172a"
+      ? theme.textColor
+      : isAppDark
+      ? "#f8fafc"
+      : "#0f172a";
+
   const handleCanvasClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement | null;
     if (
@@ -199,10 +232,10 @@ export function Canvas({
         >
           <DeviceFrame device={device}>
         <div
-          className="h-full min-h-[500px]"
+          className="h-full min-h-[500px] transition-colors duration-300"
           style={{
-            backgroundColor: theme.backgroundColor || "#ffffff",
-            color: theme.textColor || "#0f172a",
+            backgroundColor: canvasBg,
+            color: canvasTextColor,
             fontFamily: theme.fontFamily || "inherit",
           }}
           onClick={(e) => {
@@ -226,13 +259,13 @@ export function Canvas({
                 </div>
                 <h3
                   className="text-xl font-extrabold tracking-tight"
-                  style={{ color: theme.textColor || "inherit" }}
+                  style={{ color: canvasTextColor }}
                 >
                   Start Building Your Page
                 </h3>
                 <p
-                  className="mt-2 max-w-sm text-sm opacity-70"
-                  style={{ color: theme.textColor || "inherit" }}
+                  className="mt-2 max-w-sm text-sm opacity-80"
+                  style={{ color: canvasTextColor }}
                 >
                   Set your global container width basis to start adding components to your page.
                 </p>
@@ -406,8 +439,13 @@ export function Canvas({
                   <ComponentRenderer
                     component={c}
                     allComponents={components}
-                    theme={theme}
+                    theme={{
+                      ...theme,
+                      backgroundColor: canvasBg,
+                      textColor: canvasTextColor,
+                    }}
                     interactive={editing}
+                    device={device}
                     onUpdateProps={(props) => onUpdateProps?.(c.id, props)}
                   />
                 </div>
