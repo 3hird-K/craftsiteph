@@ -79,6 +79,7 @@ export type SiteTheme = {
   fontFamily: string;
   borderRadius: string;
   containerWidth?: string;
+  boxShadow?: string;
 };
 
 export type Project = {
@@ -114,6 +115,7 @@ export const DEFAULT_THEME: SiteTheme = {
   fontFamily: "Inter, system-ui, sans-serif",
   borderRadius: "12px",
   containerWidth: "1120px",
+  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
 };
 
 export const FONT_OPTIONS = [

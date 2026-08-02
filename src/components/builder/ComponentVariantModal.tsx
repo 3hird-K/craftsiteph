@@ -37,9 +37,9 @@ export function ComponentVariantModal({
   return (
     <Dialog open={open} onOpenChange={(val) => { if (!val) onClose(); }}>
       <DialogContent
-        className="sm:max-w-[840px] md:max-w-[900px] border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl p-0 overflow-hidden"
+        className="sm:max-w-[840px] md:max-w-[900px] border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl p-0 overflow-hidden rounded-2xl"
         style={{
-          borderRadius: theme.borderRadius ? `calc(${theme.borderRadius} * 1.5)` : "24px",
+          borderRadius: "24px",
           fontFamily: theme.fontFamily || "inherit",
         }}
       >
@@ -53,11 +53,10 @@ export function ComponentVariantModal({
           <DialogHeader>
             <div className="flex items-center gap-2 mb-1">
               <span
-                className="p-2 transition-all flex items-center justify-center"
+                className="p-2 transition-all flex items-center justify-center rounded-xl"
                 style={{
                   backgroundColor: `${theme.primaryColor || "#ea580c"}20`,
                   color: theme.primaryColor || "#ea580c",
-                  borderRadius: theme.borderRadius || "12px",
                 }}
               >
                 <Layout className="h-5 w-5" />
@@ -92,9 +91,6 @@ export function ComponentVariantModal({
                   onClose();
                 }}
                 className="group relative flex flex-col justify-between p-4 rounded-2xl border border-border/80 bg-card hover:bg-background hover:border-primary/60 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer overflow-hidden"
-                style={{
-                  borderRadius: theme.borderRadius || "16px",
-                }}
               >
                 {/* Visual Component Preview Thumbnail (Top) */}
                 <div className="w-full p-2.5 rounded-xl bg-muted/40 border border-border/50 group-hover:border-primary/40 group-hover:bg-muted/60 transition-all flex items-center justify-center min-h-[76px] overflow-hidden mb-3">
@@ -168,7 +164,7 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-2.5 flex items-center justify-between text-xs border ${borderStyle} shadow-sm transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "0px" }}
         >
           <span className="font-extrabold text-[11px]" style={{ color: cardTextColor }}>Brand</span>
           <div className="hidden sm:flex items-center gap-3 text-[10px] opacity-75">
@@ -186,7 +182,7 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-3 flex flex-col items-center gap-2 text-center border ${borderStyle} shadow-sm transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "0px" }}
         >
           <span className="font-black text-xs tracking-wider" style={{ color: cardTextColor }}>CRAFTSITE</span>
           <div className="flex items-center gap-4 text-[10px] opacity-75 font-medium">
@@ -225,7 +221,7 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-2.5 flex items-center justify-between text-xs border ${borderStyle} shadow-sm transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "0px" }}
         >
           <div className="flex items-center gap-3">
             <span className="font-black text-[11px]" style={{ color: cardTextColor }}>Pulse</span>
@@ -245,7 +241,7 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-2.5 flex items-center justify-between text-xs border ${borderStyle} shadow-sm transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "0px" }}
         >
           <span className="font-extrabold text-[11px]" style={{ color: cardTextColor }}>Horizon</span>
           <div className="hidden sm:flex items-center gap-3 text-[10px] opacity-75">
@@ -267,7 +263,7 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full border-b-2 p-2.5 flex items-center justify-between text-xs transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderColor: primaryColor, borderRadius: navRadius }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderColor: primaryColor, borderRadius: "0px" }}
         >
           <span className="font-extrabold text-[11px] tracking-tight" style={{ color: cardTextColor }}>Vanguard</span>
           <div className="hidden sm:flex items-center gap-3 text-[10px] opacity-75">

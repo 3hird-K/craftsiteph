@@ -13,6 +13,7 @@ import {
   Menu,
   Search,
   User,
+  Image as ImageIcon,
   Home,
   Briefcase,
   Info,
@@ -634,6 +635,114 @@ function ButtonEditItem({
   );
 }
 
+function ImageEditItem({
+  currentUrl,
+  currentAlt,
+  onSave,
+  onClose,
+}: {
+  currentUrl?: string;
+  currentAlt?: string;
+  onSave: (url: string, alt?: string) => void;
+  onClose: () => void;
+}) {
+  const [draftUrl, setDraftUrl] = useState(currentUrl || "");
+  const [draftAlt, setDraftAlt] = useState(currentAlt || "");
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    const timer = setTimeout(() => {
+      window.addEventListener("click", handleOutsideClick);
+    }, 50);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleOutsideClick);
+    };
+  }, [onClose]);
+
+  const sampleImages = [
+    { label: "Design Sketch", url: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&auto=format&fit=crop&q=80" },
+    { label: "Modern Dashboard", url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80" },
+    { label: "Workspace Office", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80" },
+    { label: "Mobile App Screen", url: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80" },
+  ];
+
+  return (
+    <div
+      ref={popoverRef}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+      className="absolute top-4 right-4 w-80 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
+    >
+      <div className="flex items-center justify-between pb-2 border-b border-border/60">
+        <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+          <ImageIcon className="h-3.5 w-3.5 text-primary" /> Edit Image
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Image Address (URL)
+        </label>
+        <input
+          type="text"
+          value={draftUrl}
+          onChange={(e) => setDraftUrl(e.target.value)}
+          placeholder="https://images.unsplash.com/..."
+          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Sample Image Presets
+        </label>
+        <div className="grid grid-cols-2 gap-1.5">
+          {sampleImages.map((img) => (
+            <button
+              key={img.label}
+              type="button"
+              onClick={() => setDraftUrl(img.url)}
+              className="p-1.5 rounded-lg border border-border/60 bg-muted/30 hover:bg-muted hover:border-primary text-[10px] font-medium text-left truncate transition-all cursor-pointer"
+            >
+              {img.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="pt-2 border-t border-border/60 flex items-center gap-2 w-full">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex-1 py-2 text-xs font-bold text-muted-foreground hover:bg-muted border border-border rounded-xl transition-colors shrink-0"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => onSave(draftUrl, draftAlt)}
+          className="flex-1 py-2 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+        >
+          <Check className="h-3.5 w-3.5" /> Save Image
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ComponentRenderer({
   component,
   allComponents = [],
@@ -646,6 +755,7 @@ export function ComponentRenderer({
   const css = styleToCss(style);
   const radius = style.borderRadius || theme.borderRadius || "12px";
   const btnRadius = style.borderRadius || theme.borderRadius || "12px";
+  const shadow = style.boxShadow || theme.boxShadow || "none";
   const effectiveMaxWidth = theme.containerWidth || style.maxWidth || "1120px";
   const primary = theme.primaryColor;
   const isMobile = device === "mobile";
@@ -677,7 +787,7 @@ export function ComponentRenderer({
   if (type === "navbar") {
     const variant = props.variant || "classic-split";
     const isFloating = variant === "floating-glass" || Boolean(style.maxWidth && style.maxWidth !== "100%" && style.maxWidth !== "auto");
-    const headerRadius = style.borderRadius || theme.borderRadius || "12px";
+    const headerRadius = style.borderRadius || (variant === "floating-glass" ? (theme.borderRadius || "12px") : "0px");
     const isLightTheme =
       !theme.backgroundColor ||
       theme.backgroundColor === "#ffffff" ||
@@ -1084,7 +1194,7 @@ export function ComponentRenderer({
         }`}
       >
         <Center maxWidth={effectiveMaxWidth}>
-          <div className="flex items-center justify-between gap-3 py-2.5">
+          <div className="flex items-center justify-between w-full gap-2 py-2.5">
             <LogoElement />
 
             {/* Desktop Navigation Links & Action Buttons */}
@@ -1101,12 +1211,8 @@ export function ComponentRenderer({
                   e.stopPropagation();
                   setIsMobileMenuOpen(!isMobileMenuOpen);
                 }}
-                className={`p-2 rounded-xl transition-all cursor-pointer flex items-center justify-center border shadow-xs shrink-0 ${
-                  isLightTheme
-                    ? "bg-foreground/5 hover:bg-foreground/10 border-foreground/15 text-foreground"
-                    : "bg-white/10 hover:bg-white/20 border-white/20 text-white"
-                }`}
-                style={{ color: headerTextColor }}
+                className="p-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center border border-foreground/15 hover:bg-foreground/10 shrink-0"
+                style={{ color: headerTextColor, borderRadius: theme.borderRadius || "12px" }}
                 title="Toggle Navigation Menu"
               >
                 {isMobileMenuOpen ? (
@@ -1242,6 +1348,8 @@ export function ComponentRenderer({
       );
     };
 
+    const [isEditingHeroImage, setIsEditingHeroImage] = useState(false);
+
     return (
       <section
         id={currentSectionId}
@@ -1257,36 +1365,115 @@ export function ComponentRenderer({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 {props.heading && (
-                  <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+                  <h1
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerText.trim();
+                      if (newText && newText !== props.heading) {
+                        onUpdateProps?.({ heading: newText });
+                      }
+                    }}
+                    style={{ outline: "none" }}
+                    className={`text-4xl md:text-5xl font-extrabold tracking-tight ${
+                      interactive ? "cursor-text transition-all" : ""
+                    }`}
+                  >
                     {props.heading}
                   </h1>
                 )}
                 {props.subheading && (
-                  <p className="text-lg text-muted-foreground">
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerText.trim();
+                      if (newText && newText !== props.subheading) {
+                        onUpdateProps?.({ subheading: newText });
+                      }
+                    }}
+                    style={{ outline: "none" }}
+                    className={`text-lg text-muted-foreground ${
+                      interactive ? "cursor-text transition-all" : ""
+                    }`}
+                  >
                     {props.subheading}
                   </p>
                 )}
                 <ButtonsBlock />
               </div>
               {props.imageUrl && (
-                <div className="relative overflow-hidden rounded-2xl border border-border/80 shadow-2xl">
+                <div
+                  className="relative group overflow-hidden border border-border/80 transition-all"
+                  style={{ borderRadius: radius, boxShadow: shadow !== "none" ? shadow : undefined }}
+                >
                   <img
                     src={props.imageUrl}
                     alt={props.imageAlt || "Hero"}
                     className="w-full h-auto object-cover max-h-[450px]"
                   />
+                  {interactive && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditingHeroImage(!isEditingHeroImage);
+                      }}
+                      className="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-20"
+                      style={{ borderRadius: theme.borderRadius || "12px" }}
+                    >
+                      <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                    </button>
+                  )}
+                  {isEditingHeroImage && (
+                    <ImageEditItem
+                      currentUrl={props.imageUrl}
+                      currentAlt={props.imageAlt}
+                      onSave={(url, alt) => {
+                        onUpdateProps?.({ imageUrl: url, imageAlt: alt });
+                        setIsEditingHeroImage(false);
+                      }}
+                      onClose={() => setIsEditingHeroImage(false)}
+                    />
+                  )}
                 </div>
               )}
             </div>
           ) : (
             <div className="max-w-3xl mx-auto text-center space-y-6">
               {props.heading && (
-                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
+                <h1
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const newText = e.currentTarget.innerText.trim();
+                    if (newText && newText !== props.heading) {
+                      onUpdateProps?.({ heading: newText });
+                    }
+                  }}
+                  style={{ outline: "none" }}
+                  className={`text-4xl md:text-6xl font-extrabold tracking-tight ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                >
                   {props.heading}
                 </h1>
               )}
               {props.subheading && (
-                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const newText = e.currentTarget.innerText.trim();
+                    if (newText && newText !== props.subheading) {
+                      onUpdateProps?.({ subheading: newText });
+                    }
+                  }}
+                  style={{ outline: "none" }}
+                  className={`text-xl text-muted-foreground max-w-2xl mx-auto ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                >
                   {props.subheading}
                 </p>
               )}
@@ -1302,8 +1489,42 @@ export function ComponentRenderer({
   return (
     <section id={currentSectionId} style={css} className="py-12">
       <Center maxWidth={effectiveMaxWidth}>
-        {props.heading && <h2 className="text-2xl font-bold mb-4">{props.heading}</h2>}
-        {props.text && <p className="text-muted-foreground">{props.text}</p>}
+        {props.heading && (
+          <h2
+            contentEditable={interactive}
+            suppressContentEditableWarning
+            onBlur={(e) => {
+              const newText = e.currentTarget.innerText.trim();
+              if (newText && newText !== props.heading) {
+                onUpdateProps?.({ heading: newText });
+              }
+            }}
+            style={{ outline: "none" }}
+            className={`text-2xl font-bold mb-4 ${
+              interactive ? "cursor-text transition-all" : ""
+            }`}
+          >
+            {props.heading}
+          </h2>
+        )}
+        {props.text && (
+          <p
+            contentEditable={interactive}
+            suppressContentEditableWarning
+            onBlur={(e) => {
+              const newText = e.currentTarget.innerText.trim();
+              if (newText && newText !== props.text) {
+                onUpdateProps?.({ text: newText });
+              }
+            }}
+            style={{ outline: "none" }}
+            className={`text-muted-foreground ${
+              interactive ? "cursor-text transition-all" : ""
+            }`}
+          >
+            {props.text}
+          </p>
+        )}
       </Center>
     </section>
   );
