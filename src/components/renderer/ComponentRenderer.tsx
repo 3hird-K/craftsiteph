@@ -709,10 +709,13 @@ export function ComponentRenderer({
       css.zIndex = 30;
       css.marginTop = "16px";
       css.marginBottom = "24px";
+      css.width = "calc(100% - 2rem)";
       css.maxWidth = effectiveMaxWidth;
       css.marginLeft = "auto";
       css.marginRight = "auto";
     } else {
+      css.width = "100%";
+      css.maxWidth = "100%";
       if (!style.marginY) {
         css.marginBottom = "16px";
       }
