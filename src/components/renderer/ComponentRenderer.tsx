@@ -2425,14 +2425,16 @@ export function ComponentRenderer({
           ) : variant === "newsletter-split-footer" ? (
             <div className="space-y-12">
               <div
-                className="p-6 md:p-8 border flex flex-col md:flex-row items-center justify-between gap-6"
+                className={`p-6 md:p-8 border flex justify-between gap-6 ${
+                  isMobile ? "flex-col items-start text-left" : "flex-col md:flex-row items-center"
+                }`}
                 style={{
                   borderColor,
                   backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.05)",
                   borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "16px"),
                 }}
               >
-                <div className="space-y-1 text-center md:text-left w-full md:w-auto">
+                <div className={`space-y-1 text-left ${isMobile ? "w-full" : "w-full md:w-auto"}`}>
                   <h4
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2460,14 +2462,22 @@ export function ComponentRenderer({
                     {tagline}
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto max-w-md shrink-0">
+                <div
+                  className={`flex gap-2.5 ${
+                    isMobile
+                      ? "flex-col items-stretch w-full"
+                      : "flex-col sm:flex-row items-stretch sm:items-center w-full md:w-auto max-w-md shrink-0"
+                  }`}
+                >
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="px-4 py-2.5 border bg-transparent text-sm outline-none w-full sm:w-64 placeholder:opacity-50"
+                    className={`px-4 py-2.5 border bg-transparent text-sm outline-none placeholder:opacity-50 ${
+                      isMobile ? "w-full" : "w-full sm:w-64"
+                    }`}
                     style={{ borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                   />
-                  <div className="relative group/btn inline-flex items-center w-full sm:w-auto">
+                  <div className={`relative group/btn inline-flex items-center ${isMobile ? "w-full" : "w-full sm:w-auto"}`}>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -2475,7 +2485,9 @@ export function ComponentRenderer({
                         e.stopPropagation();
                         setActiveFooterPopover(activeFooterPopover === "cta-btn" ? null : "cta-btn");
                       }}
-                      className="px-5 py-2.5 font-bold text-xs text-white shadow-md hover:brightness-110 w-full sm:w-auto justify-center shrink-0 cursor-pointer"
+                      className={`px-5 py-2.5 font-bold text-xs text-white shadow-md hover:brightness-110 justify-center shrink-0 cursor-pointer ${
+                        isMobile ? "w-full" : "w-full sm:w-auto"
+                      }`}
                       style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
                     >
                       {props.buttonText || "Subscribe"}
@@ -2495,8 +2507,8 @@ export function ComponentRenderer({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
-                <div className="md:col-span-2 space-y-3 text-left">
+              <div className={`grid gap-8 text-left ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-4"}`}>
+                <div className={`space-y-3 text-left ${isMobile ? "w-full" : "md:col-span-2"}`}>
                   <h3
                     contentEditable={interactive}
                     suppressContentEditableWarning
