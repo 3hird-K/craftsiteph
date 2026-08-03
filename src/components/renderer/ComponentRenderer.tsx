@@ -1922,7 +1922,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none" }}
-                    className={`text-4xl md:text-5xl font-extrabold tracking-tight ${
+                    className={`${isMobile ? "text-2xl sm:text-3xl" : "text-3xl md:text-5xl"} font-extrabold tracking-tight ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -1940,7 +1940,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none" }}
-                    className={`text-lg text-muted-foreground ${
+                    className={`${isMobile ? "text-sm" : "text-base md:text-lg"} text-muted-foreground ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -2005,7 +2005,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none" }}
-                  className={`text-4xl md:text-6xl font-extrabold tracking-tight ${
+                  className={`${isMobile ? "text-2xl sm:text-3xl" : "text-3xl md:text-6xl"} font-extrabold tracking-tight ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                 >
@@ -2184,7 +2184,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-3xl md:text-4xl font-extrabold tracking-tight ${
+                    className={`${isMobile ? "text-xl sm:text-2xl" : "text-3xl md:text-4xl"} font-extrabold tracking-tight ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -2202,7 +2202,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none", color: subtextColor }}
-                    className={`text-base font-medium opacity-90 ${
+                    className={`${isMobile ? "text-sm" : "text-base font-medium"} opacity-90 ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -2232,7 +2232,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: textColor }}
-                  className={`text-3xl md:text-5xl font-extrabold tracking-tight ${
+                  className={`${isMobile ? "text-2xl sm:text-3xl" : "text-3xl md:text-5xl"} font-extrabold tracking-tight ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                 >
