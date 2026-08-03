@@ -585,7 +585,6 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Upgrade Pro Plan", variant: "solid" }],
       },
       applyStyle: {
-        backgroundColor: "#1e1b4b",
         textColor: "#ffffff",
         paddingY: "80px",
         paddingX: "32px",

@@ -2062,8 +2062,8 @@ export function ComponentRenderer({
         ? "#0f172a"
         : variant === "minimal-inline-cta"
         ? "#f8fafc"
-        : variant === "gradient-glow-cta"
-        ? "#1e1b4b"
+        : (variant === "gradient-glow-cta" || variant === "full-width-primary")
+        ? primary
         : "#f0f9ff";
 
     const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
