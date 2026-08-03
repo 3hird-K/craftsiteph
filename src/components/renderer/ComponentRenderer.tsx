@@ -1207,6 +1207,8 @@ export function ComponentRenderer({
   const effectiveMaxWidth = theme.containerWidth || style.maxWidth || "1120px";
   const primary = theme.primaryColor;
   const isMobile = device === "mobile";
+  const isTablet = device === "tablet";
+  const isMobileOrTablet = isMobile || isTablet;
 
   const getSectionAnchorId = (c: BuilderComponent): string => {
     const sameType = allComponents.filter((item) => item.type === c.type);
@@ -1922,7 +1924,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none" }}
-                    className={`${isMobile ? "text-2xl sm:text-3xl" : "text-3xl md:text-5xl"} font-extrabold tracking-tight ${
+                    className={`${isMobile ? "text-2xl" : isTablet ? "text-3xl" : "text-3xl md:text-5xl"} font-extrabold tracking-tight ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -1940,7 +1942,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none" }}
-                    className={`${isMobile ? "text-sm" : "text-base md:text-lg"} text-muted-foreground ${
+                    className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} text-muted-foreground ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -2005,7 +2007,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none" }}
-                  className={`${isMobile ? "text-2xl sm:text-3xl" : "text-3xl md:text-6xl"} font-extrabold tracking-tight ${
+                  className={`${isMobile ? "text-2xl" : isTablet ? "text-3xl sm:text-4xl" : "text-3xl md:text-6xl"} font-extrabold tracking-tight ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                 >
