@@ -22,7 +22,7 @@ import { PageSetupModal } from "./PageSetupModal";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useProjectRealtime } from "@/hooks/useProjectRealtime";
 import { createClient } from "@/lib/supabase/client";
-import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio } from "lucide-react";
+import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio, Square } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -94,6 +94,7 @@ export function BuilderEditor({ project }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [showDeviceFrame, setShowDeviceFrame] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -537,7 +538,7 @@ export function BuilderEditor({ project }: Props) {
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
           {/* Viewport Controls */}
-          <div className="mr-1 hidden items-center rounded-lg border border-border bg-muted/50 dark:bg-muted/20 p-0.5 sm:flex">
+          <div className="mr-1 hidden items-center gap-1 rounded-lg border border-border bg-muted/50 dark:bg-muted/20 p-0.5 sm:flex">
             {(
               [
                 ["desktop", "Desktop", Monitor],
@@ -550,7 +551,7 @@ export function BuilderEditor({ project }: Props) {
                 type="button"
                 onClick={() => setDevice(key)}
                 title={label}
-                className={`rounded-md p-1.5 transition ${
+                className={`rounded-md p-1.5 transition cursor-pointer ${
                   device === key
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -559,6 +560,24 @@ export function BuilderEditor({ project }: Props) {
                 <Icon className="h-4 w-4" />
               </button>
             ))}
+
+            <div className="h-4 w-px bg-border/80 mx-0.5" />
+
+            <button
+              type="button"
+              onClick={() => setShowDeviceFrame(!showDeviceFrame)}
+              title={showDeviceFrame ? "Frame Active (Click for Frameless Canvas)" : "Frameless Mode (Click to Show Device Frame)"}
+              className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold transition cursor-pointer select-none ${
+                showDeviceFrame
+                  ? "bg-background text-foreground shadow-sm border border-border/80"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Square className={`h-3.5 w-3.5 ${showDeviceFrame ? "text-primary fill-primary/20" : ""}`} />
+              <span className="text-[11px] font-medium hidden md:inline">
+                {showDeviceFrame ? "With Frame" : "No Frame"}
+              </span>
+            </button>
           </div>
 
           <div className="flex items-center rounded-lg border border-border bg-muted/50 dark:bg-muted/20 p-0.5">
@@ -805,6 +824,7 @@ export function BuilderEditor({ project }: Props) {
             selectedId={selectedId}
             previewMode={previewMode}
             device={device}
+            showDeviceFrame={showDeviceFrame}
             onSelect={(id) => {
               setSelectedId(id);
               if (id) setLeftTab("design");

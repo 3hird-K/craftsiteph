@@ -12,6 +12,7 @@ type Props = {
   selectedId: string | null;
   previewMode: "edit" | "preview";
   device: "desktop" | "tablet" | "mobile";
+  showDeviceFrame?: boolean;
   onSelect: (id: string | null) => void;
   onMove: (id: string, direction: "up" | "down") => void;
   onReorder?: (fromIndex: number, toIndex: number) => void;
@@ -29,7 +30,22 @@ const deviceWidth = {
 };
 
 // Device Frame Wrapper Component
-function DeviceFrame({ device, children }: { device: Props["device"]; children: React.ReactNode }) {
+function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Props["device"]; showDeviceFrame?: boolean; children: React.ReactNode }) {
+  if (!showDeviceFrame) {
+    return (
+      <div
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col bg-background relative z-10"
+        style={{
+          width: device === "mobile" ? "440px" : device === "tablet" ? "768px" : "100%",
+          height: device === "mobile" ? "860px" : device === "tablet" ? "960px" : "100%",
+        }}
+      >
+        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+          {children}
+        </div>
+      </div>
+    );
+  }
   if (device === "mobile") {
     return (
       <div
@@ -156,6 +172,7 @@ export function Canvas({
   selectedId,
   previewMode,
   device,
+  showDeviceFrame = true,
   onSelect,
   onMove,
   onReorder,
@@ -273,7 +290,7 @@ export function Canvas({
             willChange: 'transform' 
           }}
         >
-          <DeviceFrame device={device}>
+          <DeviceFrame device={device} showDeviceFrame={showDeviceFrame}>
         <div
           className="h-full min-h-[500px] transition-colors duration-300"
           style={{
