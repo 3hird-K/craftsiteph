@@ -1730,6 +1730,7 @@ export function ComponentRenderer({
         id={currentSectionId}
         style={{
           ...css,
+          border: variant === "floating-glass" ? undefined : (style.border || "none"),
           borderRadius: isMobileMenuOpen ? "24px 24px 12px 12px" : headerRadius,
           backgroundColor: headerBg,
           color: headerTextColor,
