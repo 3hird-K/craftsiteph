@@ -517,7 +517,7 @@ function LogoEditItem({
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-xl my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-4 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -532,175 +532,170 @@ function LogoEditItem({
         </button>
       </div>
 
-      {/* Live Preview */}
-      <div className="space-y-1">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Live Logo Preview
-        </label>
-        <div className="p-3 rounded-xl border border-border/80 bg-muted/30 flex items-center justify-center overflow-hidden min-h-[48px]">
-          <span
-            style={{
-              fontFamily: draftFontFamily || undefined,
-              fontSize: draftFontSize || "18px",
-              fontWeight: draftFontWeight || "800",
-              fontStyle: draftFontStyle || "normal",
-              textTransform: (draftTextTransform as React.CSSProperties["textTransform"]) || "none",
-              color: draftColor || "inherit",
-            }}
-            className="truncate transition-all max-w-full text-center"
-          >
-            {draftText || "Brand"}
-          </span>
-        </div>
-      </div>
-
-      {/* Logo Text */}
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Logo Text Name
-        </label>
-        <input
-          type="text"
-          value={draftText}
-          onChange={(e) => setDraftText(e.target.value)}
-          placeholder="e.g. Studio"
-          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-        />
-      </div>
-
-      {/* Typography Controls */}
-      <div className="space-y-2 pt-2 border-t border-border/60">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
-          Font Style & Typography
-        </span>
-
-        {/* Font Family */}
-        <div className="space-y-1">
-          <label className="text-[10px] font-medium text-muted-foreground">Font Family</label>
-          <CustomSelectDropdown
-            value={draftFontFamily}
-            onChange={(val) => setDraftFontFamily(val)}
-            options={fontFamilyOptions}
-            placeholder="Select Font Family"
-          />
-        </div>
-
-        {/* Font Size & Weight */}
-        <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+        {/* Left Column: Preview, Text & Core Typography */}
+        <div className="space-y-3">
+          {/* Live Preview */}
           <div className="space-y-1">
-            <label className="text-[10px] font-medium text-muted-foreground">Font Size</label>
-            <CustomSelectDropdown
-              value={draftFontSize}
-              onChange={(val) => setDraftFontSize(val)}
-              options={fontSizeOptions}
-              placeholder="Font Size"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-medium text-muted-foreground">Font Weight</label>
-            <CustomSelectDropdown
-              value={draftFontWeight}
-              onChange={(val) => setDraftFontWeight(val)}
-              options={fontWeightOptions}
-              placeholder="Font Weight"
-            />
-          </div>
-        </div>
-
-        {/* Font Style (Italic) & Text Transform */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="space-y-1">
-            <label className="text-[10px] font-medium text-muted-foreground">Style</label>
-            <CustomSelectDropdown
-              value={draftFontStyle}
-              onChange={(val) => setDraftFontStyle(val)}
-              options={fontStyleOptions}
-              placeholder="Font Style"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-medium text-muted-foreground">Text Case</label>
-            <CustomSelectDropdown
-              value={draftTextTransform}
-              onChange={(val) => setDraftTextTransform(val)}
-              options={textTransformOptions}
-              placeholder="Text Case"
-            />
-          </div>
-        </div>
-
-        {/* Custom Text Color */}
-        <div className="space-y-1.5 pt-1">
-          <label className="text-[10px] font-medium text-muted-foreground">Text Color</label>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {presetColors.map((c) => (
-              <button
-                key={c.value || "default"}
-                type="button"
-                onClick={() => setDraftColor(c.value)}
-                className={`h-5 w-5 rounded-full border transition-transform cursor-pointer ${
-                  draftColor === c.value ? "scale-110 ring-2 ring-primary ring-offset-1" : "hover:scale-105 opacity-80"
-                }`}
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Live Logo Preview
+            </label>
+            <div className="p-3 rounded-xl border border-border/80 bg-muted/30 flex items-center justify-center overflow-hidden min-h-[48px]">
+              <span
                 style={{
-                  backgroundColor: c.value || "transparent",
-                  borderColor: c.value === "#ffffff" ? "#ccc" : "transparent",
+                  fontFamily: draftFontFamily || undefined,
+                  fontSize: draftFontSize || "18px",
+                  fontWeight: draftFontWeight || "800",
+                  fontStyle: draftFontStyle || "normal",
+                  textTransform: (draftTextTransform as React.CSSProperties["textTransform"]) || "none",
+                  color: draftColor || "inherit",
                 }}
-                title={c.label}
-              />
-            ))}
+                className="truncate transition-all max-w-full text-center"
+              >
+                {draftText || "Brand"}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="color"
-              value={draftColor || "#000000"}
-              onChange={(e) => setDraftColor(e.target.value)}
-              className="h-7 w-8 rounded-md border border-border cursor-pointer bg-transparent p-0.5"
-            />
+
+          {/* Logo Text */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Logo Text Name
+            </label>
             <input
               type="text"
-              value={draftColor}
-              onChange={(e) => setDraftColor(e.target.value)}
-              placeholder="e.g. #4f46e5 or transparent"
-              className="flex-1 px-2.5 py-1 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary transition-all"
+              value={draftText}
+              onChange={(e) => setDraftText(e.target.value)}
+              placeholder="e.g. Studio"
+              className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
+
+          {/* Font Family */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Font Family</label>
+            <CustomSelectDropdown
+              value={draftFontFamily}
+              onChange={(val) => setDraftFontFamily(val)}
+              options={fontFamilyOptions}
+              placeholder="Select Font Family"
+            />
+          </div>
+
+          {/* Font Size & Weight */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Font Size</label>
+              <CustomSelectDropdown
+                value={draftFontSize}
+                onChange={(val) => setDraftFontSize(val)}
+                options={fontSizeOptions}
+                placeholder="Font Size"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Font Weight</label>
+              <CustomSelectDropdown
+                value={draftFontWeight}
+                onChange={(val) => setDraftFontWeight(val)}
+                options={fontWeightOptions}
+                placeholder="Font Weight"
+              />
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Link Settings */}
-      <div className="space-y-2 pt-2 border-t border-border/60">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
-          Link & Destination
-        </span>
+        {/* Right Column: Style, Case, Color & Link Settings */}
+        <div className="space-y-3">
+          {/* Font Style & Text Case */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Style</label>
+              <CustomSelectDropdown
+                value={draftFontStyle}
+                onChange={(val) => setDraftFontStyle(val)}
+                options={fontStyleOptions}
+                placeholder="Font Style"
+              />
+            </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Scroll To Section
-          </label>
-          <SectionSelectDropdown
-            value={draftHref}
-            options={sectionOptions}
-            onChange={(val) => {
-              if (val !== "CUSTOM_URL") {
-                setDraftHref(val);
-              }
-            }}
-          />
-        </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Text Case</label>
+              <CustomSelectDropdown
+                value={draftTextTransform}
+                onChange={(val) => setDraftTextTransform(val)}
+                options={textTransformOptions}
+                placeholder="Text Case"
+              />
+            </div>
+          </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Target URL
-          </label>
-          <input
-            type="text"
-            value={draftHref}
-            onChange={(e) => setDraftHref(e.target.value)}
-            placeholder="e.g. #top or https://..."
-            className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-          />
+          {/* Custom Text Color */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Text Color</label>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {presetColors.map((c) => (
+                <button
+                  key={c.value || "default"}
+                  type="button"
+                  onClick={() => setDraftColor(c.value)}
+                  className={`h-5 w-5 rounded-full border transition-transform cursor-pointer ${
+                    draftColor === c.value ? "scale-110 ring-2 ring-primary ring-offset-1" : "hover:scale-105 opacity-80"
+                  }`}
+                  style={{
+                    backgroundColor: c.value || "transparent",
+                    borderColor: c.value === "#ffffff" ? "#ccc" : "transparent",
+                  }}
+                  title={c.label}
+                />
+              ))}
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                type="color"
+                value={draftColor || "#000000"}
+                onChange={(e) => setDraftColor(e.target.value)}
+                className="h-7 w-8 rounded-md border border-border cursor-pointer bg-transparent p-0.5"
+              />
+              <input
+                type="text"
+                value={draftColor}
+                onChange={(e) => setDraftColor(e.target.value)}
+                placeholder="e.g. #4f46e5 or transparent"
+                className="flex-1 px-2.5 py-1 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Link Settings */}
+          <div className="space-y-1.5 pt-1 border-t border-border/60">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Scroll To Section
+            </label>
+            <SectionSelectDropdown
+              value={draftHref}
+              options={sectionOptions}
+              onChange={(val) => {
+                if (val !== "CUSTOM_URL") {
+                  setDraftHref(val);
+                }
+              }}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Target URL
+            </label>
+            <input
+              type="text"
+              value={draftHref}
+              onChange={(e) => setDraftHref(e.target.value)}
+              placeholder="e.g. #top or https://..."
+              className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            />
+          </div>
         </div>
       </div>
 
@@ -783,7 +778,7 @@ function LinkEditItem({
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-xl my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-4 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -798,47 +793,54 @@ function LinkEditItem({
         </button>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Link Label Text
-        </label>
-        <input
-          type="text"
-          value={draftLabel}
-          onChange={(e) => setDraftLabel(e.target.value)}
-          placeholder="e.g. Work"
-          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-        />
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+        {/* Left Column: Link Label & Navigation settings */}
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Link Label Text
+            </label>
+            <input
+              type="text"
+              value={draftLabel}
+              onChange={(e) => setDraftLabel(e.target.value)}
+              placeholder="e.g. Work"
+              className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            />
+          </div>
 
-      {/* Icon Search Picker */}
-      <IconSearchPicker
-        selectedIcon={draftIcon}
-        onSelectIcon={(iconName) => setDraftIcon(iconName)}
-      />
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Scroll To Section
+            </label>
+            <SectionSelectDropdown
+              value={draftHref}
+              options={sectionOptions}
+              onChange={(val) => setDraftHref(val)}
+            />
+          </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Scroll To Section
-        </label>
-        <SectionSelectDropdown
-          value={draftHref}
-          options={sectionOptions}
-          onChange={(val) => setDraftHref(val)}
-        />
-      </div>
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Target URL
+            </label>
+            <input
+              type="text"
+              value={draftHref}
+              onChange={(e) => setDraftHref(e.target.value)}
+              placeholder="e.g. #hero-1 or https://..."
+              className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            />
+          </div>
+        </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Target URL
-        </label>
-        <input
-          type="text"
-          value={draftHref}
-          onChange={(e) => setDraftHref(e.target.value)}
-          placeholder="e.g. #hero-1 or https://..."
-          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-        />
+        {/* Right Column: Icon Search Picker */}
+        <div className="space-y-1.5 flex flex-col justify-start">
+          <IconSearchPicker
+            selectedIcon={draftIcon}
+            onSelectIcon={(iconName) => setDraftIcon(iconName)}
+          />
+        </div>
       </div>
 
       <div className="pt-2 border-t border-border/60 flex items-center gap-2 w-full">
@@ -909,7 +911,7 @@ function ButtonEditItem({
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-xl my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-4 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -924,69 +926,76 @@ function ButtonEditItem({
         </button>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Button Label
-        </label>
-        <input
-          type="text"
-          value={draftLabel}
-          onChange={(e) => setDraftLabel(e.target.value)}
-          placeholder="e.g. Sign In"
-          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-        />
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+        {/* Left Column: Label, Style & Link settings */}
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Button Label
+            </label>
+            <input
+              type="text"
+              value={draftLabel}
+              onChange={(e) => setDraftLabel(e.target.value)}
+              placeholder="e.g. Sign In"
+              className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            />
+          </div>
 
-      {/* Icon Search Picker */}
-      <IconSearchPicker
-        selectedIcon={draftIcon}
-        onSelectIcon={(iconName) => setDraftIcon(iconName)}
-      />
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Button Style
+            </label>
+            <div className="grid grid-cols-3 gap-1 bg-muted/30 p-1 rounded-xl border border-border/60">
+              {(["solid", "outline", "ghost"] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setDraftVariant(v)}
+                  className={`py-1.5 text-[10px] font-bold capitalize rounded-lg transition-all cursor-pointer ${
+                    draftVariant === v
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Button Style
-        </label>
-        <div className="grid grid-cols-3 gap-1 bg-muted/30 p-1 rounded-xl border border-border/60">
-          {(["solid", "outline", "ghost"] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setDraftVariant(v)}
-              className={`py-1.5 text-[10px] font-bold capitalize rounded-lg transition-all cursor-pointer ${
-                draftVariant === v
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {v}
-            </button>
-          ))}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Scroll To Section
+            </label>
+            <SectionSelectDropdown
+              value={draftHref}
+              options={sectionOptions}
+              onChange={(val) => setDraftHref(val)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Target URL
+            </label>
+            <input
+              type="text"
+              value={draftHref}
+              onChange={(e) => setDraftHref(e.target.value)}
+              placeholder="e.g. #hero-1 or https://..."
+              className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Scroll To Section
-        </label>
-        <SectionSelectDropdown
-          value={draftHref}
-          options={sectionOptions}
-          onChange={(val) => setDraftHref(val)}
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Target URL
-        </label>
-        <input
-          type="text"
-          value={draftHref}
-          onChange={(e) => setDraftHref(e.target.value)}
-          placeholder="e.g. #hero-1 or https://..."
-          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-        />
+        {/* Right Column: Icon Search Picker */}
+        <div className="space-y-1.5 flex flex-col justify-start">
+          <IconSearchPicker
+            selectedIcon={draftIcon}
+            onSelectIcon={(iconName) => setDraftIcon(iconName)}
+          />
+        </div>
       </div>
 
       <div className="pt-2 border-t border-border/60 flex items-center gap-2 w-full">
