@@ -2054,17 +2054,22 @@ export function ComponentRenderer({
     const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
     const ctaRadius = "0px";
 
-    // Contrast detection
-    const isDarkBg =
-      ctaBg === primary ||
-      isDarkVariant ||
-      ctaBg === "#020617" ||
-      ctaBg === "#0f172a" ||
-      ctaBg === "#1e1b4b" ||
-      ctaBg === "#000000" ||
-      (typeof ctaBg === "string" && ctaBg.startsWith("#") && ctaBg.length === 7 && ctaBg !== "#ffffff" && ctaBg !== "#f8fafc");
+    // Smart background & text contrast detection
+    const isLightBg =
+      ctaBg === "#ffffff" ||
+      ctaBg === "#f8fafc" ||
+      ctaBg === "#fafafa" ||
+      ctaBg === "#f1f5f9" ||
+      ctaBg === "transparent" ||
+      (typeof ctaBg === "string" && ctaBg.startsWith("#") && (ctaBg.toUpperCase() === "#FFFFFF" || ctaBg.toUpperCase() === "#F8FAFC" || ctaBg.toUpperCase() === "#FAFAFA" || ctaBg.toUpperCase() === "#F1F5F9"));
 
-    const textColor = style.textColor || (isDarkBg ? "#ffffff" : theme.textColor || "#0f172a");
+    const isDarkBg = !isLightBg;
+
+    const textColor = isLightBg
+      ? (style.textColor && style.textColor.toLowerCase() !== "#ffffff" && style.textColor.toLowerCase() !== "#fff" ? style.textColor : (theme.textColor || "#0f172a"))
+      : (style.textColor || "#ffffff");
+
+    const subtextColor = isLightBg ? "#475569" : "rgba(255, 255, 255, 0.85)";
 
     const isSplitLayout = variant === "split-headline-cta" || variant === "minimal-inline-cta";
 
@@ -2160,8 +2165,8 @@ export function ComponentRenderer({
                         onUpdateProps?.({ subheading: newText });
                       }
                     }}
-                    style={{ outline: "none", color: textColor }}
-                    className={`text-base opacity-90 ${
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-base font-medium opacity-90 ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -2208,7 +2213,7 @@ export function ComponentRenderer({
                       onUpdateProps?.({ subheading: newText });
                     }
                   }}
-                  style={{ outline: "none", color: textColor }}
+                  style={{ outline: "none", color: subtextColor }}
                   className={`text-lg md:text-xl opacity-90 max-w-2xl mx-auto ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}

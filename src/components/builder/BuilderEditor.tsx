@@ -954,7 +954,9 @@ export function BuilderEditor({ project }: Props) {
             const rawBg = targetComp?.style?.backgroundColor;
             const isLegacyPresetBg = rawBg === "#ea580c" || rawBg === "#4f46e5" || rawBg === "#4F46E5";
             const existingBg = isLegacyPresetBg ? undefined : rawBg;
-            const existingTextColor = targetComp?.style?.textColor;
+            const rawTextColor = targetComp?.style?.textColor;
+            const isLegacyWhiteText = rawTextColor === "#ffffff" || rawTextColor === "#fff";
+            const existingTextColor = isLegacyWhiteText ? undefined : rawTextColor;
 
             changeProps(editingLayoutTargetId, { variant: variantId, ...(variantPreset?.applyProps || {}) });
 
@@ -963,6 +965,7 @@ export function BuilderEditor({ project }: Props) {
               if (existingBg) updatedStyle.backgroundColor = existingBg;
               else delete updatedStyle.backgroundColor;
               if (existingTextColor) updatedStyle.textColor = existingTextColor;
+              else if (!variantPreset.applyStyle.textColor) delete updatedStyle.textColor;
               changeStyle(editingLayoutTargetId, updatedStyle);
             }
             toast.success(`Updated ${type} layout design`);
