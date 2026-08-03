@@ -1924,9 +1924,9 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none" }}
-                    className={`${isMobile ? "text-2xl" : isTablet ? "text-3xl" : "text-3xl md:text-5xl"} font-extrabold tracking-tight ${
-                      interactive ? "cursor-text transition-all" : ""
-                    }`}
+                    className={`${
+                      isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
+                    } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
                   >
                     {props.heading}
                   </h1>
@@ -2007,9 +2007,9 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none" }}
-                  className={`${isMobile ? "text-2xl" : isTablet ? "text-3xl sm:text-4xl" : "text-3xl md:text-6xl"} font-extrabold tracking-tight ${
-                    interactive ? "cursor-text transition-all" : ""
-                  }`}
+                  className={`${
+                    isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
+                  } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
                 >
                   {props.heading}
                 </h1>
@@ -2025,7 +2025,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none" }}
-                  className={`text-xl text-muted-foreground max-w-2xl mx-auto ${
+                  className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} text-muted-foreground ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                 >
@@ -2173,7 +2173,7 @@ export function ComponentRenderer({
       >
         <Center maxWidth={effectiveMaxWidth}>
           {isSplitLayout ? (
-            <div className={`flex justify-between gap-8 text-left ${isMobile ? "flex-col items-start text-left" : "flex-col md:flex-row items-center"}`}>
+            <div className={`flex justify-between gap-8 text-left ${isMobileOrTablet ? "flex-col items-start text-left" : "flex-col md:flex-row items-center"}`}>
               <div className="space-y-3 max-w-2xl">
                 {props.heading && (
                   <h2
@@ -2186,9 +2186,9 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`${isMobile ? "text-xl sm:text-2xl" : "text-3xl md:text-4xl"} font-extrabold tracking-tight ${
-                      interactive ? "cursor-text transition-all" : ""
-                    }`}
+                    className={`${
+                      isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
+                    } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
                   >
                     {props.heading}
                   </h2>
@@ -2234,9 +2234,9 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: textColor }}
-                  className={`${isMobile ? "text-2xl sm:text-3xl" : "text-3xl md:text-5xl"} font-extrabold tracking-tight ${
-                    interactive ? "cursor-text transition-all" : ""
-                  }`}
+                  className={`${
+                    isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
+                  } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
                 >
                   {props.heading}
                 </h2>
