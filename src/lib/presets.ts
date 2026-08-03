@@ -182,7 +182,6 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Book Demo", variant: "solid" }],
       },
       applyStyle: {
-        border: "1px solid var(--color-border)",
         paddingY: "16px",
         paddingX: "32px",
         marginY: "0px",
