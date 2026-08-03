@@ -2479,8 +2479,8 @@ export function ComponentRenderer({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div className="col-span-2 space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-left">
+                <div className="col-span-2 space-y-3 text-left">
                   <h3
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2507,7 +2507,7 @@ export function ComponentRenderer({
                   </p>
                 </div>
                 {columnsList.map((col: any, cIdx: number) => (
-                  <div key={cIdx} className="space-y-3 text-xs">
+                  <div key={cIdx} className="space-y-3 text-xs text-left">
                     <h5
                       contentEditable={interactive}
                       suppressContentEditableWarning
@@ -2608,8 +2608,8 @@ export function ComponentRenderer({
           ) : (
             /* Multi-Column Links Default */
             <div className="space-y-12">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-                <div className="md:col-span-2 space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-8 text-left">
+                <div className="md:col-span-2 space-y-3 text-left">
                   <h3
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2636,7 +2636,7 @@ export function ComponentRenderer({
                   </p>
                 </div>
                 {columnsList.map((col: any, cIdx: number) => (
-                  <div key={cIdx} className="space-y-3 text-sm">
+                  <div key={cIdx} className="space-y-3 text-sm text-left">
                     <h5
                       contentEditable={interactive}
                       suppressContentEditableWarning
