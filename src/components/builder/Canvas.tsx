@@ -392,7 +392,7 @@ export function Canvas({
                       setCanvasDragOverIndex(null);
                     }}
                     className={`relative ${editing ? "cursor-pointer" : ""} ${
-                      c.type === "navbar" ? "z-50" : selected ? "z-50" : "z-10"
+                      c.type === "navbar" ? "z-[999]" : selected ? "z-[500]" : "z-10"
                     } ${
                       isCanvasDragging ? "opacity-25 border-2 border-dashed border-primary scale-[0.99] transition-all" : ""
                     }`}
