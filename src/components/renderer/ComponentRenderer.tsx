@@ -476,12 +476,12 @@ function LogoEditItem({
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-md my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -742,12 +742,12 @@ function LinkEditItem({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-sm my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -868,12 +868,12 @@ function ButtonEditItem({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-sm max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-sm my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -1025,12 +1025,12 @@ function ImageEditItem({
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-md my-auto max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -1145,12 +1145,12 @@ function SpacerEditItem({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xs p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+        className="w-full max-w-xs my-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
       >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
