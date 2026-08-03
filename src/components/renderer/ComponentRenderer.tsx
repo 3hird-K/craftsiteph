@@ -1637,7 +1637,7 @@ export function ComponentRenderer({
                 }`;
 
             return (
-              <div key={i} className={isMobileNav ? "w-full text-center relative" : "group/btn relative inline-flex items-center"}>
+              <div key={i} className={isMobileNav ? "w-full text-center relative" : `group/btn relative inline-flex items-center ${isEditingThis ? "z-[999999]" : ""}`}>
                 {!interactive ? (
                   <span
                     className={btnClass}
@@ -1736,7 +1736,7 @@ export function ComponentRenderer({
           backgroundColor: headerBg,
           color: headerTextColor,
         }}
-        className={`transition-all duration-300 ${isMobileMenuOpen ? "overflow-hidden" : ""} ${
+        className={`relative z-[9999] transition-all duration-300 ${isMobileMenuOpen ? "overflow-hidden" : ""} ${
           variant === "floating-glass"
             ? "backdrop-blur-md border border-white/15 dark:border-white/10 shadow-2xl"
             : ""
