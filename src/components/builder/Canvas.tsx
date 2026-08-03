@@ -409,7 +409,7 @@ export function Canvas({
                     }}
                   >
                     {selected ? (
-                      <div className="absolute left-2 top-2 z-40 flex flex-wrap items-center gap-1.5 p-1 bg-background/95 backdrop-blur-md rounded-xl border border-border shadow-lg max-w-[calc(100%-16px)]">
+                      <div className="absolute left-2 top-2 z-40 flex flex-wrap items-center gap-1.5 p-1 bg-background/95 backdrop-blur-md rounded-full border border-border shadow-lg max-w-[calc(100%-16px)]">
                         <div
                           draggable
                           onDragStart={(e) => {
@@ -417,13 +417,13 @@ export function Canvas({
                             e.dataTransfer.setData("text/plain", index.toString());
                             setCanvasDragIndex(index);
                           }}
-                          className="rounded-lg bg-muted px-1.5 py-1 text-xs shadow-xs hover:bg-muted/80 text-foreground border border-border transition-all cursor-grab active:cursor-grabbing flex items-center justify-center shrink-0"
+                          className="rounded-full bg-muted px-1.5 py-1 text-xs shadow-xs hover:bg-muted/80 text-foreground border border-border transition-all cursor-grab active:cursor-grabbing flex items-center justify-center shrink-0"
                           title="Drag up or down to reorder section"
                         >
                           <GripVertical className="h-3 w-3 text-muted-foreground" />
                         </div>
                         <span
-                          className="rounded-lg px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-xs shrink-0"
+                          className="rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-xs shrink-0"
                           style={{ backgroundColor: theme.primaryColor || "#ea580c" }}
                         >
                           {label}
@@ -435,7 +435,7 @@ export function Canvas({
                             e.stopPropagation();
                             onOpenLayoutModal(c.id, c.type);
                           }}
-                          className="rounded-lg bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                          className="rounded-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
                           title="Change Layout Design Template"
                         >
                           <LayoutGrid className="h-3 w-3" /> Layouts
@@ -450,7 +450,7 @@ export function Canvas({
                             const nextPos = currentPos === "left" ? "right" : "left";
                             onUpdateProps?.(c.id, { imagePosition: nextPos, reverseLayout: nextPos === "left" });
                           }}
-                          className="rounded-lg bg-muted/90 hover:bg-primary hover:text-white px-2 py-1 text-xs font-bold text-foreground border border-border shadow-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                          className="rounded-full bg-muted/90 hover:bg-primary hover:text-white px-2 py-1 text-xs font-bold text-foreground border border-border shadow-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
                           title="Switch / Flip Left & Right Grid Items"
                         >
                           <ArrowLeftRight className="h-3 w-3" />
@@ -472,7 +472,7 @@ export function Canvas({
                                onUpdateProps?.(c.id, { subheading: "New subheading text..." });
                             }
                           }}
-                          className="rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                          className="rounded-full bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
                           title="Add text block"
                         >
                           <Type className="h-3 w-3" /> Text
@@ -494,7 +494,7 @@ export function Canvas({
                               buttonText: undefined,
                             });
                           }}
-                          className="rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                          className="rounded-full bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
                           title="Add a new button"
                         >
                           <Plus className="h-3 w-3" /> Button
@@ -502,7 +502,7 @@ export function Canvas({
                       )}
                       {c.type !== "navbar" && (
                         <div
-                          className="flex items-center gap-1 bg-muted/80 hover:bg-muted focus-within:bg-background border border-border/80 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary rounded-lg px-2 py-0.5 transition-all text-xs shrink-0 shadow-xs"
+                          className="flex items-center gap-1 bg-muted/80 hover:bg-muted focus-within:bg-background border border-border/80 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary rounded-full px-2 py-0.5 transition-all text-xs shrink-0 shadow-xs"
                           title="Edit Section Anchor ID (#id)"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -523,7 +523,7 @@ export function Canvas({
                       )}
                       <button
                         type="button"
-                        className="rounded-lg bg-muted px-2 py-1 text-xs shadow-xs hover:bg-muted/80 text-foreground border border-border transition-all cursor-pointer flex items-center justify-center"
+                        className="rounded-full bg-muted px-2 py-1 text-xs shadow-xs hover:bg-muted/80 text-foreground border border-border transition-all cursor-pointer flex items-center justify-center"
                         title="Move up"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -535,7 +535,7 @@ export function Canvas({
                       </button>
                       <button
                         type="button"
-                        className="rounded-lg bg-muted px-2 py-1 text-xs shadow-xs hover:bg-muted/80 text-foreground border border-border transition-all cursor-pointer flex items-center justify-center"
+                        className="rounded-full bg-muted px-2 py-1 text-xs shadow-xs hover:bg-muted/80 text-foreground border border-border transition-all cursor-pointer flex items-center justify-center"
                         title="Move down"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -547,7 +547,7 @@ export function Canvas({
                       </button>
                       <button
                         type="button"
-                        className="rounded-lg bg-rose-500 hover:bg-rose-600 px-2.5 py-1 text-xs font-bold text-white shadow-xs border border-rose-600 transition-all cursor-pointer flex items-center gap-1"
+                        className="rounded-full bg-rose-500 hover:bg-rose-600 px-2.5 py-1 text-xs font-bold text-white shadow-xs border border-rose-600 transition-all cursor-pointer flex items-center gap-1"
                         title="Delete Layer"
                         onClick={(e) => {
                           e.stopPropagation();
