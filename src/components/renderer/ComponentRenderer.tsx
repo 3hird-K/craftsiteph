@@ -1689,6 +1689,7 @@ export function ComponentRenderer({
                   <ButtonEditItem
                     button={btn}
                     sectionOptions={sectionOptions}
+                    alignRight={true}
                     onSave={(label, newHref, variant, icon) => {
                       const next = [...buttonsList];
                       next[i] = { ...next[i], label, href: newHref, variant, icon };
