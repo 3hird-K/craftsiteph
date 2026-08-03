@@ -2526,7 +2526,7 @@ export function ComponentRenderer({
                     </h5>
                     <ul className="space-y-2">
                       {col.links.map((lnk: string, lIdx: number) => (
-                        <li key={lIdx} className="group/link relative inline-flex items-center">
+                        <li key={lIdx} className="block">
                           <span
                             contentEditable={interactive}
                             suppressContentEditableWarning
@@ -2541,7 +2541,7 @@ export function ComponentRenderer({
                               }
                             }}
                             style={{ outline: "none", color: subtextColor }}
-                            className={`hover:opacity-100 transition-opacity ${interactive ? "cursor-text" : ""}`}
+                            className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
                           >
                             {lnk}
                           </span>
@@ -2655,7 +2655,7 @@ export function ComponentRenderer({
                     </h5>
                     <ul className="space-y-2.5">
                       {col.links.map((lnk: string, lIdx: number) => (
-                        <li key={lIdx}>
+                        <li key={lIdx} className="block">
                           <span
                             contentEditable={interactive}
                             suppressContentEditableWarning
@@ -2670,7 +2670,7 @@ export function ComponentRenderer({
                               }
                             }}
                             style={{ outline: "none", color: subtextColor }}
-                            className={`hover:opacity-100 transition-opacity ${interactive ? "cursor-text" : ""}`}
+                            className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
                           >
                             {lnk}
                           </span>
