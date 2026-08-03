@@ -1024,18 +1024,24 @@ function ImageEditItem({
   currentUrl,
   currentAlt,
   currentBorderRadius,
+  currentObjectFit,
+  currentAspectRatio,
   onSave,
   onClose,
 }: {
   currentUrl?: string;
   currentAlt?: string;
   currentBorderRadius?: string;
-  onSave: (url: string, alt?: string, imageBorderRadius?: string) => void;
+  currentObjectFit?: string;
+  currentAspectRatio?: string;
+  onSave: (url: string, alt?: string, imageBorderRadius?: string, objectFit?: string, aspectRatio?: string) => void;
   onClose: () => void;
 }) {
   const [draftUrl, setDraftUrl] = useState(currentUrl || "");
   const [draftAlt, setDraftAlt] = useState(currentAlt || "");
   const [draftBorderRadius, setDraftBorderRadius] = useState(currentBorderRadius || "16px");
+  const [draftObjectFit, setDraftObjectFit] = useState(currentObjectFit || "cover");
+  const [draftAspectRatio, setDraftAspectRatio] = useState(currentAspectRatio || "auto");
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1068,6 +1074,20 @@ function ImageEditItem({
     { label: "Large Round (24px)", value: "24px" },
     { label: "Extra Large (32px)", value: "32px" },
     { label: "Full Round (Circle / Oval)", value: "9999px" },
+  ];
+
+  const objectFitOptions = [
+    { label: "Cover (Fill Shape)", value: "cover" },
+    { label: "Contain (Show Whole Image)", value: "contain" },
+    { label: "Fill (Stretch to Shape)", value: "fill" },
+  ];
+
+  const aspectRatioOptions = [
+    { label: "Auto (Original)", value: "auto" },
+    { label: "Square (1:1)", value: "1/1" },
+    { label: "Landscape (16:9)", value: "16/9" },
+    { label: "Standard (4:3)", value: "4/3" },
+    { label: "Portrait (4:5)", value: "4/5" },
   ];
 
   return (
@@ -1116,6 +1136,31 @@ function ImageEditItem({
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Image Object Fit
+          </label>
+          <CustomSelectDropdown
+            value={draftObjectFit}
+            onChange={(val) => setDraftObjectFit(val)}
+            options={objectFitOptions}
+            placeholder="Select Object Fit"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Image Aspect Ratio
+          </label>
+          <CustomSelectDropdown
+            value={draftAspectRatio}
+            onChange={(val) => setDraftAspectRatio(val)}
+            options={aspectRatioOptions}
+            placeholder="Select Aspect Ratio"
+          />
+        </div>
+      </div>
+
       <div className="space-y-1.5">
         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           Sample Image Presets
@@ -1152,7 +1197,7 @@ function ImageEditItem({
         </button>
         <button
           type="button"
-          onClick={() => onSave(draftUrl, draftAlt, draftBorderRadius)}
+          onClick={() => onSave(draftUrl, draftAlt, draftBorderRadius, draftObjectFit, draftAspectRatio)}
           className="flex-1 py-2 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
         >
           <Check className="h-3.5 w-3.5" /> Save Image
@@ -2086,7 +2131,10 @@ export function ComponentRenderer({
                       <img
                         src={props.imageUrl}
                         alt={props.imageAlt || "Hero"}
-                        className="w-full h-auto object-cover max-h-[450px]"
+                        className={`w-full ${props.imageAspectRatio && props.imageAspectRatio !== "auto" ? "h-full" : "h-auto max-h-[450px]"} ${
+                          props.imageObjectFit === "contain" ? "object-contain" : props.imageObjectFit === "fill" ? "object-fill" : "object-cover"
+                        }`}
+                        style={{ aspectRatio: props.imageAspectRatio && props.imageAspectRatio !== "auto" ? props.imageAspectRatio : undefined }}
                       />
                     </div>
                   ) : (
@@ -2119,8 +2167,16 @@ export function ComponentRenderer({
                       currentUrl={props.imageUrl}
                       currentAlt={props.imageAlt}
                       currentBorderRadius={props.imageBorderRadius}
-                      onSave={(url, alt, imageBorderRadius) => {
-                        onUpdateProps?.({ imageUrl: url, imageAlt: alt, imageBorderRadius: imageBorderRadius });
+                      currentObjectFit={props.imageObjectFit}
+                      currentAspectRatio={props.imageAspectRatio}
+                      onSave={(url, alt, imageBorderRadius, objectFit, aspectRatio) => {
+                        onUpdateProps?.({ 
+                          imageUrl: url, 
+                          imageAlt: alt, 
+                          imageBorderRadius: imageBorderRadius,
+                          imageObjectFit: objectFit as any,
+                          imageAspectRatio: aspectRatio as any
+                        });
                         setIsEditingHeroImage(false);
                       }}
                       onClose={() => setIsEditingHeroImage(false)}

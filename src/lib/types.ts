@@ -37,6 +37,8 @@ export type ComponentProps = {
   imageUrl?: string;
   imageAlt?: string;
   imageBorderRadius?: string;
+  imageObjectFit?: "cover" | "contain" | "fill";
+  imageAspectRatio?: "auto" | "1/1" | "16/9" | "4/3" | "4/5";
   imagePosition?: "left" | "right";
   reverseLayout?: boolean;
   items?: { title: string; description: string; icon?: string }[];
