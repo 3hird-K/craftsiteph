@@ -2057,15 +2057,9 @@ export function ComponentRenderer({
       style.backgroundColor === "rgb(234, 88, 12)";
 
     const defaultBg =
-      variant === "dark-card-badge"
-        ? "#020617"
-        : variant === "boxed-glass-card"
-        ? "#0f172a"
-        : variant === "minimal-inline-cta"
-        ? "#f8fafc"
-        : (variant === "gradient-glow-cta" || variant === "full-width-primary")
-        ? primary
-        : "#f0f9ff";
+      variant === "minimal-inline-cta"
+        ? (theme.secondaryColor || "#f8fafc")
+        : primary;
 
     const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
     const ctaRadius = "0px";
