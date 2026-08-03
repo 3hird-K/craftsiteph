@@ -33,45 +33,23 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
   if (device === "mobile") {
     return (
       <div
-        className="relative mx-auto border-[12px] border-[#1c1c1e] rounded-[52px] bg-[#1c1c1e] shadow-2xl my-6 flex-shrink-0 ring-1 ring-white/10 transition-all duration-300 select-none"
-        style={{ width: "420px", height: "860px" }}
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col shadow-2xl rounded-2xl border border-border/80 bg-background overflow-hidden ring-1 ring-black/5"
+        style={{ width: "440px", height: "860px" }}
       >
-        {/* Top Status Bar & Dynamic Island */}
-        <div className="absolute top-2 left-0 right-0 px-7 flex items-center justify-between z-30 pointer-events-none text-white text-[11px] font-semibold tracking-tight">
-          <span>10:03 AM</span>
-          
-          {/* Dynamic Island Notch */}
-          <div className="w-28 h-7 bg-black rounded-full flex items-center justify-between px-3 shadow-inner">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#0d0d18] border border-indigo-900/60" />
-            <div className="w-2 h-2 rounded-full bg-emerald-500/80 animate-pulse" />
+        {/* Browser Top Bar */}
+        <div className="bg-muted/80 backdrop-blur-md px-4 py-2 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
           </div>
-
-          <div className="flex items-center gap-1.5 opacity-90">
-            <span className="text-[9px] font-bold">5G</span>
-            <div className="w-3.5 h-2.5 border border-white rounded-[2px] p-[1px] flex items-center">
-              <div className="h-full w-full bg-white rounded-[1px]" />
-            </div>
-          </div>
+          <span className="font-mono text-[11px] font-bold text-foreground">Mobile Viewport (440px)</span>
+          <span className="text-[10px] bg-background/80 px-2 py-0.5 rounded-full border border-border font-mono">440 × 860</span>
         </div>
 
-        {/* Physical buttons (visual volume & power) */}
-        <div className="absolute -left-[15px] top-[110px] w-[3px] h-7 bg-[#2c2c2e] rounded-l-md" />
-        <div className="absolute -left-[15px] top-[155px] w-[3px] h-12 bg-[#2c2c2e] rounded-l-md" />
-        <div className="absolute -left-[15px] top-[215px] w-[3px] h-12 bg-[#2c2c2e] rounded-l-md" />
-        <div className="absolute -right-[15px] top-[170px] w-[3px] h-16 bg-[#2c2c2e] rounded-r-md" />
-
-        {/* Main Canvas Scroll Area */}
-        <div className="w-full h-full pt-10 pb-12 overflow-y-auto overflow-x-hidden rounded-[40px] bg-background relative z-10 border border-black/10">
+        {/* Scrollable Content Viewport */}
+        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
           {children}
-        </div>
-
-        {/* Floating Bottom Browser Address Bar & Home Indicator */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1.5 pointer-events-none w-full px-6">
-          <div className="w-full max-w-[240px] px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-medium text-white/80 flex items-center justify-center gap-1.5 shadow-lg">
-            <span className="text-[9px] text-white/50">🔒</span>
-            <span>localhost</span>
-          </div>
-          <div className="w-32 h-1 bg-white/40 rounded-full" />
         </div>
       </div>
     );
@@ -80,22 +58,22 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
   if (device === "tablet") {
     return (
       <div
-        className="relative mx-auto border-[16px] border-[#202020] rounded-[2.5rem] bg-[#202020] shadow-2xl my-8 flex-shrink-0 ring-1 ring-border/20 transition-all duration-300"
-        style={{ width: "768px", height: "1024px" }}
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col shadow-2xl rounded-2xl border border-border/80 bg-background overflow-hidden ring-1 ring-black/5"
+        style={{ width: "768px", height: "960px" }}
       >
-        {/* Camera */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-4 w-full flex items-center justify-center z-30 -mt-[10px]">
-          <div className="w-2 h-2 rounded-full bg-[#111] ring-1 ring-black/40 relative">
-             <div className="absolute inset-0.5 rounded-full bg-indigo-900/40" />
+        {/* Browser Top Bar */}
+        <div className="bg-muted/80 backdrop-blur-md px-4 py-2 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
           </div>
+          <span className="font-mono text-[11px] font-bold text-foreground">Tablet Viewport (768px)</span>
+          <span className="text-[10px] bg-background/80 px-2 py-0.5 rounded-full border border-border font-mono">768 × 960</span>
         </div>
-        
-        {/* Physical buttons (visual only) */}
-        <div className="absolute -top-[19px] right-[100px] w-12 h-[3px] bg-[#333] rounded-t-md" />
-        <div className="absolute -right-[19px] top-[100px] w-[3px] h-12 bg-[#333] rounded-r-md" />
-        <div className="absolute -right-[19px] top-[160px] w-[3px] h-12 bg-[#333] rounded-r-md" />
 
-        <div className="w-full h-full overflow-y-auto overflow-x-hidden rounded-3xl bg-background relative z-10 border border-black/10">
+        {/* Scrollable Content Viewport */}
+        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
           {children}
         </div>
       </div>
@@ -104,21 +82,9 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
 
   // Desktop
   return (
-    <div
-      className="relative mx-auto border-t-[6px] border-l-[6px] border-r-[6px] border-[#202020] rounded-t-2xl bg-[#202020] shadow-2xl flex-shrink-0 ring-1 ring-border/20 transition-all duration-300 w-full h-full flex flex-col"
-    >
-      {/* Camera */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1.5 w-full flex items-center justify-center z-30 -mt-1.5">
-        <div className="w-1 h-1 rounded-full bg-[#111] ring-1 ring-black/40" />
-      </div>
-      
-      <div className="w-full flex-1 overflow-y-auto overflow-x-hidden rounded-t-lg bg-background relative z-10 border border-black/10">
+    <div className="relative mx-auto w-full h-full flex flex-col transition-all duration-300">
+      <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
         {children}
-      </div>
-      
-      {/* Bottom lip / Base */}
-      <div className="relative h-4 bg-gradient-to-b from-[#2a2a2a] to-[#151515] rounded-b-xl shadow-xl z-20 flex justify-center border-t border-[#444] shrink-0">
-        <div className="w-32 h-full bg-[#1a1a1a] rounded-b-xl" />
       </div>
     </div>
   );
@@ -155,8 +121,8 @@ export function Canvas({
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
       
-      const frameWidth = device === "desktop" ? 1200 : device === "tablet" ? 768 : 420;
-      const frameHeight = device === "desktop" ? 720 : device === "tablet" ? 1024 : 860;
+      const frameWidth = device === "desktop" ? 1200 : device === "tablet" ? 768 : 440;
+      const frameHeight = device === "desktop" ? 720 : device === "tablet" ? 960 : 860;
       
       const paddingX = 80;
       const paddingY = 80;
