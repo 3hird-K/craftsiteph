@@ -2072,13 +2072,31 @@ export function ComponentRenderer({
         ctaBg.toUpperCase() === "#F1F5F9"
       ));
 
-    const isDarkBg = !isLightBg;
+    const isDarkBg =
+      !isLightBg ||
+      ctaBg === primary ||
+      isDarkVariant ||
+      ctaBg === "#020617" ||
+      ctaBg === "#0f172a" ||
+      ctaBg === "#1e1b4b" ||
+      ctaBg === "#000000";
 
-    const textColor = isLightBg
-      ? (style.textColor && style.textColor.toLowerCase() !== "#ffffff" && style.textColor.toLowerCase() !== "#fff" ? style.textColor : (theme.textColor || "#0f172a"))
-      : (style.textColor || "#ffffff");
+    const isDarkTextColor =
+      style.textColor === "#0f172a" ||
+      style.textColor === "#0F172A" ||
+      style.textColor === "#000000" ||
+      style.textColor === "black";
 
-    const subtextColor = isLightBg ? "#475569" : "rgba(255, 255, 255, 0.85)";
+    const isWhiteTextColor =
+      style.textColor === "#ffffff" ||
+      style.textColor === "#FFFFFF" ||
+      style.textColor === "#fff";
+
+    const textColor = isDarkBg
+      ? (isDarkTextColor || !style.textColor ? "#ffffff" : style.textColor)
+      : (isWhiteTextColor || !style.textColor ? (theme.textColor || "#0f172a") : style.textColor);
+
+    const subtextColor = isDarkBg ? "rgba(255, 255, 255, 0.85)" : "#475569";
 
     const isSplitLayout = variant === "split-headline-cta" || variant === "minimal-inline-cta";
 

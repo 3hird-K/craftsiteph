@@ -386,6 +386,8 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
+        backgroundColor: "#f0f9ff",
+        textColor: "#0f172a",
         paddingY: "72px",
         paddingX: "32px",
         textAlign: "center",
@@ -493,7 +495,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       },
       applyStyle: {
         backgroundColor: "#020617",
-        textColor: "#f8fafc",
+        textColor: "#ffffff",
         paddingY: "64px",
         paddingX: "40px",
         borderRadius: "0px",
