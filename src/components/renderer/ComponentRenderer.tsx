@@ -2425,14 +2425,14 @@ export function ComponentRenderer({
           ) : variant === "newsletter-split-footer" ? (
             <div className="space-y-12">
               <div
-                className="p-8 border flex flex-col md:flex-row items-center justify-between gap-6"
+                className="p-6 md:p-8 border flex flex-col md:flex-row items-center justify-between gap-6"
                 style={{
                   borderColor,
                   backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.05)",
                   borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "16px"),
                 }}
               >
-                <div className="space-y-1 text-center md:text-left">
+                <div className="space-y-1 text-center md:text-left w-full md:w-auto">
                   <h4
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2443,7 +2443,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-xl font-bold ${interactive ? "cursor-text transition-all" : ""}`}
+                    className={`text-lg md:text-xl font-bold ${interactive ? "cursor-text transition-all" : ""}`}
                   >
                     {props.heading || "Stay updated with our latest news"}
                   </h4>
@@ -2460,14 +2460,14 @@ export function ComponentRenderer({
                     {tagline}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 w-full md:w-auto max-w-md">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto max-w-md shrink-0">
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="px-4 py-2.5 border bg-transparent text-sm outline-none w-full md:w-64 placeholder:opacity-50"
+                    className="px-4 py-2.5 border bg-transparent text-sm outline-none w-full sm:w-64 placeholder:opacity-50"
                     style={{ borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                   />
-                  <div className="relative group/btn inline-flex items-center">
+                  <div className="relative group/btn inline-flex items-center w-full sm:w-auto">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -2475,7 +2475,7 @@ export function ComponentRenderer({
                         e.stopPropagation();
                         setActiveFooterPopover(activeFooterPopover === "cta-btn" ? null : "cta-btn");
                       }}
-                      className="px-5 py-2.5 font-bold text-xs text-white shadow-md hover:brightness-110 shrink-0 cursor-pointer"
+                      className="px-5 py-2.5 font-bold text-xs text-white shadow-md hover:brightness-110 w-full sm:w-auto justify-center shrink-0 cursor-pointer"
                       style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
                     >
                       {props.buttonText || "Subscribe"}
@@ -2495,8 +2495,8 @@ export function ComponentRenderer({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-left">
-                <div className="col-span-2 space-y-3 text-left">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-left">
+                <div className="sm:col-span-2 space-y-3 text-left">
                   <h3
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2505,7 +2505,7 @@ export function ComponentRenderer({
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-xl font-black ${interactive ? "cursor-text transition-all" : ""}`}
+                    className={`text-xl font-black break-words ${interactive ? "cursor-text transition-all" : ""}`}
                   >
                     {logoText}
                   </h3>
@@ -2536,7 +2536,7 @@ export function ComponentRenderer({
                         }
                       }}
                       style={{ outline: "none", color: textColor }}
-                      className={`font-bold uppercase tracking-wider text-[11px] ${interactive ? "cursor-text transition-all" : ""}`}
+                      className={`font-bold uppercase tracking-wider text-[11px] whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
                     >
                       {col.title}
                     </h5>

@@ -33,29 +33,46 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
   if (device === "mobile") {
     return (
       <div
-        className="relative mx-auto border-[14px] border-[#202020] rounded-[3rem] bg-[#202020] shadow-2xl my-6 flex-shrink-0 ring-1 ring-border/20 transition-all duration-300"
-        style={{ width: "390px", height: "844px" }}
+        className="relative mx-auto border-[12px] border-[#1c1c1e] rounded-[52px] bg-[#1c1c1e] shadow-2xl my-6 flex-shrink-0 ring-1 ring-white/10 transition-all duration-300 select-none"
+        style={{ width: "420px", height: "860px" }}
       >
-        {/* Notch */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#202020] rounded-b-3xl z-30 flex items-center justify-center gap-2">
-          <div className="w-12 h-1.5 bg-black/40 rounded-full" />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#111] ring-1 ring-black/40 relative">
-             <div className="absolute inset-1 rounded-full bg-indigo-900/40" />
+        {/* Top Status Bar & Dynamic Island */}
+        <div className="absolute top-2 left-0 right-0 px-7 flex items-center justify-between z-30 pointer-events-none text-white text-[11px] font-semibold tracking-tight">
+          <span>10:03 AM</span>
+          
+          {/* Dynamic Island Notch */}
+          <div className="w-28 h-7 bg-black rounded-full flex items-center justify-between px-3 shadow-inner">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#0d0d18] border border-indigo-900/60" />
+            <div className="w-2 h-2 rounded-full bg-emerald-500/80 animate-pulse" />
+          </div>
+
+          <div className="flex items-center gap-1.5 opacity-90">
+            <span className="text-[9px] font-bold">5G</span>
+            <div className="w-3.5 h-2.5 border border-white rounded-[2px] p-[1px] flex items-center">
+              <div className="h-full w-full bg-white rounded-[1px]" />
+            </div>
           </div>
         </div>
-        
-        {/* Physical buttons (visual only) */}
-        <div className="absolute -left-[17px] top-[100px] w-[3px] h-8 bg-[#333] rounded-l-md" />
-        <div className="absolute -left-[17px] top-[150px] w-[3px] h-14 bg-[#333] rounded-l-md" />
-        <div className="absolute -left-[17px] top-[220px] w-[3px] h-14 bg-[#333] rounded-l-md" />
-        <div className="absolute -right-[17px] top-[170px] w-[3px] h-20 bg-[#333] rounded-r-md" />
 
-        <div className="w-full h-full overflow-y-auto overflow-x-hidden rounded-[2rem] bg-background relative z-10 border border-black/10">
+        {/* Physical buttons (visual volume & power) */}
+        <div className="absolute -left-[15px] top-[110px] w-[3px] h-7 bg-[#2c2c2e] rounded-l-md" />
+        <div className="absolute -left-[15px] top-[155px] w-[3px] h-12 bg-[#2c2c2e] rounded-l-md" />
+        <div className="absolute -left-[15px] top-[215px] w-[3px] h-12 bg-[#2c2c2e] rounded-l-md" />
+        <div className="absolute -right-[15px] top-[170px] w-[3px] h-16 bg-[#2c2c2e] rounded-r-md" />
+
+        {/* Main Canvas Scroll Area */}
+        <div className="w-full h-full pt-10 pb-12 overflow-y-auto overflow-x-hidden rounded-[40px] bg-background relative z-10 border border-black/10">
           {children}
         </div>
-        
-        {/* Home indicator */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full z-30" />
+
+        {/* Floating Bottom Browser Address Bar & Home Indicator */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1.5 pointer-events-none w-full px-6">
+          <div className="w-full max-w-[240px] px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-medium text-white/80 flex items-center justify-center gap-1.5 shadow-lg">
+            <span className="text-[9px] text-white/50">🔒</span>
+            <span>localhost</span>
+          </div>
+          <div className="w-32 h-1 bg-white/40 rounded-full" />
+        </div>
       </div>
     );
   }
