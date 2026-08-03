@@ -2132,9 +2132,18 @@ export function ComponentRenderer({
       },
     ];
 
+    const [activeCtaPopover, setActiveCtaPopover] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (!selected) {
+        setActiveCtaPopover(null);
+      }
+    }, [selected]);
+
     const renderCtaButtons = () => (
       <div className={`flex flex-wrap items-center gap-3 ${isSplitLayout ? "justify-start" : "justify-center"}`}>
         {buttonsList.map((btn, i) => {
+          const isEditingThis = interactive && activeCtaPopover === `button-${i}`;
           const isSolid = btn.variant === "solid" || !btn.variant;
           const isOutline = btn.variant === "outline";
           const isGhost = btn.variant === "ghost";
@@ -2151,25 +2160,102 @@ export function ComponentRenderer({
             ? (isDarkBg ? "rgba(255, 255, 255, 0.4)" : primary)
             : "transparent";
 
+          const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg transition-all cursor-pointer select-none active:scale-95 ${
+            isOutline ? "border-2 hover:bg-white/10" : isGhost ? "hover:bg-white/10 shadow-none" : "hover:brightness-110 shadow-md"
+          }`;
+
           return (
-            <a
-              key={i}
-              href={btn.href || "#"}
-              className={`inline-flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg transition-all cursor-pointer select-none active:scale-95 ${
-                isOutline ? "border-2 hover:bg-white/10" : isGhost ? "hover:bg-white/10 shadow-none" : "hover:brightness-110 shadow-md"
-              }`}
-              style={{
-                borderRadius: btnRadius,
-                backgroundColor: btnBg,
-                color: btnText,
-                borderColor: btnBorder,
-              }}
-            >
-              <RenderIcon icon={btn.icon} className="h-4 w-4 shrink-0" />
-              <span>{btn.label || "Button"}</span>
-            </a>
+            <div key={i} className={`group/btn relative inline-flex items-center ${isEditingThis ? "z-[999999]" : ""}`}>
+              {!interactive ? (
+                <a
+                  href={btn.href || "#"}
+                  className={btnClass}
+                  style={{
+                    borderRadius: btnRadius,
+                    backgroundColor: btnBg,
+                    color: btnText,
+                    borderColor: btnBorder,
+                  }}
+                >
+                  <RenderIcon icon={btn.icon} className="h-4 w-4 shrink-0" />
+                  <span>{btn.label || "Button"}</span>
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCtaPopover(isEditingThis ? null : `button-${i}`);
+                  }}
+                  className={btnClass}
+                  style={{
+                    borderRadius: btnRadius,
+                    backgroundColor: btnBg,
+                    color: btnText,
+                    borderColor: btnBorder,
+                  }}
+                >
+                  <RenderIcon icon={btn.icon} className="h-4 w-4 shrink-0" />
+                  <span>{btn.label || "Button"}</span>
+                </button>
+              )}
+
+              {interactive && !isEditingThis && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCtaPopover(`button-${i}`);
+                  }}
+                  className="absolute -top-2.5 -right-2.5 hidden group-hover/btn:flex h-5 items-center gap-1 px-1.5 py-0.5 rounded-full bg-background border border-border shadow-md hover:border-primary text-foreground text-[10px] font-mono z-20 transition-all cursor-pointer"
+                  title="Click to Edit Button & Icon"
+                >
+                  <Link2 className="h-3 w-3 text-primary shrink-0" />
+                </button>
+              )}
+
+              {isEditingThis && (
+                <ButtonEditItem
+                  button={btn}
+                  sectionOptions={sectionOptions}
+                  onSave={(label, newHref, variant, icon) => {
+                    const next = [...buttonsList];
+                    next[i] = { ...next[i], label, href: newHref, variant, icon };
+                    onUpdateProps?.({ buttons: next, buttonText: undefined });
+                    setActiveCtaPopover(null);
+                  }}
+                  onRemove={() => {
+                    const next = [...buttonsList];
+                    next.splice(i, 1);
+                    onUpdateProps?.({ buttons: next.length > 0 ? next : undefined, buttonText: undefined });
+                    setActiveCtaPopover(null);
+                  }}
+                  onClose={() => setActiveCtaPopover(null)}
+                />
+              )}
+            </div>
           );
         })}
+
+        {interactive && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex h-9 items-center gap-1.5 px-3 py-1.5 rounded-xl border border-dashed border-foreground/30 bg-muted/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground text-xs font-semibold transition-all cursor-pointer"
+                title="Add CTA Button"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add Button</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => onUpdateProps?.({ buttons: [...buttonsList, { label: "Get Started", variant: "solid" }], buttonText: undefined })}>Solid Button</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => onUpdateProps?.({ buttons: [...buttonsList, { label: "Learn More", variant: "outline" }], buttonText: undefined })}>Outline Button</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => onUpdateProps?.({ buttons: [...buttonsList, { label: "Contact Us", variant: "ghost" }], buttonText: undefined })}>Ghost Button</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     );
 
