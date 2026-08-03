@@ -476,12 +476,13 @@ function LogoEditItem({
   ];
 
   return (
-    <div
-      ref={popoverRef}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      className="absolute top-full left-0 mt-2.5 w-84 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3.5 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal max-h-[85vh] overflow-y-auto"
-    >
+    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
           <Link2 className="h-3.5 w-3.5 text-primary" /> Edit Logo & Typography
@@ -695,6 +696,7 @@ function LogoEditItem({
           <Check className="h-3.5 w-3.5" /> Done
         </button>
       </div>
+      </div>
     </div>
   );
 }
@@ -740,12 +742,13 @@ function LinkEditItem({
   }, [onClose]);
 
   return (
-    <div
-      ref={popoverRef}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      className={`absolute ${positionUp ? "bottom-full mb-2.5" : "top-full mt-2.5"} ${alignRight ? "right-0" : "left-0"} w-76 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-[999999] space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal`}
-    >
+    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-sm max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
           <Link2 className="h-3.5 w-3.5 text-primary" /> Edit Nav Link
@@ -818,6 +821,7 @@ function LinkEditItem({
           <Check className="h-3.5 w-3.5" /> Done
         </button>
       </div>
+      </div>
     </div>
   );
 }
@@ -864,12 +868,13 @@ function ButtonEditItem({
   }, [onClose]);
 
   return (
-    <div
-      ref={popoverRef}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      className={`absolute ${positionUp ? "bottom-full mb-2.5" : "top-full mt-2.5"} ${alignRight ? "right-0" : "left-0"} w-76 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-[999999] space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal`}
-    >
+    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-sm max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
           <Link2 className="h-3.5 w-3.5 text-primary" /> Edit Button Link
@@ -964,6 +969,7 @@ function ButtonEditItem({
           <Check className="h-3.5 w-3.5" /> Done
         </button>
       </div>
+      </div>
     </div>
   );
 }
@@ -1019,12 +1025,13 @@ function ImageEditItem({
   ];
 
   return (
-    <div
-      ref={popoverRef}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      className="absolute top-4 right-4 w-80 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
-    >
+    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md max-h-[85vh] overflow-y-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
           <ImageIcon className="h-3.5 w-3.5 text-primary" /> Edit Image & Shape
@@ -1105,6 +1112,7 @@ function ImageEditItem({
           <Check className="h-3.5 w-3.5" /> Save Image
         </button>
       </div>
+      </div>
     </div>
   );
 }
@@ -1137,12 +1145,13 @@ function SpacerEditItem({
   }, [onClose]);
 
   return (
-    <div
-      ref={popoverRef}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      className="absolute top-full right-0 mt-2.5 w-64 p-3.5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
-    >
+    <div className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0" onClick={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-xs p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-3.5 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
           <Settings className="h-3.5 w-3.5 text-primary" /> Custom Spacer Height
@@ -1184,6 +1193,7 @@ function SpacerEditItem({
         >
           <Check className="h-3.5 w-3.5" /> Apply
         </button>
+      </div>
       </div>
     </div>
   );
