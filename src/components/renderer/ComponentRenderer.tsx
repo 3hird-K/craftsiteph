@@ -2053,6 +2053,7 @@ export function ComponentRenderer({
       style.backgroundColor === "#ea580c" ||
       style.backgroundColor === "#4f46e5" ||
       style.backgroundColor === "#4F46E5" ||
+      style.backgroundColor === "#1e1b4b" ||
       style.backgroundColor === "rgb(234, 88, 12)";
 
     const defaultBg =
