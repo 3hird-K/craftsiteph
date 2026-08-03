@@ -22,7 +22,7 @@ import { PageSetupModal } from "./PageSetupModal";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useProjectRealtime } from "@/hooks/useProjectRealtime";
 import { createClient } from "@/lib/supabase/client";
-import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio, Square } from "lucide-react";
+import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio, Square, ExternalLink, Globe, Copy, EyeOff, MoreVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -614,32 +614,82 @@ export function BuilderEditor({ project }: Props) {
 
 
           {isPublished && slug ? (
-            <>
+            <div className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 p-1 rounded-xl">
+              {/* Live Site Link Button */}
               <Link
                 href={`/p/${slug}`}
                 target="_blank"
-                className="hidden rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 sm:inline"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-background/80 hover:bg-background rounded-lg shadow-xs transition-all cursor-pointer select-none"
               >
-                View live
+                <Globe className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
+                <span className="hidden sm:inline">View Live</span>
+                <ExternalLink className="h-3 w-3 opacity-70" />
               </Link>
+
+              {/* Quick Copy Link Icon Button */}
               <button
                 type="button"
-                disabled={saving}
-                onClick={() => void save({ unpublish: true })}
-                className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted/50 dark:bg-muted/20 disabled:opacity-50"
+                onClick={() => {
+                  const liveUrl = `${window.location.origin}/p/${slug}`;
+                  navigator.clipboard.writeText(liveUrl);
+                  toast.success("Live website link copied to clipboard!");
+                }}
+                title="Copy Live Link"
+                className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-background/80 rounded-lg transition-all cursor-pointer"
               >
-                Unpublish
+                <Copy className="h-3.5 w-3.5" />
               </button>
-            </>
+
+              {/* Published Options Dropdown Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:bg-background/80 rounded-lg transition-all cursor-pointer"
+                    title="Publishing Settings"
+                  >
+                    <MoreVertical className="h-3.5 w-3.5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 rounded-xl p-1">
+                  <DropdownMenuItem
+                    className="cursor-pointer flex items-center gap-2 text-xs font-semibold"
+                    onClick={() => window.open(`/p/${slug}`, "_blank")}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Open Live Site</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer flex items-center gap-2 text-xs font-semibold"
+                    onClick={() => {
+                      const liveUrl = `${window.location.origin}/p/${slug}`;
+                      navigator.clipboard.writeText(liveUrl);
+                      toast.success("Live website link copied to clipboard!");
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>Copy URL Link</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer flex items-center gap-2 text-xs font-semibold text-rose-600 dark:text-rose-400 focus:text-rose-600"
+                    onClick={() => void save({ unpublish: true })}
+                  >
+                    <EyeOff className="h-3.5 w-3.5 text-rose-500" />
+                    <span>Unpublish Site</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <button
               type="button"
               disabled={saving}
               onClick={() => void save({ publish: true })}
-              className="rounded-lg px-4 py-1.5 text-xs font-bold text-white shadow-md transition-all hover:brightness-110 disabled:opacity-50 cursor-pointer"
+              className="rounded-xl px-4 py-1.5 text-xs font-bold text-white shadow-md transition-all hover:brightness-110 disabled:opacity-50 cursor-pointer flex items-center gap-1.5 select-none"
               style={{ backgroundColor: theme.primaryColor || "#ea580c" }}
             >
-              {isPublishing ? "Publishing..." : "Publish"}
+              <Globe className="h-3.5 w-3.5" />
+              <span>{isPublishing ? "Publishing..." : "Publish"}</span>
             </button>
           )}
 
