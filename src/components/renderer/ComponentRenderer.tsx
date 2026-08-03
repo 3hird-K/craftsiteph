@@ -1194,7 +1194,7 @@ export function ComponentRenderer({
   const { type, props, style } = component;
   const css = styleToCss(style);
   const radius = style.borderRadius || theme.borderRadius || "12px";
-  const btnRadius = style.borderRadius || theme.borderRadius || "12px";
+  const btnRadius = theme.borderRadius || "12px";
   const shadow = style.boxShadow || theme.boxShadow || "none";
   const effectiveMaxWidth = theme.containerWidth || style.maxWidth || "1120px";
   const primary = theme.primaryColor;
@@ -2052,7 +2052,7 @@ export function ComponentRenderer({
         : primary;
 
     const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
-    const ctaRadius = style.borderRadius || (variant === "boxed-glass-card" || variant === "gradient-glow-cta" || variant === "dark-card-badge" ? "24px" : "0px");
+    const ctaRadius = "0px";
 
     // Contrast detection
     const isDarkBg =
