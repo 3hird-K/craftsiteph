@@ -2049,19 +2049,28 @@ export function ComponentRenderer({
         ? "#0f172a"
         : variant === "minimal-inline-cta"
         ? "#f8fafc"
-        : primary;
+        : variant === "gradient-glow-cta"
+        ? "#1e1b4b"
+        : "#f0f9ff";
 
     const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
     const ctaRadius = "0px";
 
     // Smart background & text contrast detection
     const isLightBg =
+      ctaBg === "#f0f9ff" ||
       ctaBg === "#ffffff" ||
       ctaBg === "#f8fafc" ||
       ctaBg === "#fafafa" ||
       ctaBg === "#f1f5f9" ||
       ctaBg === "transparent" ||
-      (typeof ctaBg === "string" && ctaBg.startsWith("#") && (ctaBg.toUpperCase() === "#FFFFFF" || ctaBg.toUpperCase() === "#F8FAFC" || ctaBg.toUpperCase() === "#FAFAFA" || ctaBg.toUpperCase() === "#F1F5F9"));
+      (typeof ctaBg === "string" && ctaBg.startsWith("#") && (
+        ctaBg.toUpperCase() === "#F0F9FF" ||
+        ctaBg.toUpperCase() === "#FFFFFF" ||
+        ctaBg.toUpperCase() === "#F8FAFC" ||
+        ctaBg.toUpperCase() === "#FAFAFA" ||
+        ctaBg.toUpperCase() === "#F1F5F9"
+      ));
 
     const isDarkBg = !isLightBg;
 

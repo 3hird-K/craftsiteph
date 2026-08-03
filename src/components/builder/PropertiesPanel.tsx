@@ -339,7 +339,7 @@ export function PropertiesPanel({
                     component.style.backgroundColor === "#4f46e5" ||
                     component.style.backgroundColor === "#4F46E5" ||
                     !component.style.backgroundColor
-                      ? theme.primaryColor
+                      ? "#f0f9ff"
                       : component.style.backgroundColor
                   }
                   onChange={(v) => onChangeStyle(component.id, { backgroundColor: v })}
