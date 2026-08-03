@@ -2080,14 +2080,14 @@ export function ComponentRenderer({
         ctaBg.toUpperCase() === "#F1F5F9"
       ));
 
-    const isDarkBg =
-      !isLightBg ||
+    const isDarkBg = !isLightBg && (
       ctaBg === primary ||
-      isDarkVariant ||
       ctaBg === "#020617" ||
       ctaBg === "#0f172a" ||
       ctaBg === "#1e1b4b" ||
-      ctaBg === "#000000";
+      ctaBg === "#000000" ||
+      (typeof ctaBg === "string" && ctaBg.startsWith("#") && ctaBg !== "#ffffff" && ctaBg !== "#f8fafc" && ctaBg !== "#f0f9ff" && ctaBg !== "#fafafa" && ctaBg !== "#f1f5f9")
+    );
 
     const isDarkTextColor =
       style.textColor === "#0f172a" ||
@@ -2216,7 +2216,9 @@ export function ComponentRenderer({
           ) : (
             <div className="max-w-3xl mx-auto text-center space-y-6">
               {variant === "gradient-glow-cta" && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-white mb-2">
+                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold mb-2 ${
+                  isDarkBg ? "bg-white/10 backdrop-blur-md border-white/20 text-white" : "bg-primary/10 border-primary/20 text-primary"
+                }`}>
                   <span>✦</span> <span>ANNOUNCEMENT</span>
                 </div>
               )}
