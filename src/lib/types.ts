@@ -35,13 +35,16 @@ export type ComponentProps = {
   buttonHref?: string;
   buttons?: { label: string; href?: string; variant?: "solid" | "outline" | "ghost"; icon?: string }[];
   imageUrl?: string;
+  imageUrl2?: string;
+  imageUrl3?: string;
   imageAlt?: string;
   imageBorderRadius?: string;
   imageObjectFit?: "cover" | "contain" | "fill";
   imageAspectRatio?: "auto" | "1/1" | "16/9" | "4/3" | "4/5";
+  imageLayout?: "single" | "split" | "bento" | "background";
   imagePosition?: "left" | "right";
   reverseLayout?: boolean;
-  items?: { title: string; description: string; icon?: string }[];
+  items?: { title: string; description: string; icon?: string; imageUrl?: string }[];
   links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string; icon?: string }[];
   columns?: number | { title: string; links: string[] }[];
   tagline?: string;

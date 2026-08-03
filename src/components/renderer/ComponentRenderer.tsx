@@ -1022,26 +1022,35 @@ function ButtonEditItem({
 
 function ImageEditItem({
   currentUrl,
+  currentUrl2,
+  currentUrl3,
   currentAlt,
   currentBorderRadius,
   currentObjectFit,
   currentAspectRatio,
+  currentImageLayout,
   onSave,
   onClose,
 }: {
   currentUrl?: string;
+  currentUrl2?: string;
+  currentUrl3?: string;
   currentAlt?: string;
   currentBorderRadius?: string;
   currentObjectFit?: string;
   currentAspectRatio?: string;
-  onSave: (url: string, alt?: string, imageBorderRadius?: string, objectFit?: string, aspectRatio?: string) => void;
+  currentImageLayout?: string;
+  onSave: (props: { url: string; url2?: string; url3?: string; imageLayout?: string; alt?: string; imageBorderRadius?: string; objectFit?: string; aspectRatio?: string }) => void;
   onClose: () => void;
 }) {
   const [draftUrl, setDraftUrl] = useState(currentUrl || "");
+  const [draftUrl2, setDraftUrl2] = useState(currentUrl2 || "");
+  const [draftUrl3, setDraftUrl3] = useState(currentUrl3 || "");
   const [draftAlt, setDraftAlt] = useState(currentAlt || "");
   const [draftBorderRadius, setDraftBorderRadius] = useState(currentBorderRadius || "16px");
   const [draftObjectFit, setDraftObjectFit] = useState(currentObjectFit || "cover");
   const [draftAspectRatio, setDraftAspectRatio] = useState(currentAspectRatio || "auto");
+  const [draftImageLayout, setDraftImageLayout] = useState(currentImageLayout || "single");
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1090,6 +1099,12 @@ function ImageEditItem({
     { label: "Portrait (4:5)", value: "4/5" },
   ];
 
+  const imageLayoutOptions = [
+    { label: "Single Image", value: "single" },
+    { label: "Bento Grid (3 Images)", value: "bento" },
+    { label: "Background Image", value: "background" },
+  ];
+
   return (
     <EditModalPortal onClose={onClose}>
       <div
@@ -1113,6 +1128,26 @@ function ImageEditItem({
 
       <div className="space-y-1.5">
         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Image Layout
+        </label>
+        <CustomSelectDropdown
+          value={draftImageLayout}
+          onChange={(val) => {
+            setDraftImageLayout(val);
+            if (val === "bento" && !draftUrl2) {
+              setDraftUrl2("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
+            }
+            if (val === "bento" && !draftUrl3) {
+              setDraftUrl3("https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80");
+            }
+          }}
+          options={imageLayoutOptions}
+          placeholder="Select Layout"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           Image Address (URL)
         </label>
         <input
@@ -1123,6 +1158,36 @@ function ImageEditItem({
           className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
         />
       </div>
+
+      {draftImageLayout === "bento" && (
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Image Address 2 (URL)
+          </label>
+          <input
+            type="text"
+            value={draftUrl2}
+            onChange={(e) => setDraftUrl2(e.target.value)}
+            placeholder="Second Image URL..."
+            className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          />
+        </div>
+      )}
+
+      {draftImageLayout === "bento" && (
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Image Address 3 (URL)
+          </label>
+          <input
+            type="text"
+            value={draftUrl3}
+            onChange={(e) => setDraftUrl3(e.target.value)}
+            placeholder="Third Image URL..."
+            className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          />
+        </div>
+      )}
 
       <div className="space-y-1.5">
         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -1197,7 +1262,16 @@ function ImageEditItem({
         </button>
         <button
           type="button"
-          onClick={() => onSave(draftUrl, draftAlt, draftBorderRadius, draftObjectFit, draftAspectRatio)}
+          onClick={() => onSave({
+            url: draftUrl,
+            url2: draftUrl2,
+            url3: draftUrl3,
+            imageLayout: draftImageLayout,
+            alt: draftAlt,
+            imageBorderRadius: draftBorderRadius,
+            objectFit: draftObjectFit,
+            aspectRatio: draftAspectRatio
+          })}
           className="flex-1 py-2 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
         >
           <Check className="h-3.5 w-3.5" /> Save Image
@@ -1906,7 +1980,8 @@ export function ComponentRenderer({
     const heroSectionRadius = style.borderRadius || "0px";
     const variant = props.variant || "centered-hero";
     const heroBg = style.backgroundColor || "transparent";
-    const isSplit = variant === "split-image" || variant === "bento-hero";
+    const isBgLayout = props.imageLayout === "background" && !!props.imageUrl;
+    const isSplit = (variant === "split-image" || variant === "bento-hero") && !isBgLayout;
     const [activeHeroPopover, setActiveHeroPopover] = useState<string | null>(null);
 
     const ButtonsBlock = () => {
@@ -1915,7 +1990,7 @@ export function ComponentRenderer({
       if (!buttonsList && !interactive) return null;
       if (!buttonsList || buttonsList.length === 0) {
         return interactive ? (
-          <div className={`pt-2 flex flex-wrap items-center ${isSplit || style.textAlign === "left" ? "justify-start" : "justify-center"}`}>
+          <div className={`pt-2 flex flex-wrap items-center ${!isSplit ? "justify-center" : "justify-start"}`}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 px-6 py-3 text-sm font-medium rounded-md border-2 border-dashed border-foreground/30 bg-muted/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all cursor-pointer">
@@ -1932,7 +2007,7 @@ export function ComponentRenderer({
         ) : null;
       }
       return (
-        <div className={`pt-2 flex flex-wrap items-center ${isSplit || style.textAlign === "left" ? "justify-start" : "justify-center"}`} style={{ gap: style.gap || "1rem" }}>
+        <div className={`pt-2 flex flex-wrap items-center ${!isSplit ? "justify-center" : "justify-start"}`} style={{ gap: style.gap || "1rem" }}>
           {buttonsList.map((btn, i) => {
             const href = btn.href || "#";
             const isEditingThis = interactive && activeHeroPopover === `button-${i}`;
@@ -2062,11 +2137,62 @@ export function ComponentRenderer({
         style={{
           borderRadius: heroSectionRadius,
           backgroundColor: heroBg,
+          backgroundImage: isBgLayout ? `url(${props.imageUrl})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           ...css
         }}
-        className="py-16 md:py-24 transition-all"
+        className={`relative py-16 md:py-24 transition-all ${isBgLayout ? "text-white" : ""}`}
       >
-        <Center maxWidth={effectiveMaxWidth}>
+        {isBgLayout && (
+          <div className="absolute inset-0 bg-black/60 z-0" style={{ borderRadius: heroSectionRadius }} />
+        )}
+        
+        {interactive && isBgLayout && (
+          <div className="absolute top-4 right-4 z-40">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditingHeroImage(!isEditingHeroImage);
+              }}
+              className="px-4 py-2 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-sm font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+              style={{ borderRadius: theme.borderRadius || "12px" }}
+            >
+              <ImageIcon className="h-4 w-4" /> Edit Background
+            </button>
+            {isEditingHeroImage && (
+              <div className="absolute top-12 right-0">
+                <ImageEditItem
+                  currentUrl={props.imageUrl}
+                  currentUrl2={props.imageUrl2}
+                  currentUrl3={props.imageUrl3}
+                  currentAlt={props.imageAlt}
+                  currentBorderRadius={props.imageBorderRadius}
+                  currentObjectFit={props.imageObjectFit}
+                  currentAspectRatio={props.imageAspectRatio}
+                  currentImageLayout={props.imageLayout}
+                  onSave={(editProps) => {
+                    onUpdateProps?.({ 
+                      imageUrl: editProps.url,
+                      imageUrl2: editProps.url2,
+                      imageUrl3: editProps.url3,
+                      imageAlt: editProps.alt, 
+                      imageBorderRadius: editProps.imageBorderRadius,
+                      imageObjectFit: editProps.objectFit as any,
+                      imageAspectRatio: editProps.aspectRatio as any,
+                      imageLayout: editProps.imageLayout as any
+                    });
+                    setIsEditingHeroImage(false);
+                  }}
+                  onClose={() => setIsEditingHeroImage(false)}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        <Center maxWidth={effectiveMaxWidth} className="relative z-10">
           {isSplit ? (
             <div className={`grid gap-12 items-center ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
               <div className={`space-y-6 ${isImageLeft ? "md:order-2" : "md:order-1"}`}>
@@ -2099,7 +2225,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none" }}
-                    className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} text-muted-foreground ${
+                    className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                   >
@@ -2122,20 +2248,53 @@ export function ComponentRenderer({
                 <div className={`relative group z-30 w-full ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
                   {props.imageUrl ? (
                     <div
-                      className="w-full overflow-hidden border border-border/80 transition-all"
-                      style={{
-                        borderRadius: props.imageBorderRadius || "16px",
-                        boxShadow: shadow !== "none" ? shadow : undefined,
-                      }}
+                      className={`w-full ${props.imageLayout === "bento" ? "grid grid-cols-2 gap-4" : "block"}`}
                     >
-                      <img
-                        src={props.imageUrl}
-                        alt={props.imageAlt || "Hero"}
-                        className={`w-full ${props.imageAspectRatio && props.imageAspectRatio !== "auto" ? "h-full" : "h-auto max-h-[450px]"} ${
-                          props.imageObjectFit === "contain" ? "object-contain" : props.imageObjectFit === "fill" ? "object-fill" : "object-cover"
-                        }`}
-                        style={{ aspectRatio: props.imageAspectRatio && props.imageAspectRatio !== "auto" ? props.imageAspectRatio : undefined }}
-                      />
+                      <div
+                        className={`overflow-hidden border border-border/80 transition-all ${props.imageLayout === "bento" ? "col-span-2" : "col-span-1 w-full"}`}
+                        style={{
+                          borderRadius: props.imageBorderRadius || "16px",
+                          boxShadow: shadow !== "none" ? shadow : undefined,
+                        }}
+                      >
+                        <img
+                          src={props.imageUrl}
+                          alt={props.imageAlt || "Hero"}
+                          onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"; }}
+                          className={`w-full ${props.imageAspectRatio && props.imageAspectRatio !== "auto" ? "h-full" : (props.imageLayout === "bento" ? "h-[250px]" : "h-auto max-h-[450px]")} ${
+                            props.imageObjectFit === "contain" ? "object-contain" : props.imageObjectFit === "fill" ? "object-fill" : "object-cover"
+                          }`}
+                          style={{ aspectRatio: props.imageAspectRatio && props.imageAspectRatio !== "auto" ? props.imageAspectRatio : undefined }}
+                        />
+                      </div>
+                      
+                      {props.imageLayout === "bento" && props.imageUrl2 && (
+                        <div
+                          className="overflow-hidden border border-border/80 transition-all col-span-1 min-h-[150px]"
+                          style={{ borderRadius: props.imageBorderRadius || "16px", boxShadow: shadow !== "none" ? shadow : undefined }}
+                        >
+                           <img 
+                             src={props.imageUrl2} 
+                             alt="Hero 2" 
+                             onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"; }}
+                             className="w-full h-full object-cover" 
+                           />
+                        </div>
+                      )}
+                      
+                      {props.imageLayout === "bento" && props.imageUrl3 && (
+                        <div
+                          className="overflow-hidden border border-border/80 transition-all col-span-1 min-h-[150px]"
+                          style={{ borderRadius: props.imageBorderRadius || "16px", boxShadow: shadow !== "none" ? shadow : undefined }}
+                        >
+                           <img 
+                             src={props.imageUrl3} 
+                             alt="Hero 3" 
+                             onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"; }}
+                             className="w-full h-full object-cover" 
+                           />
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div
@@ -2165,17 +2324,23 @@ export function ComponentRenderer({
                   {isEditingHeroImage && (
                     <ImageEditItem
                       currentUrl={props.imageUrl}
+                      currentUrl2={props.imageUrl2}
+                      currentUrl3={props.imageUrl3}
                       currentAlt={props.imageAlt}
                       currentBorderRadius={props.imageBorderRadius}
                       currentObjectFit={props.imageObjectFit}
                       currentAspectRatio={props.imageAspectRatio}
-                      onSave={(url, alt, imageBorderRadius, objectFit, aspectRatio) => {
+                      currentImageLayout={props.imageLayout}
+                      onSave={(editProps) => {
                         onUpdateProps?.({ 
-                          imageUrl: url, 
-                          imageAlt: alt, 
-                          imageBorderRadius: imageBorderRadius,
-                          imageObjectFit: objectFit as any,
-                          imageAspectRatio: aspectRatio as any
+                          imageUrl: editProps.url,
+                          imageUrl2: editProps.url2,
+                          imageUrl3: editProps.url3,
+                          imageAlt: editProps.alt, 
+                          imageBorderRadius: editProps.imageBorderRadius,
+                          imageObjectFit: editProps.objectFit as any,
+                          imageAspectRatio: editProps.aspectRatio as any,
+                          imageLayout: editProps.imageLayout as any
                         });
                         setIsEditingHeroImage(false);
                       }}
@@ -2216,7 +2381,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none" }}
-                  className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} text-muted-foreground ${
+                  className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                 >
@@ -2234,6 +2399,96 @@ export function ComponentRenderer({
                 </button>
               )}
               <ButtonsBlock />
+            </div>
+          )}
+        </Center>
+      </section>
+    );
+  }
+
+  if (type === "features") {
+    const variant = props.variant || "bento-grid";
+    const items = props.items || [
+      { title: "Digital Banking", description: "Experience seamless financial operations anywhere.", icon: "briefcase", imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=1200" },
+      { title: "AI-Assistant", description: "Smart automation for your daily tasks.", icon: "zap" },
+      { title: "Ethereum", description: "Track your crypto portfolio in real-time.", icon: "shield" },
+    ];
+    
+    return (
+      <section
+        id={currentSectionId}
+        style={{
+          ...css,
+          backgroundColor: style.backgroundColor || "transparent",
+        }}
+        className={`w-full py-16 sm:py-24 ${style.padding || "px-4 md:px-8"}`}
+      >
+        <Center maxWidth={style.maxWidth}>
+          {(props.heading || props.subheading) && (
+            <div className="text-center mb-16 space-y-4">
+              {props.heading && (
+                <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+                  {props.heading}
+                </h2>
+              )}
+              {props.subheading && (
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {props.subheading}
+                </p>
+              )}
+            </div>
+          )}
+          
+          {variant === "bento-grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {items.map((item, i) => {
+                const isFeatured = i === 0 && items.length >= 3;
+                const hasBgImage = !!item.imageUrl;
+                return (
+                  <div 
+                    key={i} 
+                    className={`relative overflow-hidden rounded-3xl border border-border/50 flex flex-col justify-end ${
+                      isFeatured ? "md:col-span-2 min-h-[400px] md:min-h-[500px]" : "min-h-[300px] md:min-h-[400px]"
+                    } ${!hasBgImage ? "bg-muted/20 p-8 hover:bg-muted/40 transition-colors" : "p-8"}`}
+                  >
+                    {hasBgImage && (
+                      <div className="absolute inset-0 z-0">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      </div>
+                    )}
+                    <div className={`relative z-10 ${hasBgImage ? "text-white" : "text-foreground"}`}>
+                       {item.icon && !hasBgImage && (
+                         <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                           <RenderIcon icon={item.icon} className="h-6 w-6" />
+                         </div>
+                       )}
+                       <h3 className={`text-2xl font-bold mb-2 ${hasBgImage ? "text-white" : ""}`}>{item.title}</h3>
+                       <p className={`max-w-md ${hasBgImage ? "text-white/80" : "text-muted-foreground"}`}>{item.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+               {items.map((item, i) => (
+                 <div key={i} className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl border border-transparent hover:border-border hover:bg-muted/10 transition-all">
+                    {item.imageUrl ? (
+                       <img src={item.imageUrl} alt={item.title} className="w-16 h-16 rounded-xl object-cover mb-2 shadow-sm" />
+                    ) : item.icon ? (
+                       <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-2">
+                         <RenderIcon icon={item.icon} className="h-6 w-6" />
+                       </div>
+                    ) : null}
+                    <h3 className="text-xl font-bold">{item.title}</h3>
+                    <p className="text-muted-foreground">{item.description}</p>
+                 </div>
+               ))}
             </div>
           )}
         </Center>
