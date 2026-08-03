@@ -345,42 +345,7 @@ export function PropertiesPanel({
                   onChange={(v) => onChangeStyle(component.id, { backgroundColor: v })}
                 />
               </Field>
-              <Field label="Text Color">
-                <ColorInput
-                  value={component.style.textColor}
-                  onChange={(v) => onChangeStyle(component.id, { textColor: v })}
-                />
-              </Field>
-              <Field label="Font Size">
-                <SelectInput
-                  value={component.style.fontSize || ""}
-                  onChange={(v) => onChangeStyle(component.id, { fontSize: v || undefined })}
-                  options={[
-                    { label: "Default", value: "" },
-                    { label: "14px", value: "14px" },
-                    { label: "16px", value: "16px" },
-                    { label: "18px", value: "18px" },
-                    { label: "20px", value: "20px" },
-                    { label: "24px", value: "24px" },
-                    { label: "32px", value: "32px" },
-                    { label: "40px", value: "40px" },
-                    { label: "48px", value: "48px" },
-                  ]}
-                />
-              </Field>
-              <Field label="Font Weight">
-                <SelectInput
-                  value={component.style.fontWeight || ""}
-                  onChange={(v) => onChangeStyle(component.id, { fontWeight: v || undefined })}
-                  options={[
-                    { label: "Default", value: "" },
-                    { label: "Normal", value: "400" },
-                    { label: "Medium", value: "500" },
-                    { label: "Semibold", value: "600" },
-                    { label: "Bold", value: "700" },
-                  ]}
-                />
-              </Field>
+
               <Field label="Alignment">
                 <SelectInput
                   value={component.style.textAlign || "left"}
