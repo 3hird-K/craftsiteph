@@ -563,6 +563,105 @@ function RealisticLayoutPreview({
         </div>
       );
 
+    /* Footer Variants */
+    case "multi-column-links":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} text-[10px] space-y-2 transition-all`}
+          style={{ backgroundColor: "#0f172a", color: "#f8fafc", borderRadius: "12px" }}
+        >
+          <div className="flex justify-between items-start">
+            <div className="space-y-0.5">
+              <span className="font-extrabold text-xs block text-white">CraftSite</span>
+              <span className="text-[8px] opacity-75 block">Building the future of visual web creation.</span>
+            </div>
+            <div className="flex gap-4 text-[8px] opacity-80">
+              <div className="space-y-0.5"><span className="font-bold block text-white">Product</span><span>Features</span></div>
+              <div className="space-y-0.5"><span className="font-bold block text-white">Company</span><span>About</span></div>
+            </div>
+          </div>
+          <div className="pt-1 border-t border-slate-700/60 text-[8px] opacity-60 flex justify-between">
+            <span>© 2026 CraftSite Inc.</span>
+            <span>Twitter • GitHub</span>
+          </div>
+        </div>
+      );
+
+    case "centered-minimal":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} text-center space-y-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
+        >
+          <span className="font-black text-xs block" style={{ color: cardTextColor }}>CraftSite</span>
+          <div className="flex justify-center gap-3 text-[9px] opacity-80">
+            <span>Privacy</span><span>Terms</span><span>Contact</span><span>Support</span>
+          </div>
+          <span className="text-[8px] opacity-50 block">© 2026 CraftSite. Built with passion.</span>
+        </div>
+      );
+
+    case "newsletter-split-footer":
+      return (
+        <div
+          className="w-full p-3 border border-slate-800 text-[10px] space-y-2 transition-all"
+          style={{ backgroundColor: "#020617", color: "#f8fafc", borderRadius: "12px" }}
+        >
+          <div className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-slate-900 border border-slate-800">
+            <span className="text-[8px] text-slate-300">Subscribe to updates</span>
+            <span className="px-2 py-0.5 text-[8px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+              Join
+            </span>
+          </div>
+          <div className="flex justify-between items-center text-[8px] text-slate-400">
+            <span className="font-bold text-white">CraftSite</span>
+            <span>© 2026 CraftSite Inc.</span>
+          </div>
+        </div>
+      );
+
+    case "dark-tech-dock":
+      return (
+        <div
+          className="w-full p-3 border border-slate-800 text-[10px] space-y-2 transition-all"
+          style={{ backgroundColor: "#030712", color: "#ffffff", borderRadius: "12px" }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="font-extrabold text-xs text-white">CraftSite Dev</span>
+            <span className="px-2 py-0.5 text-[8px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
+              🟢 Operational
+            </span>
+          </div>
+          <div className="flex justify-between text-[8px] text-slate-400">
+            <span>Status • API Docs • GitHub</span>
+            <span>© 2026</span>
+          </div>
+        </div>
+      );
+
+    case "stacked-brand-statement":
+      return (
+        <div
+          className="w-full p-3 border border-indigo-950 text-center space-y-1 transition-all"
+          style={{ backgroundColor: "#1e1b4b", color: "#ffffff", borderRadius: "12px" }}
+        >
+          <span className="font-black text-sm tracking-widest block text-white">CRAFTSITE</span>
+          <span className="text-[8px] tracking-wider text-indigo-200 block">VISUAL BUILDER FOR CREATORS</span>
+          <span className="text-[7px] text-indigo-300/60 block pt-1">© 2026 ALL RIGHTS RESERVED</span>
+        </div>
+      );
+
+    case "compact-bottom-bar":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between text-[9px] transition-all`}
+          style={{ backgroundColor: isLightTheme ? "#f8fafc" : "#0f172a", color: cardTextColor, borderRadius: "10px" }}
+        >
+          <span className="font-extrabold text-[10px]" style={{ color: cardTextColor }}>CraftSite</span>
+          <span className="opacity-70">© 2026 • Privacy • Terms</span>
+        </div>
+      );
+
     default:
       return (
         <div

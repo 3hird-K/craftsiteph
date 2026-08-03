@@ -2259,6 +2259,228 @@ export function ComponentRenderer({
     );
   }
 
+  if (type === "footer") {
+    const variant = props.variant || "multi-column-links";
+    const defaultBg =
+      variant === "centered-minimal" || variant === "compact-bottom-bar"
+        ? "#ffffff"
+        : variant === "newsletter-split-footer" || variant === "dark-tech-dock"
+        ? "#020617"
+        : variant === "stacked-brand-statement"
+        ? "#1e1b4b"
+        : "#0f172a";
+
+    const footerBg = style.backgroundColor || defaultBg;
+    const footerRadius = "0px";
+
+    const isLightBg =
+      footerBg === "#ffffff" ||
+      footerBg === "#f8fafc" ||
+      footerBg === "#fafafa" ||
+      footerBg === "#f0f9ff" ||
+      (typeof footerBg === "string" && (footerBg.toUpperCase() === "#FFFFFF" || footerBg.toUpperCase() === "#F8FAFC" || footerBg.toUpperCase() === "#FAFAFA" || footerBg.toUpperCase() === "#F0F9FF"));
+
+    const textColor = isLightBg ? (style.textColor || theme.textColor || "#0f172a") : (style.textColor || "#ffffff");
+    const subtextColor = isLightBg ? "#64748b" : "rgba(255, 255, 255, 0.75)";
+    const borderColor = isLightBg ? "rgba(15, 23, 42, 0.1)" : "rgba(255, 255, 255, 0.12)";
+
+    const logoText = props.logoText || "CraftSite";
+    const tagline = props.tagline || "Building the future of visual web creation.";
+    const copyright = props.copyright || `© ${new Date().getFullYear()} ${logoText}. All rights reserved.`;
+
+    const navLinks = props.links || [
+      { label: "Privacy Policy", href: "#" },
+      { label: "Terms of Service", href: "#" },
+      { label: "Contact Us", href: "#" },
+    ];
+
+    const columnsList: { title: string; links: string[] }[] = Array.isArray(props.columns)
+      ? (props.columns as { title: string; links: string[] }[])
+      : [
+          { title: "Product", links: ["Features", "Templates", "Integrations", "Changelog"] },
+          { title: "Company", links: ["About Us", "Careers", "Press", "Contact"] },
+          { title: "Resources", links: ["Documentation", "Community", "Guides", "API Status"] },
+        ];
+
+    return (
+      <footer
+        id={currentSectionId}
+        style={{
+          ...css,
+          backgroundColor: footerBg,
+          color: textColor,
+          borderRadius: footerRadius,
+        }}
+        className="py-12 md:py-16 transition-all"
+      >
+        <Center maxWidth={effectiveMaxWidth}>
+          {variant === "centered-minimal" ? (
+            <div className="text-center space-y-6 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-black tracking-tight" style={{ color: textColor }}>
+                {logoText}
+              </h3>
+              <p className="text-sm" style={{ color: subtextColor }}>
+                {tagline}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium">
+                {navLinks.map((l: any, idx: number) => (
+                  <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity" style={{ color: textColor }}>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+              <div className="pt-6 border-t" style={{ borderColor }}>
+                <p className="text-xs opacity-60" style={{ color: textColor }}>
+                  {copyright}
+                </p>
+              </div>
+            </div>
+          ) : variant === "newsletter-split-footer" ? (
+            <div className="space-y-12">
+              <div className="p-8 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor, backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.03)" }}>
+                <div className="space-y-1 text-center md:text-left">
+                  <h4 className="text-xl font-bold" style={{ color: textColor }}>Stay updated with our latest news</h4>
+                  <p className="text-xs" style={{ color: subtextColor }}>{tagline}</p>
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto max-w-md">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="px-4 py-2.5 rounded-xl border bg-transparent text-sm outline-none w-full md:w-64"
+                    style={{ borderColor, color: textColor }}
+                  />
+                  <button
+                    type="button"
+                    className="px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md hover:brightness-110 shrink-0 cursor-pointer"
+                    style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                  >
+                    Subscribe
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="col-span-2 space-y-3">
+                  <h3 className="text-xl font-black" style={{ color: textColor }}>{logoText}</h3>
+                  <p className="text-xs max-w-sm" style={{ color: subtextColor }}>{tagline}</p>
+                </div>
+                {columnsList.map((col: any, cIdx: number) => (
+                  <div key={cIdx} className="space-y-3 text-xs">
+                    <h5 className="font-bold uppercase tracking-wider text-[11px]" style={{ color: textColor }}>{col.title}</h5>
+                    <ul className="space-y-2">
+                      {col.links.map((lnk: string, lIdx: number) => (
+                        <li key={lIdx}>
+                          <a href="#" className="hover:opacity-100 transition-opacity" style={{ color: subtextColor }}>{lnk}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
+                <span style={{ color: subtextColor }}>{copyright}</span>
+                <div className="flex gap-4" style={{ color: subtextColor }}>
+                  <a href="#">Privacy</a>
+                  <a href="#">Terms</a>
+                  <a href="#">Security</a>
+                </div>
+              </div>
+            </div>
+          ) : variant === "dark-tech-dock" ? (
+            <div className="space-y-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b" style={{ borderColor }}>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-black text-white">{logoText}</h3>
+                  <p className="text-xs text-slate-400">{tagline}</p>
+                </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>All Systems Operational</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
+                <div className="flex flex-wrap gap-6 font-medium text-slate-300">
+                  {navLinks.map((l: any, idx: number) => (
+                    <a key={idx} href={l.href || "#"} className="hover:text-white transition-colors">
+                      {l.label}
+                    </a>
+                  ))}
+                </div>
+                <span className="text-slate-400">{copyright}</span>
+              </div>
+            </div>
+          ) : variant === "stacked-brand-statement" ? (
+            <div className="text-center space-y-8">
+              <h2 className="text-4xl md:text-7xl font-black tracking-tighter opacity-20 uppercase" style={{ color: textColor }}>
+                {logoText}
+              </h2>
+              <div className="max-w-md mx-auto space-y-2">
+                <p className="text-sm font-semibold tracking-wider uppercase" style={{ color: textColor }}>
+                  {tagline}
+                </p>
+                <div className="flex justify-center gap-6 text-xs font-bold pt-2">
+                  {navLinks.map((l: any, idx: number) => (
+                    <a key={idx} href={l.href || "#"} className="hover:underline" style={{ color: textColor }}>
+                      {l.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div className="pt-6 border-t text-xs opacity-60" style={{ borderColor, color: textColor }}>
+                {copyright}
+              </div>
+            </div>
+          ) : variant === "compact-bottom-bar" ? (
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+              <div className="flex items-center gap-3">
+                <span className="font-extrabold text-sm" style={{ color: textColor }}>{logoText}</span>
+                <span style={{ color: subtextColor }}>{copyright}</span>
+              </div>
+              <div className="flex items-center gap-5 font-medium">
+                {navLinks.map((l: any, idx: number) => (
+                  <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity" style={{ color: subtextColor }}>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* Multi-Column Links Default */
+            <div className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div className="md:col-span-2 space-y-3">
+                  <h3 className="text-2xl font-black" style={{ color: textColor }}>{logoText}</h3>
+                  <p className="text-sm max-w-sm" style={{ color: subtextColor }}>{tagline}</p>
+                </div>
+                {columnsList.map((col: any, cIdx: number) => (
+                  <div key={cIdx} className="space-y-3 text-sm">
+                    <h5 className="font-bold uppercase tracking-wider text-xs" style={{ color: textColor }}>{col.title}</h5>
+                    <ul className="space-y-2.5">
+                      {col.links.map((lnk: string, lIdx: number) => (
+                        <li key={lIdx}>
+                          <a href="#" className="hover:opacity-100 transition-opacity" style={{ color: subtextColor }}>{lnk}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-8 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
+                <span style={{ color: subtextColor }}>{copyright}</span>
+                <div className="flex items-center gap-6" style={{ color: subtextColor }}>
+                  {navLinks.map((l: any, idx: number) => (
+                    <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity">
+                      {l.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </Center>
+      </footer>
+    );
+  }
+
   // Fallback for default section types
   return (
     <section id={currentSectionId} style={css} className="py-12">

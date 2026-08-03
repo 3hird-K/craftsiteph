@@ -44,7 +44,9 @@ export type ComponentProps = {
   reverseLayout?: boolean;
   items?: { title: string; description: string; icon?: string }[];
   links?: { label: string; href: string }[];
-  columns?: number;
+  columns?: number | { title: string; links: string[] }[];
+  tagline?: string;
+  copyright?: string;
   variant?: string;
   placeholder?: string;
   logoText?: string;
