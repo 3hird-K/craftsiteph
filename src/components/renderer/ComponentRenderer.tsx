@@ -2073,22 +2073,35 @@ export function ComponentRenderer({
                 )}
                 <ButtonsBlock />
               </div>
-              {props.imageUrl && (
-                <div className={`relative group z-30 ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
-                  <div
-                    className="w-full overflow-hidden border border-border/80 transition-all"
-                    style={{
-                      borderRadius: props.imageBorderRadius || "16px",
-                      boxShadow: shadow !== "none" ? shadow : undefined,
-                    }}
-                  >
-                    <img
-                      src={props.imageUrl}
-                      alt={props.imageAlt || "Hero"}
-                      className="w-full h-auto object-cover max-h-[450px]"
-                    />
-                  </div>
-                  {interactive && (
+              {(props.imageUrl || interactive) && (
+                <div className={`relative group z-30 w-full ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
+                  {props.imageUrl ? (
+                    <div
+                      className="w-full overflow-hidden border border-border/80 transition-all"
+                      style={{
+                        borderRadius: props.imageBorderRadius || "16px",
+                        boxShadow: shadow !== "none" ? shadow : undefined,
+                      }}
+                    >
+                      <img
+                        src={props.imageUrl}
+                        alt={props.imageAlt || "Hero"}
+                        className="w-full h-auto object-cover max-h-[450px]"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-full h-[350px] flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/60 bg-muted/20 hover:bg-muted/40 transition-all cursor-pointer"
+                      onClick={(e) => {
+                         e.stopPropagation();
+                         setIsEditingHeroImage(true);
+                      }}
+                    >
+                      <ImageIcon className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                      <span className="text-sm font-medium text-muted-foreground/70">Click to Add Image</span>
+                    </div>
+                  )}
+                  {interactive && props.imageUrl && (
                     <button
                       type="button"
                       onClick={(e) => {
