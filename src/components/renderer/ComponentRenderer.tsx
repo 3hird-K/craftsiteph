@@ -2424,7 +2424,14 @@ export function ComponentRenderer({
             </div>
           ) : variant === "newsletter-split-footer" ? (
             <div className="space-y-12">
-              <div className="p-8 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor, backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.05)" }}>
+              <div
+                className="p-8 border flex flex-col md:flex-row items-center justify-between gap-6"
+                style={{
+                  borderColor,
+                  backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.05)",
+                  borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "16px"),
+                }}
+              >
                 <div className="space-y-1 text-center md:text-left">
                   <h4
                     contentEditable={interactive}
@@ -2457,8 +2464,8 @@ export function ComponentRenderer({
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="px-4 py-2.5 rounded-xl border bg-transparent text-sm outline-none w-full md:w-64 placeholder:opacity-50"
-                    style={{ borderColor, color: textColor }}
+                    className="px-4 py-2.5 border bg-transparent text-sm outline-none w-full md:w-64 placeholder:opacity-50"
+                    style={{ borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                   />
                   <div className="relative group/btn inline-flex items-center">
                     <button
@@ -2468,7 +2475,7 @@ export function ComponentRenderer({
                         e.stopPropagation();
                         setActiveFooterPopover(activeFooterPopover === "cta-btn" ? null : "cta-btn");
                       }}
-                      className="px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md hover:brightness-110 shrink-0 cursor-pointer"
+                      className="px-5 py-2.5 font-bold text-xs text-white shadow-md hover:brightness-110 shrink-0 cursor-pointer"
                       style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
                     >
                       {props.buttonText || "Subscribe"}
