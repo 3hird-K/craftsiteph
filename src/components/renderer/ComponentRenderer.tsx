@@ -1353,10 +1353,12 @@ export function ComponentRenderer({
       }
     }
 
+    const [activeEditPopover, setActiveEditPopover] = useState<string | null>(null);
+
     const LogoElement = () => {
       const text = props.logoText ?? "Brand";
       const href = props.logoHref || "#top";
-      const [isEditingLogo, setIsEditingLogo] = useState(false);
+      const isEditingLogo = activeEditPopover === "logo";
 
       if (text === "") {
         return interactive ? (
@@ -1393,7 +1395,7 @@ export function ComponentRenderer({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                setIsEditingLogo(!isEditingLogo);
+                setActiveEditPopover(isEditingLogo ? null : "logo");
               }}
               className="text-lg font-extrabold tracking-tight cursor-pointer select-none text-left"
               style={logoStyle}
@@ -1407,7 +1409,7 @@ export function ComponentRenderer({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                setIsEditingLogo(true);
+                setActiveEditPopover("logo");
               }}
               className="absolute -top-2.5 -right-2.5 hidden group-hover/logo:flex h-5 items-center gap-1 px-1.5 py-0.5 rounded-full bg-background border border-border shadow-md hover:border-primary text-foreground text-[10px] font-mono z-20 transition-all cursor-pointer"
               title="Click to Edit Logo & Destination Link"
@@ -1430,13 +1432,13 @@ export function ComponentRenderer({
               sectionOptions={sectionOptions}
               onSave={(updated) => {
                 onUpdateProps?.(updated);
-                setIsEditingLogo(false);
+                setActiveEditPopover(null);
               }}
               onRemove={() => {
                 onUpdateProps?.({ logoText: "" });
-                setIsEditingLogo(false);
+                setActiveEditPopover(null);
               }}
-              onClose={() => setIsEditingLogo(false)}
+              onClose={() => setActiveEditPopover(null)}
             />
           )}
         </div>
@@ -1444,7 +1446,6 @@ export function ComponentRenderer({
     };
 
     const LinksElement = ({ mobile = false }: { mobile?: boolean }) => {
-      const [editingIndex, setEditingIndex] = useState<number | null>(null);
       const isMobileNav = mobile || isMobile;
 
       return (
@@ -1458,7 +1459,7 @@ export function ComponentRenderer({
         >
           {(props.links || []).map((link, i) => {
             const href = link.href || "#";
-            const isEditingThis = interactive && editingIndex === i;
+            const isEditingThis = interactive && activeEditPopover === `link-${i}`;
             const linkClass = isMobileNav
               ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl ${isLightTheme ? "hover:bg-foreground/5" : "hover:bg-white/10"} text-sm font-semibold transition-all cursor-pointer select-none text-left`
               : `transition-all cursor-pointer select-none inline-flex items-center gap-1.5 ${
@@ -1492,7 +1493,7 @@ export function ComponentRenderer({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingIndex(isEditingThis ? null : i);
+                      setActiveEditPopover(isEditingThis ? null : `link-${i}`);
                     }}
                     className={linkClass}
                     style={linkStyle}
@@ -1507,7 +1508,7 @@ export function ComponentRenderer({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingIndex(i);
+                      setActiveEditPopover(`link-${i}`);
                     }}
                     className="absolute -top-2.5 -right-2.5 hidden group-hover/link:flex h-5 items-center gap-1 px-1.5 py-0.5 rounded-full bg-background border border-border shadow-md hover:border-primary text-foreground text-[10px] font-mono z-20 transition-all cursor-pointer"
                     title="Click to Edit Link & Icon"
@@ -1524,15 +1525,15 @@ export function ComponentRenderer({
                       const next = [...(props.links || [])];
                       next[i] = { ...next[i], label, href: newHref, icon };
                       onUpdateProps?.({ links: next });
-                      setEditingIndex(null);
+                      setActiveEditPopover(null);
                     }}
                     onRemove={() => {
                       const next = [...(props.links || [])];
                       next.splice(i, 1);
                       onUpdateProps?.({ links: next });
-                      setEditingIndex(null);
+                      setActiveEditPopover(null);
                     }}
-                    onClose={() => setEditingIndex(null)}
+                    onClose={() => setActiveEditPopover(null)}
                   />
                 )}
               </div>
@@ -1585,7 +1586,6 @@ export function ComponentRenderer({
     };
 
     const ButtonsElement = ({ mobile = false }: { mobile?: boolean }) => {
-      const [editingBtnIndex, setEditingBtnIndex] = useState<number | null>(null);
       const isMobileNav = mobile || isMobile;
 
       const buttonsList = props.buttons !== undefined ? props.buttons : (props.buttonText !== undefined ? [{ label: props.buttonText, variant: "solid" as const }] : undefined);
@@ -1617,7 +1617,7 @@ export function ComponentRenderer({
         >
           {buttonsList.map((btn, i) => {
             const href = btn.href || "#";
-            const isEditingThis = interactive && editingBtnIndex === i;
+            const isEditingThis = interactive && activeEditPopover === `button-${i}`;
             const btnClass = isMobileNav
               ? "w-full py-2.5 px-4 text-center text-sm font-bold shadow-md rounded-xl transition-all cursor-pointer select-none inline-flex items-center justify-center gap-2"
               : `inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold shadow-sm transition-all cursor-pointer select-none ${
@@ -1646,7 +1646,7 @@ export function ComponentRenderer({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingBtnIndex(isEditingThis ? null : i);
+                      setActiveEditPopover(isEditingThis ? null : `button-${i}`);
                     }}
                     className={btnClass}
                     style={{
@@ -1666,7 +1666,7 @@ export function ComponentRenderer({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingBtnIndex(i);
+                      setActiveEditPopover(`button-${i}`);
                     }}
                     className="absolute -top-2.5 -right-2.5 hidden group-hover/btn:flex h-5 items-center gap-1 px-1.5 py-0.5 rounded-full bg-background border border-border shadow-md hover:border-primary text-foreground text-[10px] font-mono z-20 transition-all cursor-pointer"
                     title="Click to Edit Button & Icon"
@@ -1683,15 +1683,15 @@ export function ComponentRenderer({
                       const next = [...buttonsList];
                       next[i] = { ...next[i], label, href: newHref, variant, icon };
                       onUpdateProps?.({ buttons: next, buttonText: undefined });
-                      setEditingBtnIndex(null);
+                      setActiveEditPopover(null);
                     }}
                     onRemove={() => {
                       const next = [...buttonsList];
                       next.splice(i, 1);
                       onUpdateProps?.({ buttons: next.length > 0 ? next : undefined, buttonText: undefined });
-                      setEditingBtnIndex(null);
+                      setActiveEditPopover(null);
                     }}
-                    onClose={() => setEditingBtnIndex(null)}
+                    onClose={() => setActiveEditPopover(null)}
                   />
                 )}
               </div>
@@ -1778,9 +1778,9 @@ export function ComponentRenderer({
     const variant = props.variant || "centered-hero";
     const heroBg = style.backgroundColor || "transparent";
     const isSplit = variant === "split-image" || variant === "bento-hero";
+    const [activeHeroPopover, setActiveHeroPopover] = useState<string | null>(null);
 
     const ButtonsBlock = () => {
-      const [editingBtnIndex, setEditingBtnIndex] = useState<number | null>(null);
       const buttonsList = props.buttons !== undefined ? props.buttons : (props.buttonText !== undefined ? [{ label: props.buttonText, variant: "solid" as const }] : undefined);
 
       if (!buttonsList && !interactive) return null;
@@ -1806,7 +1806,7 @@ export function ComponentRenderer({
         <div className={`pt-2 flex flex-wrap items-center ${isSplit || style.textAlign === "left" ? "justify-start" : "justify-center"}`} style={{ gap: style.gap || "1rem" }}>
           {buttonsList.map((btn, i) => {
             const href = btn.href || "#";
-            const isEditingThis = interactive && editingBtnIndex === i;
+            const isEditingThis = interactive && activeHeroPopover === `button-${i}`;
             const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg transition-all cursor-pointer select-none ${
               btn.variant === "outline" ? "border-2 bg-transparent hover:bg-foreground/5" :
               btn.variant === "ghost" ? "bg-transparent shadow-none hover:bg-foreground/5" :
@@ -1835,7 +1835,7 @@ export function ComponentRenderer({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingBtnIndex(isEditingThis ? null : i);
+                      setActiveHeroPopover(isEditingThis ? null : `button-${i}`);
                     }}
                     className={btnClass}
                     style={btnStyle}
@@ -1850,7 +1850,7 @@ export function ComponentRenderer({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingBtnIndex(i);
+                      setActiveHeroPopover(`button-${i}`);
                     }}
                     className="absolute -top-2.5 -right-2.5 hidden group-hover/btn:flex h-5 items-center gap-1 px-1.5 py-0.5 rounded-full bg-background border border-border shadow-md hover:border-primary text-foreground text-[10px] font-mono z-20 transition-all cursor-pointer"
                     title="Click to Edit Button & Icon"
@@ -1867,15 +1867,15 @@ export function ComponentRenderer({
                       const next = [...buttonsList];
                       next[i] = { ...next[i], label, href: newHref, variant, icon };
                       onUpdateProps?.({ buttons: next, buttonText: undefined });
-                      setEditingBtnIndex(null);
+                      setActiveHeroPopover(null);
                     }}
                     onRemove={() => {
                       const next = [...buttonsList];
                       next.splice(i, 1);
                       onUpdateProps?.({ buttons: next.length > 0 ? next : undefined, buttonText: undefined });
-                      setEditingBtnIndex(null);
+                      setActiveHeroPopover(null);
                     }}
-                    onClose={() => setEditingBtnIndex(null)}
+                    onClose={() => setActiveHeroPopover(null)}
                   />
                 )}
               </div>
@@ -1885,7 +1885,8 @@ export function ComponentRenderer({
       );
     };
 
-    const [isEditingHeroImage, setIsEditingHeroImage] = useState(false);
+    const isEditingHeroImage = activeHeroPopover === "image";
+    const setIsEditingHeroImage = (val: boolean) => setActiveHeroPopover(val ? "image" : null);
     const isImageLeft = props.imagePosition === "left" || props.reverseLayout;
 
     return (
