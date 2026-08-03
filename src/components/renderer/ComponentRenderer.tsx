@@ -2495,8 +2495,8 @@ export function ComponentRenderer({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-left">
-                <div className="sm:col-span-2 space-y-3 text-left">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
+                <div className="md:col-span-2 space-y-3 text-left">
                   <h3
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2505,7 +2505,7 @@ export function ComponentRenderer({
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-xl font-black break-words ${interactive ? "cursor-text transition-all" : ""}`}
+                    className={`text-xl font-black whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
                   >
                     {logoText}
                   </h3>
@@ -2522,50 +2522,52 @@ export function ComponentRenderer({
                     {tagline}
                   </p>
                 </div>
-                {columnsList.map((col: any, cIdx: number) => (
-                  <div key={cIdx} className="space-y-3 text-xs text-left">
-                    <h5
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
-                        if (next && next !== col.title) {
-                          const updatedCols = [...columnsList];
-                          updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
-                          onUpdateProps?.({ columns: updatedCols });
-                        }
-                      }}
-                      style={{ outline: "none", color: textColor }}
-                      className={`font-bold uppercase tracking-wider text-[11px] whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
-                    >
-                      {col.title}
-                    </h5>
-                    <ul className="space-y-2">
-                      {col.links.map((lnk: string, lIdx: number) => (
-                        <li key={lIdx} className="block">
-                          <span
-                            contentEditable={interactive}
-                            suppressContentEditableWarning
-                            onBlur={(e) => {
-                              const next = e.currentTarget.innerText.trim();
-                              if (next && next !== lnk) {
-                                const updatedCols = [...columnsList];
-                                const nextLinks = [...updatedCols[cIdx].links];
-                                nextLinks[lIdx] = next;
-                                updatedCols[cIdx] = { ...updatedCols[cIdx], links: nextLinks };
-                                onUpdateProps?.({ columns: updatedCols });
-                              }
-                            }}
-                            style={{ outline: "none", color: subtextColor }}
-                            className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                          >
-                            {lnk}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                <div className="md:col-span-2 grid grid-cols-2 gap-6">
+                  {columnsList.map((col: any, cIdx: number) => (
+                    <div key={cIdx} className="space-y-3 text-xs text-left">
+                      <h5
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerText.trim();
+                          if (next && next !== col.title) {
+                            const updatedCols = [...columnsList];
+                            updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
+                            onUpdateProps?.({ columns: updatedCols });
+                          }
+                        }}
+                        style={{ outline: "none", color: textColor }}
+                        className={`font-bold uppercase tracking-wider text-[11px] whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
+                      >
+                        {col.title}
+                      </h5>
+                      <ul className="space-y-2">
+                        {col.links.map((lnk: string, lIdx: number) => (
+                          <li key={lIdx} className="block">
+                            <span
+                              contentEditable={interactive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerText.trim();
+                                if (next && next !== lnk) {
+                                  const updatedCols = [...columnsList];
+                                  const nextLinks = [...updatedCols[cIdx].links];
+                                  nextLinks[lIdx] = next;
+                                  updatedCols[cIdx] = { ...updatedCols[cIdx], links: nextLinks };
+                                  onUpdateProps?.({ columns: updatedCols });
+                                }
+                              }}
+                              style={{ outline: "none", color: subtextColor }}
+                              className={`hover:opacity-100 transition-opacity block whitespace-nowrap ${interactive ? "cursor-text" : ""}`}
+                            >
+                              {lnk}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
                 <span
@@ -2636,7 +2638,7 @@ export function ComponentRenderer({
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-2xl font-black ${interactive ? "cursor-text transition-all" : ""}`}
+                    className={`text-2xl font-black whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
                   >
                     {logoText}
                   </h3>
@@ -2653,50 +2655,52 @@ export function ComponentRenderer({
                     {tagline}
                   </p>
                 </div>
-                {columnsList.map((col: any, cIdx: number) => (
-                  <div key={cIdx} className="space-y-3 text-sm text-left">
-                    <h5
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
-                        if (next && next !== col.title) {
-                          const updatedCols = [...columnsList];
-                          updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
-                          onUpdateProps?.({ columns: updatedCols });
-                        }
-                      }}
-                      style={{ outline: "none", color: textColor }}
-                      className={`font-bold uppercase tracking-wider text-xs ${interactive ? "cursor-text transition-all" : ""}`}
-                    >
-                      {col.title}
-                    </h5>
-                    <ul className="space-y-2.5">
-                      {col.links.map((lnk: string, lIdx: number) => (
-                        <li key={lIdx} className="block">
-                          <span
-                            contentEditable={interactive}
-                            suppressContentEditableWarning
-                            onBlur={(e) => {
-                              const next = e.currentTarget.innerText.trim();
-                              if (next && next !== lnk) {
-                                const updatedCols = [...columnsList];
-                                const nextLinks = [...updatedCols[cIdx].links];
-                                nextLinks[lIdx] = next;
-                                updatedCols[cIdx] = { ...updatedCols[cIdx], links: nextLinks };
-                                onUpdateProps?.({ columns: updatedCols });
-                              }
-                            }}
-                            style={{ outline: "none", color: subtextColor }}
-                            className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                          >
-                            {lnk}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                <div className="md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-6">
+                  {columnsList.map((col: any, cIdx: number) => (
+                    <div key={cIdx} className="space-y-3 text-sm text-left">
+                      <h5
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerText.trim();
+                          if (next && next !== col.title) {
+                            const updatedCols = [...columnsList];
+                            updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
+                            onUpdateProps?.({ columns: updatedCols });
+                          }
+                        }}
+                        style={{ outline: "none", color: textColor }}
+                        className={`font-bold uppercase tracking-wider text-xs whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
+                      >
+                        {col.title}
+                      </h5>
+                      <ul className="space-y-2.5">
+                        {col.links.map((lnk: string, lIdx: number) => (
+                          <li key={lIdx} className="block">
+                            <span
+                              contentEditable={interactive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerText.trim();
+                                if (next && next !== lnk) {
+                                  const updatedCols = [...columnsList];
+                                  const nextLinks = [...updatedCols[cIdx].links];
+                                  nextLinks[lIdx] = next;
+                                  updatedCols[cIdx] = { ...updatedCols[cIdx], links: nextLinks };
+                                  onUpdateProps?.({ columns: updatedCols });
+                                }
+                              }}
+                              style={{ outline: "none", color: subtextColor }}
+                              className={`hover:opacity-100 transition-opacity block whitespace-nowrap ${interactive ? "cursor-text" : ""}`}
+                            >
+                              {lnk}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="pt-8 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
                 <span

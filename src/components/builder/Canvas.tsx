@@ -155,8 +155,8 @@ export function Canvas({
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
       
-      const frameWidth = device === "desktop" ? 1200 : device === "tablet" ? 768 : 390;
-      const frameHeight = device === "desktop" ? 720 : device === "tablet" ? 1024 : 844;
+      const frameWidth = device === "desktop" ? 1200 : device === "tablet" ? 768 : 420;
+      const frameHeight = device === "desktop" ? 720 : device === "tablet" ? 1024 : 860;
       
       const paddingX = 80;
       const paddingY = 80;
