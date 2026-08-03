@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { BuilderComponent, ComponentProps, ComponentStyle, SiteTheme } from "@/lib/types";
 import { styleToCss } from "@/lib/style";
 import { PALETTE } from "@/lib/presets";
@@ -350,6 +351,26 @@ function CustomSelectDropdown({
   );
 }
 
+function EditModalPortal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0"
+      onClick={onClose}
+    >
+      {children}
+    </div>,
+    document.body
+  );
+}
+
 function LogoEditItem({
   logoText,
   logoHref = "#top",
@@ -476,7 +497,7 @@ function LogoEditItem({
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
+    <EditModalPortal onClose={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
@@ -697,7 +718,7 @@ function LogoEditItem({
         </button>
       </div>
       </div>
-    </div>
+    </EditModalPortal>
   );
 }
 
@@ -742,7 +763,7 @@ function LinkEditItem({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
+    <EditModalPortal onClose={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
@@ -822,7 +843,7 @@ function LinkEditItem({
         </button>
       </div>
       </div>
-    </div>
+    </EditModalPortal>
   );
 }
 
@@ -868,7 +889,7 @@ function ButtonEditItem({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
+    <EditModalPortal onClose={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
@@ -970,7 +991,7 @@ function ButtonEditItem({
         </button>
       </div>
       </div>
-    </div>
+    </EditModalPortal>
   );
 }
 
@@ -1025,7 +1046,7 @@ function ImageEditItem({
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
+    <EditModalPortal onClose={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
@@ -1113,7 +1134,7 @@ function ImageEditItem({
         </button>
       </div>
       </div>
-    </div>
+    </EditModalPortal>
   );
 }
 
@@ -1145,7 +1166,7 @@ function SpacerEditItem({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999999] flex items-start sm:items-center justify-center p-4 sm:p-6 pt-12 sm:pt-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0" onClick={onClose}>
+    <EditModalPortal onClose={onClose}>
       <div
         ref={popoverRef}
         onPointerDown={(e) => e.stopPropagation()}
@@ -1195,7 +1216,7 @@ function SpacerEditItem({
         </button>
       </div>
       </div>
-    </div>
+    </EditModalPortal>
   );
 }
 
