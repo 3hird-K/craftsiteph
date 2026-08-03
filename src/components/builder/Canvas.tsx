@@ -134,31 +134,6 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
 
         {/* Inner Screen Display Box */}
         <div className="w-full flex-1 rounded-xl overflow-hidden bg-background relative flex flex-col z-10 border border-black/30 shadow-inner">
-          
-          {/* macOS Browser Window Topbar */}
-          <div className="bg-muted/80 backdrop-blur-md px-4 py-2 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-rose-500/80 border border-rose-600/40" />
-              <div className="w-3 h-3 rounded-full bg-amber-500/80 border border-amber-600/40" />
-              <div className="w-3 h-3 rounded-full bg-emerald-500/80 border border-emerald-600/40" />
-            </div>
-
-            {/* Browser Address Bar */}
-            <div className="flex-1 max-w-md bg-background/90 border border-border/70 rounded-lg px-3 py-1 flex items-center justify-between text-xs text-muted-foreground shadow-xs mx-4">
-              <div className="flex items-center gap-2 text-foreground font-mono text-[11px]">
-                <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
-                <span className="font-medium tracking-tight">https://craftsite.app/preview</span>
-              </div>
-              <RotateCw className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] font-bold text-foreground flex items-center gap-1.5 bg-background/80 px-2 py-0.5 rounded-md border border-border">
-                <Monitor className="h-3 w-3 text-primary" /> Laptop Screen
-              </span>
-            </div>
-          </div>
-
           {/* Scrollable Content Viewport */}
           <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
             {children}
