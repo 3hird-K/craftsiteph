@@ -3,7 +3,7 @@
 import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "@/lib/types";
 import { ComponentRenderer } from "@/components/renderer/ComponentRenderer";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
-import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight, Wifi, Battery, Signal, Lock, RotateCw, Copy, Monitor } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -48,10 +48,11 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
               <div className="w-2.5 h-2.5 rounded-full bg-[#09090b] border border-white/20" />
             </div>
 
-            <div className="flex items-center gap-1.5 text-[11px] opacity-80 pr-1">
-              <span className="text-[10px] font-bold">5G</span>
-              <span>📶</span>
-              <span>🔋</span>
+            <div className="flex items-center gap-1.5 text-[11px] opacity-90 pr-1">
+              <span className="text-[10px] font-bold font-mono">5G</span>
+              <Signal className="h-3 w-3" />
+              <Wifi className="h-3 w-3" />
+              <Battery className="h-3.5 w-3.5 fill-foreground/30 text-foreground" />
             </div>
           </div>
 
@@ -63,13 +64,13 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
           {/* Safari Mobile Bottom Bar & Home Indicator */}
           <div className="bg-background/95 backdrop-blur-md text-foreground border-t border-border/40 pt-2 pb-1.5 px-4 flex flex-col gap-1.5 shrink-0 z-30 select-none">
             <div className="flex items-center justify-between gap-3 px-2">
-              <span className="text-xs font-bold opacity-60">AA</span>
+              <span className="text-xs font-extrabold opacity-70 tracking-tighter">AA</span>
               <div className="flex-1 max-w-[220px] bg-muted/60 border border-border/60 rounded-full px-3 py-1 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground shadow-xs">
-                <span>🔒</span>
+                <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
                 <span className="font-medium text-foreground tracking-tight">craftsite.app</span>
-                <span className="text-[10px] opacity-60">🔄</span>
+                <RotateCw className="h-2.5 w-2.5 opacity-60 shrink-0" />
               </div>
-              <span className="text-sm font-medium opacity-60">⧉</span>
+              <Copy className="h-3.5 w-3.5 opacity-70 shrink-0" />
             </div>
             {/* iOS Home Indicator Pill */}
             <div className="w-32 h-1 bg-foreground/30 rounded-full mx-auto mt-1" />
@@ -99,9 +100,10 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
             <div className="w-2.5 h-2.5 rounded-full bg-black border border-white/20 shadow-inner" />
 
             <div className="flex items-center gap-2 text-[11px] opacity-80">
-              <span>📶</span>
-              <span>100%</span>
-              <span>🔋</span>
+              <Signal className="h-3 w-3" />
+              <Wifi className="h-3.5 w-3.5" />
+              <span className="text-[10px] font-mono font-bold">100%</span>
+              <Battery className="h-3.5 w-3.5 fill-foreground/30 text-foreground" />
             </div>
           </div>
 
@@ -119,11 +121,40 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
     );
   }
 
-  // Desktop
+  // Desktop macOS Browser Frame
   return (
-    <div className="relative mx-auto w-full h-full flex flex-col transition-all duration-300">
-      <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
-        {children}
+    <div className="relative mx-auto w-full h-full p-4 flex flex-col transition-all duration-300">
+      <div className="w-full h-full rounded-2xl border border-border/80 bg-background shadow-2xl overflow-hidden flex flex-col ring-1 ring-black/5">
+        {/* Desktop macOS Browser Topbar */}
+        <div className="bg-muted/80 backdrop-blur-md px-4 py-2.5 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-rose-500/80 border border-rose-600/40" />
+              <div className="w-3 h-3 rounded-full bg-amber-500/80 border border-amber-600/40" />
+              <div className="w-3 h-3 rounded-full bg-emerald-500/80 border border-emerald-600/40" />
+            </div>
+          </div>
+          
+          {/* Desktop Browser URL Bar */}
+          <div className="flex-1 max-w-lg bg-background/90 border border-border/80 rounded-xl px-3 py-1 flex items-center justify-between text-xs text-muted-foreground shadow-xs mx-4">
+            <div className="flex items-center gap-2 text-foreground font-mono text-[11px]">
+              <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
+              <span className="font-medium">https://craftsite.app/preview</span>
+            </div>
+            <RotateCw className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[11px] font-bold text-foreground flex items-center gap-1.5 bg-background/80 px-2.5 py-1 rounded-lg border border-border">
+              <Monitor className="h-3.5 w-3.5 text-primary" /> Desktop (100%)
+            </span>
+          </div>
+        </div>
+
+        {/* Scrollable Content Viewport */}
+        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+          {children}
+        </div>
       </div>
     </div>
   );
