@@ -457,49 +457,8 @@ export function Canvas({
                           <span>{c.props.imagePosition === "left" || c.props.reverseLayout ? "Image: Left" : "Flip Sides"}</span>
                         </button>
                       )}
-                      
-                      {/* Add Text */}
-                      {["hero", "heading", "cta", "form", "testimonial", "text"].includes(c.type) && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!c.props.subheading && !c.props.text) {
-                               onUpdateProps?.(c.id, { subheading: "New subheading text..." });
-                            } else if (!c.props.text) {
-                               onUpdateProps?.(c.id, { text: "New paragraph text..." });
-                            } else if (!c.props.subheading) {
-                               onUpdateProps?.(c.id, { subheading: "New subheading text..." });
-                            }
-                          }}
-                          className="rounded-full bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
-                          title="Add text block"
-                        >
-                          <Type className="h-3 w-3" /> Text
-                        </button>
-                      )}
-                      
-                      {/* Add Button */}
-                      {["navbar", "hero", "button", "cta", "form", "footer", "heading", "features"].includes(c.type) && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const currentButtons = c.props.buttons || (c.props.buttonText ? [{ label: c.props.buttonText, href: c.props.buttonHref, variant: "solid" as const }] : []);
-                            onUpdateProps?.(c.id, {
-                              buttons: [
-                                ...currentButtons,
-                                { label: "New Button", variant: currentButtons.length ? "outline" : "solid" }
-                              ],
-                              buttonText: undefined,
-                            });
-                          }}
-                          className="rounded-full bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
-                          title="Add a new button"
-                        >
-                          <Plus className="h-3 w-3" /> Button
-                        </button>
-                      )}
+
+
                       {c.type !== "navbar" && (
                         <div
                           className="flex items-center gap-1 bg-muted/80 hover:bg-muted focus-within:bg-background border border-border/80 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary rounded-full px-2 py-0.5 transition-all text-xs shrink-0 shadow-xs"

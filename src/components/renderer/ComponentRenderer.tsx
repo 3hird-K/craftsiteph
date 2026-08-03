@@ -2022,6 +2022,16 @@ export function ComponentRenderer({
                     {props.subheading}
                   </p>
                 )}
+                {interactive && !props.subheading && (
+                  <button
+                    type="button"
+                    onClick={() => onUpdateProps?.({ subheading: "Enter your subtitle here..." })}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-transparent hover:bg-foreground/5 text-foreground/50 hover:text-foreground/80 transition-all cursor-pointer mt-2"
+                    title="Add Subheading"
+                  >
+                    <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  </button>
+                )}
                 <ButtonsBlock />
               </div>
               {props.imageUrl && (
@@ -2104,6 +2114,16 @@ export function ComponentRenderer({
                 >
                   {props.subheading}
                 </p>
+              )}
+              {interactive && !props.subheading && (
+                <button
+                  type="button"
+                  onClick={() => onUpdateProps?.({ subheading: "Enter your subtitle here..." })}
+                  className="flex h-8 w-8 mx-auto items-center justify-center rounded-full border border-dashed border-foreground/30 bg-transparent hover:bg-foreground/5 text-foreground/50 hover:text-foreground/80 transition-all cursor-pointer mt-2"
+                  title="Add Subheading"
+                >
+                  <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
               )}
               <ButtonsBlock />
             </div>
@@ -2364,6 +2384,16 @@ export function ComponentRenderer({
                     {props.subheading}
                   </p>
                 )}
+                {interactive && !props.subheading && (
+                  <button
+                    type="button"
+                    onClick={() => onUpdateProps?.({ subheading: "Enter your subtitle here..." })}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-transparent hover:bg-foreground/5 text-foreground/50 hover:text-foreground/80 transition-all cursor-pointer mt-2"
+                    title="Add Subheading"
+                  >
+                    <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  </button>
+                )}
               </div>
               <div className="shrink-0">
                 {renderCtaButtons()}
@@ -2413,6 +2443,16 @@ export function ComponentRenderer({
                 >
                   {props.subheading}
                 </p>
+              )}
+              {interactive && !props.subheading && (
+                <button
+                  type="button"
+                  onClick={() => onUpdateProps?.({ subheading: "Enter your subtitle here..." })}
+                  className="flex h-8 w-8 mx-auto items-center justify-center rounded-full border border-dashed border-foreground/30 bg-transparent hover:bg-foreground/5 text-foreground/50 hover:text-foreground/80 transition-all cursor-pointer mt-2"
+                  title="Add Subheading"
+                >
+                  <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                </button>
               )}
               <div className="pt-2">
                 {renderCtaButtons()}
