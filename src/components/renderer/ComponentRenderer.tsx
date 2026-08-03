@@ -2029,6 +2029,203 @@ export function ComponentRenderer({
     );
   }
 
+  if (type === "cta") {
+    const variant = props.variant || "full-width-primary";
+
+    const isDarkVariant = variant === "dark-card-badge" || variant === "boxed-glass-card" || variant === "gradient-glow-cta";
+    const isLightVariant = variant === "minimal-inline-cta";
+
+    const isLegacyPresetColor =
+      !style.backgroundColor ||
+      style.backgroundColor === "#ea580c" ||
+      style.backgroundColor === "#4f46e5" ||
+      style.backgroundColor === "#4F46E5" ||
+      style.backgroundColor === "rgb(234, 88, 12)";
+
+    const defaultBg =
+      variant === "dark-card-badge"
+        ? "#020617"
+        : variant === "boxed-glass-card"
+        ? "#0f172a"
+        : variant === "minimal-inline-cta"
+        ? "#f8fafc"
+        : primary;
+
+    const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
+    const ctaRadius = style.borderRadius || (variant === "boxed-glass-card" || variant === "gradient-glow-cta" || variant === "dark-card-badge" ? "24px" : "0px");
+
+    // Contrast detection
+    const isDarkBg =
+      ctaBg === primary ||
+      isDarkVariant ||
+      ctaBg === "#020617" ||
+      ctaBg === "#0f172a" ||
+      ctaBg === "#1e1b4b" ||
+      ctaBg === "#000000" ||
+      (typeof ctaBg === "string" && ctaBg.startsWith("#") && ctaBg.length === 7 && ctaBg !== "#ffffff" && ctaBg !== "#f8fafc");
+
+    const textColor = style.textColor || (isDarkBg ? "#ffffff" : theme.textColor || "#0f172a");
+
+    const isSplitLayout = variant === "split-headline-cta" || variant === "minimal-inline-cta";
+
+    const buttonsList = props.buttons || [
+      {
+        label: props.buttonText || "Get Started",
+        href: props.buttonHref || "#",
+        variant: "solid" as const,
+      },
+    ];
+
+    const renderCtaButtons = () => (
+      <div className={`flex flex-wrap items-center gap-3 ${isSplitLayout ? "justify-start" : "justify-center"}`}>
+        {buttonsList.map((btn, i) => {
+          const isSolid = btn.variant === "solid" || !btn.variant;
+          const isOutline = btn.variant === "outline";
+          const isGhost = btn.variant === "ghost";
+
+          const btnBg = isSolid
+            ? (isDarkBg ? "#ffffff" : primary)
+            : "transparent";
+
+          const btnText = isSolid
+            ? (isDarkBg ? "#0f172a" : "#ffffff")
+            : (isDarkBg ? "#ffffff" : primary);
+
+          const btnBorder = isOutline
+            ? (isDarkBg ? "rgba(255, 255, 255, 0.4)" : primary)
+            : "transparent";
+
+          return (
+            <a
+              key={i}
+              href={btn.href || "#"}
+              className={`inline-flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg transition-all cursor-pointer select-none active:scale-95 ${
+                isOutline ? "border-2 hover:bg-white/10" : isGhost ? "hover:bg-white/10 shadow-none" : "hover:brightness-110 shadow-md"
+              }`}
+              style={{
+                borderRadius: btnRadius,
+                backgroundColor: btnBg,
+                color: btnText,
+                borderColor: btnBorder,
+              }}
+            >
+              <RenderIcon icon={btn.icon} className="h-4 w-4 shrink-0" />
+              <span>{btn.label || "Button"}</span>
+            </a>
+          );
+        })}
+      </div>
+    );
+
+    return (
+      <section
+        id={currentSectionId}
+        style={{
+          ...css,
+          backgroundColor: ctaBg,
+          color: textColor,
+          borderRadius: ctaRadius,
+        }}
+        className="py-16 md:py-20 transition-all"
+      >
+        <Center maxWidth={effectiveMaxWidth}>
+          {isSplitLayout ? (
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 text-left">
+              <div className="space-y-3 max-w-2xl">
+                {props.heading && (
+                  <h2
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerText.trim();
+                      if (newText && newText !== props.heading) {
+                        onUpdateProps?.({ heading: newText });
+                      }
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-3xl md:text-4xl font-extrabold tracking-tight ${
+                      interactive ? "cursor-text transition-all" : ""
+                    }`}
+                  >
+                    {props.heading}
+                  </h2>
+                )}
+                {props.subheading && (
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerText.trim();
+                      if (newText && newText !== props.subheading) {
+                        onUpdateProps?.({ subheading: newText });
+                      }
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-base opacity-90 ${
+                      interactive ? "cursor-text transition-all" : ""
+                    }`}
+                  >
+                    {props.subheading}
+                  </p>
+                )}
+              </div>
+              <div className="shrink-0">
+                {renderCtaButtons()}
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-3xl mx-auto text-center space-y-6">
+              {variant === "gradient-glow-cta" && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-white mb-2">
+                  <span>✦</span> <span>ANNOUNCEMENT</span>
+                </div>
+              )}
+              {props.heading && (
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const newText = e.currentTarget.innerText.trim();
+                    if (newText && newText !== props.heading) {
+                      onUpdateProps?.({ heading: newText });
+                    }
+                  }}
+                  style={{ outline: "none", color: textColor }}
+                  className={`text-3xl md:text-5xl font-extrabold tracking-tight ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                >
+                  {props.heading}
+                </h2>
+              )}
+              {props.subheading && (
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const newText = e.currentTarget.innerText.trim();
+                    if (newText && newText !== props.subheading) {
+                      onUpdateProps?.({ subheading: newText });
+                    }
+                  }}
+                  style={{ outline: "none", color: textColor }}
+                  className={`text-lg md:text-xl opacity-90 max-w-2xl mx-auto ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                >
+                  {props.subheading}
+                </p>
+              )}
+              <div className="pt-2">
+                {renderCtaButtons()}
+              </div>
+            </div>
+          )}
+        </Center>
+      </section>
+    );
+  }
+
   // Fallback for default section types
   return (
     <section id={currentSectionId} style={css} className="py-12">

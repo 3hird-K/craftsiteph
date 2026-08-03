@@ -466,6 +466,103 @@ function RealisticLayoutPreview({
         </div>
       );
 
+    // CTA VARIANTS
+    case "full-width-primary":
+    case "full-width-cta":
+      return (
+        <div
+          className="w-full p-3 text-center flex flex-col items-center justify-center gap-1.5 shadow-md transition-all"
+          style={{ backgroundColor: primaryColor, color: "#ffffff", borderRadius: "12px" }}
+        >
+          <span className="font-extrabold text-xs">Ready to ship your next page?</span>
+          <span className="text-[9px] opacity-85 line-clamp-1">Join thousands of makers designing with CraftSite.</span>
+          <span className="mt-0.5 px-3 py-1 text-[9px] font-extrabold text-slate-900 bg-white shadow-xs rounded-lg">
+            Create Free Project
+          </span>
+        </div>
+      );
+
+    case "boxed-glass-card":
+    case "boxed-cta":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all shadow-md`}
+          style={{ backgroundColor: isLightTheme ? "#0f172a" : "#1e293b", color: "#ffffff", borderRadius: "14px" }}
+        >
+          <span className="font-bold text-xs text-white">Accelerate your workflow today</span>
+          <span className="text-[9px] opacity-75 line-clamp-1 text-slate-300">Get instant access to design templates.</span>
+          <span className="mt-0.5 px-3 py-1 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            Get Started Now
+          </span>
+        </div>
+      );
+
+    case "split-headline-cta":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="flex-1 space-y-0.5 text-left">
+            <span className="font-extrabold text-[11px] block" style={{ color: cardTextColor }}>Start building faster today</span>
+            <span className="text-[9px] opacity-75 block line-clamp-1">Everything you need to launch products.</span>
+          </div>
+          <span className="px-2.5 py-1 text-[9px] font-bold text-white shadow-xs shrink-0" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            Start Free Trial
+          </span>
+        </div>
+      );
+
+    case "gradient-glow-cta":
+      return (
+        <div
+          className="w-full p-3 text-center flex flex-col items-center justify-center gap-1 shadow-lg transition-all relative overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${primaryColor}, #312e81)`,
+            color: "#ffffff",
+            borderRadius: "14px",
+          }}
+        >
+          <span className="px-2 py-0.5 text-[8px] font-extrabold bg-white/20 backdrop-blur-md text-white rounded-full">
+            ✦ PRO EDITION
+          </span>
+          <span className="font-extrabold text-xs text-white">Unlock unlimited site creation</span>
+          <span className="px-3 py-0.5 text-[9px] font-bold text-slate-950 bg-white shadow-xs rounded-md">
+            Upgrade Pro Plan
+          </span>
+        </div>
+      );
+
+    case "minimal-inline-cta":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 transition-all`}
+          style={{ backgroundColor: isLightTheme ? "#f8fafc" : "#0f172a", color: cardTextColor, borderRadius: "12px" }}
+        >
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: primaryColor }} />
+            <span className="font-bold text-[10px]" style={{ color: cardTextColor }}>Want to see it in action?</span>
+          </div>
+          <span className="px-2 py-0.5 text-[9px] font-bold border opacity-90 hover:opacity-100 shrink-0" style={{ borderColor: primaryColor, color: primaryColor, borderRadius: navRadius }}>
+            Watch Demo →
+          </span>
+        </div>
+      );
+
+    case "dark-card-badge":
+      return (
+        <div
+          className="w-full p-3 border border-slate-700/80 text-center flex flex-col items-center justify-center gap-1 transition-all shadow-md"
+          style={{ backgroundColor: "#020617", color: "#f8fafc", borderRadius: "14px" }}
+        >
+          <span className="font-extrabold text-xs text-white">Transform how you build</span>
+          <span className="text-[8px] text-slate-400">Join 50,000+ teams building next-generation websites.</span>
+          <span className="mt-1 px-3 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            Join Waitlist
+          </span>
+        </div>
+      );
+
     default:
       return (
         <div

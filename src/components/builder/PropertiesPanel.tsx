@@ -334,7 +334,14 @@ export function PropertiesPanel({
 
               <Field label={`${compLabel} Background`}>
                 <ColorInput
-                  value={component.style.backgroundColor}
+                  value={
+                    component.style.backgroundColor === "#ea580c" ||
+                    component.style.backgroundColor === "#4f46e5" ||
+                    component.style.backgroundColor === "#4F46E5" ||
+                    !component.style.backgroundColor
+                      ? theme.primaryColor
+                      : component.style.backgroundColor
+                  }
                   onChange={(v) => onChangeStyle(component.id, { backgroundColor: v })}
                 />
               </Field>
