@@ -94,7 +94,7 @@ export function BuilderEditor({ project }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
-  const [showDeviceFrame, setShowDeviceFrame] = useState(true);
+  const [showDeviceFrame, setShowDeviceFrame] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
