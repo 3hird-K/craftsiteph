@@ -291,60 +291,36 @@ export function PropertiesPanel({
               </Field>
 
               {component.type === "navbar" && (
-                <div className="space-y-1.5 pb-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Navbar Color Theme
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onChangeStyle(component.id, {
-                          backgroundColor: "#ffffff",
-                          textColor: "#0f172a",
-                        })
-                      }
-                      className={`flex items-center justify-center gap-1.5 py-2 px-2 border rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        component.style.backgroundColor === "#ffffff"
-                          ? "bg-white text-slate-900 border-primary shadow-xs ring-1 ring-primary"
-                          : "bg-background text-foreground border-border hover:bg-muted/50"
-                      }`}
-                    >
-                      <Sun className="h-3.5 w-3.5 text-amber-500" /> Light
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onChangeStyle(component.id, {
-                          backgroundColor: "#0f172a",
-                          textColor: "#f8fafc",
-                        })
-                      }
-                      className={`flex items-center justify-center gap-1.5 py-2 px-2 border rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        component.style.backgroundColor === "#0f172a"
-                          ? "bg-slate-900 text-white border-primary shadow-xs ring-1 ring-primary"
-                          : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
-                      }`}
-                    >
-                      <Moon className="h-3.5 w-3.5 text-blue-400" /> Dark
-                    </button>
-                  </div>
-                </div>
+                <Field label="Navbar Shadow">
+                  <SelectInput
+                    value={component.style.boxShadow || "none"}
+                    onChange={(v) => onChangeStyle(component.id, { boxShadow: v })}
+                    options={[
+                      { label: "None", value: "none" },
+                      { label: "Small", value: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)" },
+                      { label: "Medium", value: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)" },
+                      { label: "Large", value: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)" },
+                      { label: "Extra Large", value: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)" },
+                    ]}
+                  />
+                </Field>
               )}
 
-              <Field label={`${compLabel} Background`}>
-                <ColorInput
-                  value={
-                    component.style.backgroundColor === "#ea580c" ||
-                    component.style.backgroundColor === "#4f46e5" ||
-                    component.style.backgroundColor === "#4F46E5" ||
-                    !component.style.backgroundColor
-                      ? "#f0f9ff"
-                      : component.style.backgroundColor
-                  }
-                  onChange={(v) => onChangeStyle(component.id, { backgroundColor: v })}
-                />
-              </Field>
+              {component.type !== "navbar" && (
+                <Field label={`${compLabel} Background`}>
+                  <ColorInput
+                    value={
+                      component.style.backgroundColor === "#ea580c" ||
+                      component.style.backgroundColor === "#4f46e5" ||
+                      component.style.backgroundColor === "#4F46E5" ||
+                      !component.style.backgroundColor
+                        ? "#f0f9ff"
+                        : component.style.backgroundColor
+                    }
+                    onChange={(v) => onChangeStyle(component.id, { backgroundColor: v })}
+                  />
+                </Field>
+              )}
 
 
 
@@ -490,6 +466,40 @@ export function PropertiesPanel({
                   />
                 </Field>
               ) : null}
+              {component.type === "form" && (
+                <>
+                  <Field label="Button Text">
+                    <TextInput
+                      value={component.props.buttonText || "Send message"}
+                      onChange={(v) => onChangeProps(component.id, { buttonText: v })}
+                    />
+                  </Field>
+                  <Field label="Contact Email">
+                    <TextInput
+                      value={component.props.contactEmail || "hello@craftsite.io"}
+                      onChange={(v) => onChangeProps(component.id, { contactEmail: v })}
+                    />
+                  </Field>
+                  <Field label="Phone Number">
+                    <TextInput
+                      value={component.props.contactPhone || "+1 (555) 234-5678"}
+                      onChange={(v) => onChangeProps(component.id, { contactPhone: v })}
+                    />
+                  </Field>
+                  <Field label="Office Address / Location">
+                    <TextInput
+                      value={component.props.contactAddress || "795 Folsom St, San Francisco, CA"}
+                      onChange={(v) => onChangeProps(component.id, { contactAddress: v })}
+                    />
+                  </Field>
+                  <Field label="Business Hours / Subtext">
+                    <TextInput
+                      value={component.props.contactHours || "Mon - Fri, 9am - 6pm EST"}
+                      onChange={(v) => onChangeProps(component.id, { contactHours: v })}
+                    />
+                  </Field>
+                </>
+              )}
               {component.type === "footer" && (
                 <>
                   <Field label="Tagline / Brand Subtext">
@@ -1028,7 +1038,7 @@ export function PropertiesPanel({
                 </Field>
                 <Field label="Global Page Background">
                   <ColorInput
-                    value={theme.backgroundColor}
+                    value={!theme.backgroundColor || theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc" ? "#f1f5f9" : theme.backgroundColor}
                     onChange={(v) => onChangeTheme({ backgroundColor: v })}
                   />
                 </Field>

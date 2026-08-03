@@ -44,12 +44,7 @@ export function ComponentVariantModal({
         }}
       >
         {/* Header */}
-        <div
-          className="p-6 pb-4 border-b border-border/50"
-          style={{
-            background: `linear-gradient(to right, ${theme.primaryColor || "#ea580c"}18, ${theme.primaryColor || "#ea580c"}05, transparent)`,
-          }}
-        >
+        <div className="pt-6 pb-5 px-6 border-b border-border/40">
           <DialogHeader>
             <div className="flex items-center gap-2 mb-1">
               <span
@@ -568,19 +563,19 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-3 border ${borderStyle} text-[10px] space-y-2 transition-all`}
-          style={{ backgroundColor: "#0f172a", color: "#f8fafc", borderRadius: "12px" }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
         >
           <div className="flex justify-between items-start">
             <div className="space-y-0.5">
-              <span className="font-extrabold text-xs block text-white">CraftSite</span>
+              <span className="font-extrabold text-xs block" style={{ color: cardTextColor }}>CraftSite</span>
               <span className="text-[8px] opacity-75 block">Building the future of visual web creation.</span>
             </div>
             <div className="flex gap-4 text-[8px] opacity-80">
-              <div className="space-y-0.5"><span className="font-bold block text-white">Product</span><span>Features</span></div>
-              <div className="space-y-0.5"><span className="font-bold block text-white">Company</span><span>About</span></div>
+              <div className="space-y-0.5"><span className="font-bold block" style={{ color: cardTextColor }}>Product</span><span>Features</span></div>
+              <div className="space-y-0.5"><span className="font-bold block" style={{ color: cardTextColor }}>Company</span><span>About</span></div>
             </div>
           </div>
-          <div className="pt-1 border-t border-slate-700/60 text-[8px] opacity-60 flex justify-between">
+          <div className="pt-1 border-t border-border/60 text-[8px] opacity-60 flex justify-between">
             <span>© 2026 CraftSite Inc.</span>
             <span>Twitter • GitHub</span>
           </div>
@@ -604,17 +599,17 @@ function RealisticLayoutPreview({
     case "newsletter-split-footer":
       return (
         <div
-          className="w-full p-3 border border-slate-800 text-[10px] space-y-2 transition-all"
-          style={{ backgroundColor: "#020617", color: "#f8fafc", borderRadius: "12px" }}
+          className={`w-full p-3 border ${borderStyle} text-[10px] space-y-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
         >
-          <div className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-slate-900 border border-slate-800">
-            <span className="text-[8px] text-slate-300">Subscribe to updates</span>
+          <div className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-muted/40 border border-border/60">
+            <span className="text-[8px] opacity-75">Subscribe to updates</span>
             <span className="px-2 py-0.5 text-[8px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Join
             </span>
           </div>
-          <div className="flex justify-between items-center text-[8px] text-slate-400">
-            <span className="font-bold text-white">CraftSite</span>
+          <div className="flex justify-between items-center text-[8px] opacity-75">
+            <span className="font-bold" style={{ color: cardTextColor }}>CraftSite</span>
             <span>© 2026 CraftSite Inc.</span>
           </div>
         </div>
@@ -623,16 +618,16 @@ function RealisticLayoutPreview({
     case "dark-tech-dock":
       return (
         <div
-          className="w-full p-3 border border-slate-800 text-[10px] space-y-2 transition-all"
-          style={{ backgroundColor: "#030712", color: "#ffffff", borderRadius: "12px" }}
+          className={`w-full p-3 border ${borderStyle} text-[10px] space-y-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
         >
           <div className="flex items-center justify-between">
-            <span className="font-extrabold text-xs text-white">CraftSite Dev</span>
-            <span className="px-2 py-0.5 text-[8px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
+            <span className="font-extrabold text-xs" style={{ color: cardTextColor }}>CraftSite Dev</span>
+            <span className="px-2 py-0.5 text-[8px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 rounded-full">
               🟢 Operational
             </span>
           </div>
-          <div className="flex justify-between text-[8px] text-slate-400">
+          <div className="flex justify-between text-[8px] opacity-75">
             <span>Status • API Docs • GitHub</span>
             <span>© 2026</span>
           </div>
@@ -642,12 +637,12 @@ function RealisticLayoutPreview({
     case "stacked-brand-statement":
       return (
         <div
-          className="w-full p-3 border border-indigo-950 text-center space-y-1 transition-all"
-          style={{ backgroundColor: "#1e1b4b", color: "#ffffff", borderRadius: "12px" }}
+          className={`w-full p-3 border ${borderStyle} text-center space-y-1 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
         >
-          <span className="font-black text-sm tracking-widest block text-white">CRAFTSITE</span>
-          <span className="text-[8px] tracking-wider text-indigo-200 block">VISUAL BUILDER FOR CREATORS</span>
-          <span className="text-[7px] text-indigo-300/60 block pt-1">© 2026 ALL RIGHTS RESERVED</span>
+          <span className="font-black text-sm tracking-widest block" style={{ color: cardTextColor }}>CRAFTSITE</span>
+          <span className="text-[8px] tracking-wider opacity-75 block">VISUAL BUILDER FOR CREATORS</span>
+          <span className="text-[7px] opacity-50 block pt-1">© 2026 ALL RIGHTS RESERVED</span>
         </div>
       );
 
@@ -655,10 +650,106 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between text-[9px] transition-all`}
-          style={{ backgroundColor: isLightTheme ? "#f8fafc" : "#0f172a", color: cardTextColor, borderRadius: "10px" }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "10px" }}
         >
           <span className="font-extrabold text-[10px]" style={{ color: cardTextColor }}>CraftSite</span>
           <span className="opacity-70">© 2026 • Privacy • Terms</span>
+        </div>
+      );
+
+    /* Contact Form Variants */
+    case "classic-centered-form":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} text-center space-y-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
+        >
+          <span className="font-extrabold text-xs block" style={{ color: cardTextColor }}>Get in touch</span>
+          <div className="w-11/12 mx-auto space-y-1">
+            <div className="h-2.5 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-2.5 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-4 rounded bg-muted/60 border border-border/40 w-full" />
+          </div>
+          <span className="mt-1 px-3 py-0.5 text-[8px] font-bold text-white shadow-xs inline-block" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            Send Message
+          </span>
+        </div>
+      );
+
+    case "split-contact-info-form":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} grid grid-cols-2 gap-2 text-[9px] transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
+        >
+          <div className="space-y-1 text-left">
+            <span className="font-extrabold text-[10px] block" style={{ color: cardTextColor }}>Contact Us</span>
+            <span className="text-[7px] opacity-75 block">hello@craftsite.io</span>
+            <span className="text-[7px] opacity-75 block">+1 (800) 555-0199</span>
+          </div>
+          <div className="p-1.5 rounded-lg bg-muted/30 border border-border/60 space-y-1">
+            <div className="h-2 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-2 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-2.5 rounded text-[7px] text-white font-bold flex items-center justify-center" style={{ backgroundColor: primaryColor }}>
+              Send
+            </div>
+          </div>
+        </div>
+      );
+
+    case "boxed-dark-glass-form":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} text-center space-y-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "16px" }}
+        >
+          <span className="font-extrabold text-xs block" style={{ color: cardTextColor }}>Start a Conversation</span>
+          <div className="w-11/12 mx-auto space-y-1">
+            <div className="h-2.5 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-4 rounded bg-muted/60 border border-border/40 w-full" />
+          </div>
+          <span className="px-3 py-0.5 text-[8px] font-bold text-white shadow-xs inline-block" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            Submit Inquiry
+          </span>
+        </div>
+      );
+
+    case "map-split-form":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} grid grid-cols-2 gap-2 text-[9px] transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
+        >
+          <div className="p-1.5 rounded-lg bg-muted/40 border border-border/60 space-y-1 flex flex-col justify-between">
+            <span className="font-bold text-[8px]" style={{ color: cardTextColor }}>Headquarters</span>
+            <span className="text-[7px] opacity-70">San Francisco, CA</span>
+          </div>
+          <div className="space-y-1">
+            <div className="h-2 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-2 rounded bg-muted/60 border border-border/40 w-full" />
+            <div className="h-2.5 rounded text-[7px] text-white font-bold flex items-center justify-center" style={{ backgroundColor: primaryColor }}>
+              Send
+            </div>
+          </div>
+        </div>
+      );
+
+    case "compact-newsletter-contact":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 text-[9px] transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="font-bold block text-[10px]" style={{ color: cardTextColor }}>Have Questions?</span>
+            <span className="text-[7px] opacity-70">Request callback</span>
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <div className="w-16 h-4 rounded bg-muted/60 border border-border/40" />
+            <span className="px-2 py-0.5 text-[7px] font-bold text-white shrink-0" style={{ backgroundColor: primaryColor, borderRadius: "6px" }}>
+              Send
+            </span>
+          </div>
         </div>
       );
 

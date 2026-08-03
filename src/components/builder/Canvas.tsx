@@ -30,18 +30,19 @@ const deviceWidth = {
 };
 
 // Device Frame Wrapper Component
-function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Props["device"]; showDeviceFrame?: boolean; children: React.ReactNode }) {
+function DeviceFrame({ device, showDeviceFrame = true, canvasBg, children }: { device: Props["device"]; showDeviceFrame?: boolean; canvasBg?: string; children: React.ReactNode }) {
   if (!showDeviceFrame) {
     return (
       <div
         id="canvas-host"
-        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col bg-background relative z-10"
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col relative z-10"
         style={{
           width: device === "mobile" ? "440px" : device === "tablet" ? "768px" : "100%",
           height: device === "mobile" ? "860px" : device === "tablet" ? "960px" : "100%",
+          backgroundColor: canvasBg,
         }}
       >
-        <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+        <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden relative z-10" style={{ backgroundColor: canvasBg }}>
           {children}
         </div>
       </div>
@@ -54,10 +55,10 @@ function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Pro
         style={{ width: "430px", height: "860px" }}
       >
         {/* Inner Screen Canvas Container */}
-        <div id="canvas-host" className="w-full h-full rounded-[38px] overflow-hidden bg-background relative flex flex-col z-10 border border-black/20">
+        <div id="canvas-host" className="w-full h-full rounded-[38px] overflow-hidden relative flex flex-col z-10 border border-black/20" style={{ backgroundColor: canvasBg }}>
           
           {/* iOS Status Bar */}
-          <div className="bg-background text-foreground px-6 pt-3 pb-1 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 relative">
+          <div className="text-foreground px-6 pt-3 pb-1 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 relative" style={{ backgroundColor: canvasBg }}>
             <span className="font-semibold text-[13px] tracking-tight pl-1">9:41</span>
             
             {/* Dynamic Island Notch */}
@@ -74,12 +75,12 @@ function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Pro
           </div>
 
           {/* Scrollable Content Viewport */}
-          <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+          <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden relative z-10" style={{ backgroundColor: canvasBg }}>
             {children}
           </div>
 
           {/* Safari Mobile Bottom Bar & Home Indicator */}
-          <div className="bg-background/95 backdrop-blur-md text-foreground border-t border-border/40 pt-2 pb-1.5 px-4 flex flex-col gap-1.5 shrink-0 z-30 select-none">
+          <div className="backdrop-blur-md text-foreground border-t border-border/40 pt-2 pb-1.5 px-4 flex flex-col gap-1.5 shrink-0 z-30 select-none" style={{ backgroundColor: canvasBg }}>
             <div className="flex items-center justify-between gap-3 px-2">
               <span className="text-xs font-extrabold opacity-70 tracking-tighter">AA</span>
               <div className="flex-1 max-w-[220px] bg-muted/60 border border-border/60 rounded-full px-3 py-1 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground shadow-xs">
@@ -104,10 +105,10 @@ function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Pro
         style={{ width: "768px", height: "960px" }}
       >
         {/* Inner Screen Canvas Container */}
-        <div id="canvas-host" className="w-full h-full rounded-[24px] overflow-hidden bg-background relative flex flex-col z-10 border border-black/20">
+        <div id="canvas-host" className="w-full h-full rounded-[24px] overflow-hidden relative flex flex-col z-10 border border-black/20" style={{ backgroundColor: canvasBg }}>
           
           {/* iPadOS Status Bar */}
-          <div className="bg-background text-foreground px-6 py-2 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 border-b border-border/30">
+          <div className="text-foreground px-6 py-2 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 border-b border-border/30" style={{ backgroundColor: canvasBg }}>
             <div className="flex items-center gap-2 text-[12px]">
               <span className="font-bold">9:41 AM</span>
               <span className="opacity-60 text-[11px]">Mon Aug 3</span>
@@ -125,12 +126,12 @@ function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Pro
           </div>
 
           {/* Scrollable Content Viewport */}
-          <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+          <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden relative z-10" style={{ backgroundColor: canvasBg }}>
             {children}
           </div>
 
           {/* iPadOS Home Indicator */}
-          <div className="bg-background/90 backdrop-blur-md py-2 shrink-0 z-30 select-none border-t border-border/30">
+          <div className="backdrop-blur-md py-2 shrink-0 z-30 select-none border-t border-border/30" style={{ backgroundColor: canvasBg }}>
             <div className="w-36 h-1 bg-foreground/30 rounded-full mx-auto" />
           </div>
         </div>
@@ -150,9 +151,9 @@ function DeviceFrame({ device, showDeviceFrame = true, children }: { device: Pro
         </div>
 
         {/* Inner Screen Display Box */}
-        <div id="canvas-host" className="w-full flex-1 rounded-xl overflow-hidden bg-background relative flex flex-col z-10 border border-black/30 shadow-inner">
+        <div id="canvas-host" className="w-full flex-1 rounded-xl overflow-hidden relative flex flex-col z-10 border border-black/30 shadow-inner" style={{ backgroundColor: canvasBg }}>
           {/* Scrollable Content Viewport */}
-          <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+          <div id="canvas-scroll-viewport" className="w-full flex-1 overflow-y-auto overflow-x-hidden relative z-10" style={{ backgroundColor: canvasBg }}>
             {children}
           </div>
         </div>
@@ -236,11 +237,11 @@ export function Canvas({
   }, []);
 
   const canvasBg =
-    theme.backgroundColor && theme.backgroundColor !== "#ffffff" && theme.backgroundColor !== "transparent"
-      ? theme.backgroundColor
+    theme.backgroundColor && theme.backgroundColor !== "transparent"
+      ? (theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc" ? "#f1f5f9" : theme.backgroundColor)
       : isAppDark
       ? "#09090b"
-      : "#ffffff";
+      : "#f1f5f9";
 
   const canvasTextColor =
     theme.textColor && theme.textColor !== "#0f172a"
@@ -291,7 +292,7 @@ export function Canvas({
             willChange: 'transform' 
           }}
         >
-          <DeviceFrame device={device} showDeviceFrame={showDeviceFrame}>
+          <DeviceFrame device={device} showDeviceFrame={showDeviceFrame} canvasBg={canvasBg}>
         <div
           id="canvas-host"
           className="relative w-full h-full min-h-[100vh] transition-colors duration-300"
@@ -393,7 +394,7 @@ export function Canvas({
                       setCanvasDragIndex(null);
                       setCanvasDragOverIndex(null);
                     }}
-                    className={`relative ${editing ? "cursor-pointer" : ""} ${
+                    className={`${c.type === "navbar" && !editing ? "sticky top-0" : "relative"} ${editing ? "cursor-pointer" : ""} ${
                       c.type === "navbar" ? "z-[9999]" : selected ? "z-[500]" : "z-10"
                     } ${
                       isCanvasDragging ? "opacity-25 border-2 border-dashed border-primary scale-[0.99] transition-all" : ""
@@ -409,7 +410,7 @@ export function Canvas({
                     }}
                   >
                     {selected ? (
-                      <div className="absolute left-2 top-2 z-40 flex flex-wrap items-center gap-1.5 p-1 bg-background/95 backdrop-blur-md rounded-full border border-border shadow-lg max-w-[calc(100%-16px)]">
+                      <div className="absolute left-2 top-2 z-[10000] flex flex-wrap items-center gap-1.5 p-1 bg-background/95 backdrop-blur-md rounded-full border border-border shadow-lg max-w-[calc(100%-16px)]">
                         <div
                           draggable
                           onDragStart={(e) => {

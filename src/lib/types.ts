@@ -60,6 +60,10 @@ export type ComponentProps = {
   logoTextTransform?: string;
   logoColor?: string;
   socialLinks?: { platform: string; href?: string; url?: string }[];
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
+  contactHours?: string;
 };
 
 export type ComponentType =
@@ -138,7 +142,7 @@ export const DEFAULT_THEME: SiteTheme = {
   primaryColor: "#4f46e5",
   secondaryColor: "#0f172a",
   accentColor: "#f59e0b",
-  backgroundColor: "#ffffff",
+  backgroundColor: "#f1f5f9",
   textColor: "#0f172a",
   fontFamily: "Inter, system-ui, sans-serif",
   borderRadius: "12px",

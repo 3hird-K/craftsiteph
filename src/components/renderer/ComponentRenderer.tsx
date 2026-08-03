@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import type { BuilderComponent, ComponentProps, ComponentStyle, SiteTheme } from "@/lib/types";
 import { styleToCss } from "@/lib/style";
 import { PALETTE } from "@/lib/presets";
+import { toast } from "sonner";
 import {
   Plus,
   X,
@@ -35,6 +36,9 @@ import {
   Sparkles,
   Shield,
   Zap,
+  MapPin,
+  Clock,
+  Send,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -1518,22 +1522,20 @@ export function ComponentRenderer({
         ? (isLightTheme ? "rgba(255, 255, 255, 0.9)" : "rgba(15, 23, 42, 0.85)")
         : (isLightTheme ? "#ffffff" : "#0f172a");
 
-    const headerBg = style.backgroundColor || defaultBg;
+    const headerBg = defaultBg;
 
     // Smart contrast calculation for text & icon colors
     const isDarkBg =
       headerBg === "#0f172a" ||
-      headerBg.includes("15, 23, 42") ||
-      headerBg === "#09090b" ||
-      headerBg === "#000000" ||
-      headerBg.includes("0, 0, 0");
+      headerBg.includes("15, 23, 42");
 
-    const headerTextColor = style.textColor || (isDarkBg ? "#f8fafc" : "#0f172a");
+    const headerTextColor = isDarkBg ? "#f8fafc" : "#0f172a";
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     if (variant === "floating-glass") {
-      css.position = "relative";
-      css.zIndex = 30;
+      css.position = "sticky";
+      css.top = "16px";
+      css.zIndex = 50;
       css.marginTop = "16px";
       css.marginBottom = "24px";
       css.width = "calc(100% - 2rem)";
@@ -1656,27 +1658,30 @@ export function ComponentRenderer({
               ? "flex flex-col items-start gap-2.5 w-full py-1 text-sm font-medium"
               : "hidden sm:flex items-center gap-5 text-sm font-medium"
           }
-          style={isMobileNav ? undefined : { gap: style.gap || "1.25rem" }}
+          style={isMobileNav ? { "--nav-hover": primary, color: headerTextColor } as any : { gap: style.gap || "1.25rem", "--nav-hover": primary, color: headerTextColor } as any}
         >
           {(props.links || []).map((link, i) => {
             const href = link.href || "#";
             const isEditingThis = interactive && activeEditPopover === `link-${i}`;
+            const isBtn = link.variant === "button";
+            
             const linkClass = isMobileNav
-              ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl ${isLightTheme ? "hover:bg-foreground/5" : "hover:bg-white/10"} text-sm font-semibold transition-all cursor-pointer select-none text-left`
-              : `transition-all cursor-pointer select-none inline-flex items-center gap-1.5 ${
+              ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl ${isLightTheme ? "hover:bg-foreground/5" : "hover:bg-white/10"} text-sm font-semibold transition-all cursor-pointer select-none text-left ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""}`
+              : `transition-all cursor-pointer select-none inline-flex items-center gap-1.5 ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""} ${
                   link.variant === "bold"
-                    ? "font-bold opacity-100 hover:opacity-80"
+                    ? "font-bold opacity-100"
                     : link.variant === "muted"
-                    ? "opacity-60 hover:opacity-100"
+                    ? "opacity-75"
                     : link.variant === "button"
-                    ? "px-3.5 py-1.5 rounded-md font-semibold opacity-100 hover:brightness-110 shadow-sm"
-                    : "opacity-85 hover:opacity-100"
+                    ? "px-3.5 py-1.5 rounded-md font-semibold opacity-100 hover:brightness-110 shadow-sm hover:text-white"
+                    : "opacity-90"
                 }`;
-            const linkStyle = {
-              color: link.variant === "button" ? "#ffffff" : headerTextColor,
-              backgroundColor: link.variant === "button" ? primary : "transparent",
-              borderRadius: link.variant === "button" ? btnRadius : undefined,
-            };
+            
+            const linkStyle = isBtn ? {
+              color: "#ffffff",
+              backgroundColor: primary,
+              borderRadius: btnRadius,
+            } : undefined;
 
             return (
               <div key={i} className={isMobileNav ? "w-full text-left relative" : "group/link relative inline-flex items-center"}>
@@ -1821,8 +1826,8 @@ export function ComponentRenderer({
             const isEditingThis = interactive && activeEditPopover === `button-${i}`;
             const btnClass = isMobileNav
               ? "w-full py-2.5 px-4 text-center text-sm font-bold shadow-md rounded-xl transition-all cursor-pointer select-none inline-flex items-center justify-center gap-2"
-              : `inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold shadow-sm transition-all cursor-pointer select-none ${
-                  btn.variant === "outline" ? "border-2 bg-transparent hover:bg-foreground/5" :
+              : `inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold border-2 shadow-sm transition-all cursor-pointer select-none ${
+                  btn.variant === "outline" ? "bg-transparent hover:bg-foreground/5" :
                   btn.variant === "ghost" ? "bg-transparent shadow-none hover:bg-foreground/5" :
                   "text-white hover:brightness-110 active:scale-95"
                 }`;
@@ -1926,8 +1931,9 @@ export function ComponentRenderer({
           borderRadius: isMobileMenuOpen ? "24px 24px 12px 12px" : headerRadius,
           backgroundColor: headerBg,
           color: headerTextColor,
+          boxShadow: shadow !== "none" ? shadow : undefined,
         }}
-        className={`relative z-[9999] transition-all duration-300 ${isMobileMenuOpen ? "overflow-hidden" : ""} ${
+        className={`relative z-30 transition-all duration-300 ${isMobileMenuOpen ? "overflow-hidden" : ""} ${
           variant === "floating-glass"
             ? "backdrop-blur-md border border-white/15 dark:border-white/10 shadow-2xl"
             : ""
@@ -2011,8 +2017,8 @@ export function ComponentRenderer({
           {buttonsList.map((btn, i) => {
             const href = btn.href || "#";
             const isEditingThis = interactive && activeHeroPopover === `button-${i}`;
-            const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg transition-all cursor-pointer select-none ${
-              btn.variant === "outline" ? "border-2 bg-transparent hover:bg-foreground/5" :
+            const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold border-2 shadow-lg transition-all cursor-pointer select-none ${
+              btn.variant === "outline" ? "bg-transparent hover:bg-foreground/5" :
               btn.variant === "ghost" ? "bg-transparent shadow-none hover:bg-foreground/5" :
               "text-white hover:brightness-110 active:scale-95"
             }`;
@@ -2142,7 +2148,7 @@ export function ComponentRenderer({
           backgroundPosition: "center",
           ...css
         }}
-        className={`relative py-16 md:py-24 transition-all ${isBgLayout ? "text-white" : ""}`}
+        className={`relative py-16 md:py-24 transition-all ${isBgLayout ? "text-white flex flex-col justify-center min-h-[60vh] lg:min-h-[75vh]" : ""}`}
       >
         {isBgLayout && (
           <div className="absolute inset-0 bg-black/60 z-0" style={{ borderRadius: heroSectionRadius }} />
@@ -2598,8 +2604,8 @@ export function ComponentRenderer({
             ? (isDarkBg ? "rgba(255, 255, 255, 0.4)" : primary)
             : "transparent";
 
-          const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg transition-all cursor-pointer select-none active:scale-95 ${
-            isOutline ? "border-2 hover:bg-white/10" : isGhost ? "hover:bg-white/10 shadow-none" : "hover:brightness-110 shadow-md"
+          const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold border-2 shadow-lg transition-all cursor-pointer select-none active:scale-95 ${
+            isOutline ? "hover:bg-white/10" : isGhost ? "hover:bg-white/10 shadow-none" : "hover:brightness-110 shadow-md"
           }`;
 
           return (
@@ -2848,45 +2854,42 @@ export function ComponentRenderer({
 
   if (type === "footer") {
     const variant = props.variant || "multi-column-links";
-    const defaultBg =
-      variant === "centered-minimal" || variant === "compact-bottom-bar"
-        ? "#ffffff"
-        : variant === "newsletter-split-footer" || variant === "dark-tech-dock"
-        ? "#020617"
-        : variant === "stacked-brand-statement"
-        ? "#1e1b4b"
-        : "#0f172a";
+    const effectiveBg = (!style.backgroundColor || style.backgroundColor === "transparent")
+      ? (theme.backgroundColor || "#f1f5f9")
+      : style.backgroundColor;
 
-    const footerBg = style.backgroundColor || defaultBg;
-    const footerRadius = "0px";
+    const isDarkBg = Boolean(
+      effectiveBg &&
+      effectiveBg !== "transparent" &&
+      effectiveBg !== "#ffffff" &&
+      effectiveBg !== "#f8fafc" &&
+      effectiveBg !== "#fafafa" &&
+      effectiveBg !== "#f1f5f9" &&
+      effectiveBg !== "#f0f9ff" &&
+      (effectiveBg.includes("0f172a") ||
+       effectiveBg.includes("020617") ||
+       effectiveBg.includes("030712") ||
+       effectiveBg.includes("1e1b4b") ||
+       effectiveBg.includes("rgba(15") ||
+       effectiveBg === "#000000" ||
+       effectiveBg === "#0f172a" ||
+       effectiveBg === "#1e293b" ||
+       effectiveBg === "#09090b" ||
+       effectiveBg === "#18181b")
+    );
 
-    // Dynamic contrast detection
-    const isLightBg =
-      footerBg === "#ffffff" ||
-      footerBg === "#f8fafc" ||
-      footerBg === "#fafafa" ||
-      footerBg === "#f0f9ff" ||
-      (typeof footerBg === "string" && (footerBg.toUpperCase() === "#FFFFFF" || footerBg.toUpperCase() === "#F8FAFC" || footerBg.toUpperCase() === "#FAFAFA" || footerBg.toUpperCase() === "#F0F9FF"));
+    const isLightBg = !isDarkBg;
+    const footerBg = style.backgroundColor || "transparent";
+    const footerRadius = style.borderRadius || "0px";
 
-    const isDarkBg = !isLightBg;
+    const textColor = style.textColor && style.textColor !== "#ffffff" && style.textColor !== "#0f172a"
+      ? style.textColor
+      : isDarkBg
+      ? "#f8fafc"
+      : (theme.textColor || "#0f172a");
 
-    const isDarkTextColor =
-      style.textColor === "#0f172a" ||
-      style.textColor === "#0F172A" ||
-      style.textColor === "#000000" ||
-      style.textColor === "black";
-
-    const isWhiteTextColor =
-      style.textColor === "#ffffff" ||
-      style.textColor === "#FFFFFF" ||
-      style.textColor === "#fff";
-
-    const textColor = isDarkBg
-      ? (isDarkTextColor || !style.textColor ? "#ffffff" : style.textColor)
-      : (isWhiteTextColor || !style.textColor ? (theme.textColor || "#0f172a") : style.textColor);
-
-    const subtextColor = isDarkBg ? "rgba(255, 255, 255, 0.75)" : "#64748b";
-    const borderColor = isDarkBg ? "rgba(255, 255, 255, 0.12)" : "rgba(15, 23, 42, 0.1)";
+    const subtextColor = isDarkBg ? "rgba(255, 255, 255, 0.75)" : (theme.textColor ? `${theme.textColor}cc` : "#475569");
+    const borderColor = isDarkBg ? "rgba(255, 255, 255, 0.12)" : "rgba(15, 23, 42, 0.12)";
 
     const logoText = props.logoText || "CraftSite";
     const tagline = props.tagline || "Building the future of visual web creation.";
@@ -3355,6 +3358,668 @@ export function ComponentRenderer({
     );
   }
 
+  if (type === "form") {
+    const variant = props.variant || "classic-centered-form";
+    const heading = props.heading || "Get in touch";
+    const subheading = props.subheading || "Have questions or want to start a project? Send us a message and we'll reply within 24 hours.";
+    const buttonText = props.buttonText || "Send message";
+    const contactEmail = props.contactEmail || "hello@craftsite.io";
+    const contactPhone = props.contactPhone || "+1 (555) 234-5678";
+    const contactAddress = props.contactAddress || "795 Folsom St, San Francisco, CA";
+    const contactHours = props.contactHours || "Mon - Fri, 9am - 6pm EST";
+
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+
+    const isDarkBg =
+      css.backgroundColor === "#0f172a" ||
+      css.backgroundColor === "#020617" ||
+      css.backgroundColor === "#030712" ||
+      css.backgroundColor === "#1e1b4b";
+
+    const isDarkCard =
+      isDarkBg ||
+      (style.backgroundColor &&
+        (style.backgroundColor.includes("0f172a") ||
+         style.backgroundColor.includes("020617") ||
+         style.backgroundColor.includes("030712") ||
+         style.backgroundColor.includes("1e1b4b")));
+
+    const textColor = isDarkCard ? "#f8fafc" : "#0f172a";
+    const subtextColor = isDarkCard ? "#94a3b8" : "#475569";
+    const labelColor = isDarkCard ? "#cbd5e1" : "#334155";
+    const cardBg = isDarkCard ? "rgba(15, 23, 42, 0.9)" : "#ffffff";
+    const inputBg = isDarkCard ? "rgba(2, 6, 23, 0.6)" : "#f8fafc";
+    const borderColor = isDarkCard ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.12)";
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      setFormSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      const target = e.target as HTMLFormElement;
+      if (target && typeof target.reset === "function") {
+        target.reset();
+      }
+      toast.success("Message Sent Successfully!", {
+        description: "Thank you for reaching out. We will get back to you shortly.",
+        duration: 4000,
+      });
+      setTimeout(() => setFormSubmitted(false), 5000);
+    };
+
+    const sectionMaxWidth = theme.containerWidth || "1120px";
+
+    const isTransparentBg = !style.backgroundColor || style.backgroundColor === "transparent" || style.backgroundColor === "#ffffff" || style.backgroundColor === "#f8fafc";
+    const sectionBg = isTransparentBg ? "transparent" : style.backgroundColor;
+
+    return (
+      <section
+        id={currentSectionId}
+        style={{ ...css, backgroundColor: sectionBg }}
+        className="py-16 md:py-24 transition-all relative w-full"
+      >
+        <Center maxWidth={sectionMaxWidth}>
+          {/* Variant 1: classic-centered-form */}
+          {(variant === "classic-centered-form" || !variant) && (
+            <div
+              className={`w-full max-w-2xl sm:max-w-3xl mx-auto p-8 sm:p-12 border ${borderColor} shadow-xl backdrop-blur-md space-y-8`}
+              style={{
+                backgroundColor: cardBg,
+                borderRadius: theme.borderRadius || "20px",
+              }}
+            >
+              <div className="text-center space-y-3">
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== heading) onUpdateProps?.({ heading: next });
+                  }}
+                  style={{ outline: "none", color: textColor }}
+                  className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                >
+                  {heading}
+                </h2>
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== subheading) onUpdateProps?.({ subheading: next });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className={`text-sm sm:text-base max-w-lg mx-auto ${interactive ? "cursor-text" : ""}`}
+                >
+                  {subheading}
+                </p>
+              </div>
+
+              <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground/80">Full Name</label>
+                      <input
+                        type="text"
+                        required={!interactive}
+                        placeholder="Jane Doe"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground/80">Email Address</label>
+                      <input
+                        type="email"
+                        required={!interactive}
+                        placeholder="jane@example.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground/80">Subject</label>
+                    <input
+                      type="text"
+                      placeholder="Project Inquiry"
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground/80">Message</label>
+                    <textarea
+                      rows={4}
+                      required={!interactive}
+                      placeholder="Tell us about your timeline, budget, and requirements..."
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                      style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                    />
+                  </div>
+                  <button
+                    type={interactive ? "button" : "submit"}
+                    className="w-full py-3.5 px-6 font-bold text-sm text-white shadow-lg transition-all hover:brightness-110 active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 border-2 border-transparent"
+                    style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                  >
+                    <span
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
+                      }}
+                      style={{ outline: "none" }}
+                      className={interactive ? "cursor-text" : ""}
+                    >
+                      {buttonText}
+                    </span>
+                  </button>
+                </form>
+            </div>
+          )}
+
+          {/* Variant 2: split-contact-info-form */}
+          {variant === "split-contact-info-form" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start text-left">
+              {/* Left Column: Direct Contact Info */}
+              <div className="lg:col-span-5 space-y-8">
+                <div className="space-y-3">
+                  <h2
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== heading) onUpdateProps?.({ heading: next });
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                  >
+                    {heading}
+                  </h2>
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== subheading) onUpdateProps?.({ subheading: next });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-base ${interactive ? "cursor-text" : ""}`}
+                  >
+                    {subheading}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 rounded-2xl border flex items-start gap-4 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
+                    <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                      <Mail className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email Support</h4>
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerText.trim();
+                          if (next && next !== contactEmail) onUpdateProps?.({ contactEmail: next });
+                        }}
+                        style={{ outline: "none", color: textColor }}
+                        className={`font-semibold text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
+                      >
+                        {contactEmail}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl border flex items-start gap-4 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
+                    <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                      <Phone className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Call Us Directly</h4>
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerText.trim();
+                          if (next && next !== contactPhone) onUpdateProps?.({ contactPhone: next });
+                        }}
+                        style={{ outline: "none", color: textColor }}
+                        className={`font-semibold text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
+                      >
+                        {contactPhone}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl border flex items-start gap-4 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
+                    <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                      <MapPin className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Headquarters</h4>
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerText.trim();
+                          if (next && next !== contactAddress) onUpdateProps?.({ contactAddress: next });
+                        }}
+                        style={{ outline: "none", color: textColor }}
+                        className={`font-semibold text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
+                      >
+                        {contactAddress}
+                      </p>
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerText.trim();
+                          if (next && next !== contactHours) onUpdateProps?.({ contactHours: next });
+                        }}
+                        style={{ outline: "none", color: subtextColor }}
+                        className={`text-xs opacity-75 mt-1 ${interactive ? "cursor-text" : ""}`}
+                      >
+                        {contactHours}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Form Card */}
+              <div
+                className={`lg:col-span-7 p-8 sm:p-10 border ${borderColor} shadow-2xl backdrop-blur-md space-y-6`}
+                style={{ backgroundColor: cardBg, borderRadius: theme.borderRadius || "24px" }}
+              >
+                <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground/80">First Name</label>
+                      <input
+                        type="text"
+                        required={!interactive}
+                        placeholder="Alex"
+                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground/80">Last Name</label>
+                      <input
+                        type="text"
+                        required={!interactive}
+                        placeholder="Smith"
+                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground/80">Work Email</label>
+                    <input
+                      type="email"
+                      required={!interactive}
+                      placeholder="alex@company.com"
+                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground/80">Message</label>
+                    <textarea
+                      rows={4}
+                      required={!interactive}
+                      placeholder="How can we help your business succeed?"
+                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                      style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                    />
+                  </div>
+                  <button
+                    type={interactive ? "button" : "submit"}
+                    className="w-full py-3.5 px-6 font-bold text-sm text-white shadow-lg transition-all hover:brightness-110 active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 border-2 border-transparent"
+                    style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                  >
+                    <span
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
+                      }}
+                      style={{ outline: "none" }}
+                      className={interactive ? "cursor-text" : ""}
+                    >
+                      {buttonText}
+                    </span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Variant 3: boxed-dark-glass-form / Modern Centered Form */}
+          {variant === "boxed-dark-glass-form" && (
+            <div
+              className={`w-full max-w-2xl sm:max-w-3xl mx-auto p-8 sm:p-12 border ${borderColor} shadow-2xl space-y-8`}
+              style={{
+                backgroundColor: cardBg,
+                color: textColor,
+                borderRadius: theme.borderRadius || "24px",
+              }}
+            >
+              <div className="text-center space-y-3">
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== heading) onUpdateProps?.({ heading: next });
+                  }}
+                  style={{ outline: "none", color: textColor }}
+                  className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                >
+                  {heading}
+                </h2>
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== subheading) onUpdateProps?.({ subheading: next });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className={`text-sm max-w-lg mx-auto ${interactive ? "cursor-text" : ""}`}
+                >
+                  {subheading}
+                </p>
+              </div>
+
+              <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold" style={{ color: labelColor }}>Your Name</label>
+                  <input
+                    type="text"
+                    required={!interactive}
+                    placeholder="Enter your name"
+                    className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400"
+                    style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold" style={{ color: labelColor }}>Work Email</label>
+                  <input
+                    type="email"
+                    required={!interactive}
+                    placeholder="name@company.com"
+                    className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400"
+                    style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold" style={{ color: labelColor }}>Project Overview</label>
+                  <textarea
+                    rows={4}
+                    required={!interactive}
+                    placeholder="Briefly describe your goals, budget range, and desired launch date..."
+                    className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none placeholder:text-slate-400"
+                    style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                  />
+                </div>
+                <button
+                  type={interactive ? "button" : "submit"}
+                  className="w-full py-3.5 px-6 font-bold text-sm text-white shadow-xl transition-all hover:brightness-110 active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 border-2 border-transparent"
+                  style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                >
+                  <span
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
+                    }}
+                    style={{ outline: "none" }}
+                    className={interactive ? "cursor-text" : ""}
+                  >
+                    {buttonText}
+                  </span>
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Variant 4: map-split-form */}
+          {variant === "map-split-form" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch text-left">
+              {/* Left Column: Office Location Card */}
+              <div
+                className={`lg:col-span-5 p-8 border ${borderColor} flex flex-col justify-between space-y-6 shadow-xl`}
+                style={{ backgroundColor: cardBg, borderRadius: theme.borderRadius || "24px" }}
+              >
+                <div className="space-y-4">
+                  <h3
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== heading) onUpdateProps?.({ heading: next });
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-2xl font-bold ${interactive ? "cursor-text" : ""}`}
+                  >
+                    {heading}
+                  </h3>
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== subheading) onUpdateProps?.({ subheading: next });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-sm ${interactive ? "cursor-text" : ""}`}
+                  >
+                    {subheading}
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl border space-y-3" style={{ backgroundColor: inputBg, borderColor }}>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold" style={{ color: textColor }}>Studio Location</span>
+                    <span className="text-emerald-500 font-bold">Open</span>
+                  </div>
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== contactAddress) onUpdateProps?.({ contactAddress: next });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-xs ${interactive ? "cursor-text" : ""}`}
+                  >
+                    {contactAddress}
+                  </p>
+                  <div className="pt-2 border-t flex items-center justify-between text-xs opacity-80" style={{ borderColor, color: subtextColor }}>
+                    <span
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== contactEmail) onUpdateProps?.({ contactEmail: next });
+                      }}
+                      style={{ outline: "none" }}
+                      className={interactive ? "cursor-text" : ""}
+                    >
+                      {contactEmail}
+                    </span>
+                    <span
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== contactPhone) onUpdateProps?.({ contactPhone: next });
+                      }}
+                      style={{ outline: "none" }}
+                      className={interactive ? "cursor-text" : ""}
+                    >
+                      {contactPhone}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Detailed Contact Form */}
+              <div
+                className={`lg:col-span-7 p-8 sm:p-10 border ${borderColor} shadow-xl backdrop-blur-md space-y-6`}
+                style={{ backgroundColor: cardBg, borderRadius: theme.borderRadius || "24px" }}
+              >
+                <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground/80">First Name</label>
+                      <input
+                        type="text"
+                        required={!interactive}
+                        placeholder="Alex"
+                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground/80">Last Name</label>
+                      <input
+                        type="text"
+                        required={!interactive}
+                        placeholder="Morgan"
+                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground/80">Email Address</label>
+                    <input
+                      type="email"
+                      required={!interactive}
+                      placeholder="alex@company.com"
+                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground/80">Message</label>
+                    <textarea
+                      rows={4}
+                      required={!interactive}
+                      placeholder="How can our studio assist you?"
+                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                      style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                    />
+                  </div>
+                  <button
+                    type={interactive ? "button" : "submit"}
+                    className="w-full py-3.5 px-6 font-bold text-sm text-white shadow-lg transition-all hover:brightness-110 active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 border-2 border-transparent"
+                    style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                  >
+                    <span
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
+                      }}
+                      style={{ outline: "none" }}
+                      className={interactive ? "cursor-text" : ""}
+                    >
+                      {buttonText}
+                    </span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Variant 5: compact-newsletter-contact */}
+          {variant === "compact-newsletter-contact" && (
+            <div
+              className={`p-6 sm:p-8 border ${borderColor} shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 text-left`}
+              style={{
+                backgroundColor: cardBg,
+                borderRadius: theme.borderRadius || "20px",
+              }}
+            >
+              <div className="space-y-1 max-w-md">
+                <h3
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== heading) onUpdateProps?.({ heading: next });
+                  }}
+                  style={{ outline: "none", color: textColor }}
+                  className={`text-xl font-bold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                >
+                  {heading}
+                </h3>
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== subheading) onUpdateProps?.({ subheading: next });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className={`text-xs ${interactive ? "cursor-text" : ""}`}
+                >
+                  {subheading}
+                </p>
+              </div>
+
+              <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                <input
+                  type="email"
+                  required={!interactive}
+                  placeholder="Enter your email"
+                  className="w-full sm:w-64 px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                />
+                <button
+                  type={interactive ? "button" : "submit"}
+                  className="w-full sm:w-auto py-3 px-6 font-bold text-sm text-white shadow-md transition-all hover:brightness-110 shrink-0 cursor-pointer border-2 border-transparent"
+                  style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                >
+                  <span
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
+                    }}
+                    style={{ outline: "none" }}
+                    className={interactive ? "cursor-text" : ""}
+                  >
+                    {buttonText}
+                  </span>
+                </button>
+              </form>
+            </div>
+          )}
+        </Center>
+      </section>
+    );
+  }
+
   // Fallback for default section types
   return (
     <section id={currentSectionId} style={css} className="py-12">
@@ -3409,9 +4074,9 @@ export function PageRenderer({
 }) {
   return (
     <main
-      className="min-h-screen transition-colors duration-200"
+      className="min-h-screen transition-colors duration-200 pt-0.5"
       style={{
-        backgroundColor: theme.backgroundColor || "transparent",
+        backgroundColor: (!theme.backgroundColor || theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc") ? "#f1f5f9" : theme.backgroundColor,
         color: theme.textColor || "inherit",
         fontFamily: theme.fontFamily || "inherit",
       }}

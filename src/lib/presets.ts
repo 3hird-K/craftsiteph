@@ -14,21 +14,28 @@ export type PaletteItem = {
 };
 
 export const PALETTE: PaletteItem[] = [
+  // LAYOUT
   { type: "navbar", label: "Navbar", description: "Logo + navigation links", icon: "☰", category: "layout" },
   { type: "hero", label: "Hero", description: "Big headline with CTA", icon: "✦", category: "layout" },
-  { type: "heading", label: "Heading", description: "Section title", icon: "H", category: "content" },
-  { type: "text", label: "Text", description: "Paragraph body copy", icon: "¶", category: "content" },
-  { type: "button", label: "Button", description: "Call-to-action button", icon: "◉", category: "interactive" },
-  { type: "image", label: "Image", description: "Photo or illustration", icon: "▣", category: "media" },
+  { type: "footer", label: "Footer", description: "Links and copyright", icon: "⬇", category: "layout" },
+  { type: "spacer", label: "Spacer", description: "Vertical spacing", icon: "↕", category: "layout" },
+  { type: "divider", label: "Divider", description: "Horizontal rule", icon: "—", category: "layout" },
+
+  // CONTENT
   { type: "features", label: "Features", description: "Icon feature grid", icon: "▦", category: "content" },
   { type: "card-grid", label: "Cards", description: "Card grid section", icon: "▤", category: "content" },
   { type: "stats", label: "Stats", description: "Key metrics row", icon: "＃", category: "content" },
   { type: "testimonial", label: "Testimonial", description: "Quote + author", icon: "❝", category: "content" },
-  { type: "cta", label: "CTA Band", description: "Full-width call to action", icon: "➤", category: "interactive" },
+  { type: "heading", label: "Heading", description: "Section title", icon: "H", category: "content" },
+  { type: "text", label: "Text", description: "Paragraph body copy", icon: "¶", category: "content" },
+
+  // INTERACTIVE
   { type: "form", label: "Contact Form", description: "Name, email, message", icon: "✎", category: "interactive" },
-  { type: "spacer", label: "Spacer", description: "Vertical spacing", icon: "↕", category: "layout" },
-  { type: "divider", label: "Divider", description: "Horizontal rule", icon: "—", category: "layout" },
-  { type: "footer", label: "Footer", description: "Links and copyright", icon: "⬇", category: "layout" },
+  { type: "cta", label: "CTA Band", description: "Full-width call to action", icon: "➤", category: "interactive" },
+  { type: "button", label: "Button", description: "Call-to-action button", icon: "◉", category: "interactive" },
+
+  // MEDIA
+  { type: "image", label: "Image", description: "Photo or illustration", icon: "▣", category: "media" },
 ];
 
 export type ComponentVariant = {
@@ -351,8 +358,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
-        backgroundColor: "#0f172a",
-        textColor: "#ffffff",
+        backgroundColor: "transparent",
         paddingY: "64px",
         paddingX: "32px",
         borderRadius: "0px",
@@ -377,8 +383,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         copyright: "© 2026 CraftSite. Built with passion.",
       },
       applyStyle: {
-        backgroundColor: "#ffffff",
-        textColor: "#0f172a",
+        backgroundColor: "transparent",
         paddingY: "48px",
         paddingX: "32px",
         borderRadius: "0px",
@@ -401,8 +406,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
-        backgroundColor: "#020617",
-        textColor: "#ffffff",
+        backgroundColor: "transparent",
         paddingY: "64px",
         paddingX: "32px",
         borderRadius: "0px",
@@ -427,8 +431,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
-        backgroundColor: "#030712",
-        textColor: "#ffffff",
+        backgroundColor: "transparent",
         paddingY: "56px",
         paddingX: "32px",
         borderRadius: "0px",
@@ -452,8 +455,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
-        backgroundColor: "#1e1b4b",
-        textColor: "#ffffff",
+        backgroundColor: "transparent",
         paddingY: "72px",
         paddingX: "32px",
         borderRadius: "0px",
@@ -476,8 +478,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
-        backgroundColor: "#f8fafc",
-        textColor: "#0f172a",
+        backgroundColor: "transparent",
         paddingY: "24px",
         paddingX: "32px",
         borderRadius: "0px",
@@ -652,6 +653,120 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       previewType: "boxed",
       applyProps: { columns: 4 },
       applyStyle: { backgroundColor: "#ffffff", textColor: "#0f172a", paddingY: "48px", paddingX: "32px" },
+    },
+  ],
+
+  form: [
+    {
+      id: "classic-centered-form",
+      name: "Classic Centered Card Form",
+      description: "Centered, clean contact form card with input fields and full-width primary submit button.",
+      badge: "Popular",
+      previewType: "centered",
+      applyProps: {
+        variant: "classic-centered-form",
+        heading: "Get in touch",
+        subheading: "Have questions or want to start a project? Send us a message and we'll reply within 24 hours.",
+        buttonText: "Send message",
+        contactEmail: "hello@craftsite.io",
+        contactPhone: "+1 (555) 234-5678",
+        contactAddress: "795 Folsom St, San Francisco, CA",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        textColor: "#0f172a",
+        paddingY: "64px",
+        paddingX: "32px",
+        textAlign: "center",
+      },
+    },
+    {
+      id: "split-contact-info-form",
+      name: "2-Column Form & Contact Details",
+      description: "Side-by-side layout: left column highlights phone, email, office location & hours; right column features the interactive message form.",
+      badge: "High Conversion",
+      previewType: "split",
+      applyProps: {
+        variant: "split-contact-info-form",
+        heading: "Let's build something together",
+        subheading: "Reach out directly or fill out the form and our team will get back to you shortly.",
+        buttonText: "Send message",
+        contactEmail: "contact@craftsite.io",
+        contactPhone: "+1 (800) 555-0199",
+        contactAddress: "100 Montgomery St, Suite 1400, San Francisco, CA",
+        contactHours: "Mon - Fri, 9am - 6pm EST",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        textColor: "#0f172a",
+        paddingY: "80px",
+        paddingX: "32px",
+        textAlign: "left",
+      },
+    },
+    {
+      id: "boxed-dark-glass-form",
+      name: "Dark Glassmorphism Card",
+      description: "Elevated dark mode card container with glowing border accent, subtle backdrop blur, and high-contrast inputs.",
+      badge: "Modern",
+      previewType: "boxed",
+      applyProps: {
+        variant: "boxed-dark-glass-form",
+        heading: "Start a conversation",
+        subheading: "Tell us about your team and vision. We'll tailor a custom solution for your enterprise.",
+        buttonText: "Submit Inquiry",
+        contactEmail: "enterprise@craftsite.io",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        textColor: "#ffffff",
+        paddingY: "72px",
+        paddingX: "40px",
+        textAlign: "center",
+      },
+    },
+    {
+      id: "map-split-form",
+      name: "Office Location & Contact Form",
+      description: "2-Column layout featuring office location badge, interactive map visual card, and detailed contact inquiry form.",
+      badge: "Business",
+      previewType: "split",
+      applyProps: {
+        variant: "map-split-form",
+        heading: "Visit our studio or drop a line",
+        subheading: "We're based in downtown San Francisco, available for in-person meetings and virtual consultations.",
+        buttonText: "Send message",
+        contactEmail: "studio@craftsite.io",
+        contactPhone: "+1 (415) 888-0123",
+        contactAddress: "500 Howard Street, San Francisco, CA 94105",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        textColor: "#0f172a",
+        paddingY: "80px",
+        paddingX: "32px",
+        textAlign: "left",
+      },
+    },
+    {
+      id: "compact-newsletter-contact",
+      name: "Inline Quick Support Strip",
+      description: "Compact horizontal strip layout for landing page footers with quick contact or sales inquiry fields.",
+      badge: "Minimal",
+      previewType: "floating",
+      applyProps: {
+        variant: "compact-newsletter-contact",
+        heading: "Have questions before getting started?",
+        subheading: "Enter your email and message for instant support callback.",
+        buttonText: "Request Callback",
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        textColor: "#ffffff",
+        paddingY: "40px",
+        paddingX: "40px",
+        textAlign: "left",
+      },
     },
   ],
 };
@@ -904,11 +1019,10 @@ export function createComponent(type: ComponentType, variantId?: string): Builde
           placeholder: "Tell us about your project…",
         },
         style: {
-          backgroundColor: "#ffffff",
+          backgroundColor: "transparent",
           textColor: "#0f172a",
           paddingY: "64px", paddingX: "32px",
           textAlign: "center",
-          maxWidth: "560px",
         },
       };
       break;
@@ -951,8 +1065,7 @@ export function createComponent(type: ComponentType, variantId?: string): Builde
           ],
         },
         style: {
-          backgroundColor: "#020617",
-          textColor: "#94a3b8",
+          backgroundColor: "transparent",
           paddingY: "48px", paddingX: "32px",
           textAlign: "center",
         },

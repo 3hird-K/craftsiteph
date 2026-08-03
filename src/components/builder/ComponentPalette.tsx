@@ -24,7 +24,13 @@ export function ComponentPalette({ onAdd, onSelectVariant }: Props) {
       </div>
       <div className="flex-1 space-y-5 overflow-y-auto p-3">
         {CATEGORIES.map((cat) => {
-          const items = PALETTE.filter((p) => p.category === cat.key);
+          const items = PALETTE.filter((p) => p.category === cat.key).sort((a, b) => {
+            const aHas = Boolean(COMPONENT_VARIANTS[a.type]);
+            const bHas = Boolean(COMPONENT_VARIANTS[b.type]);
+            if (aHas && !bHas) return -1;
+            if (!aHas && bHas) return 1;
+            return 0;
+          });
           if (!items.length) return null;
           return (
             <div key={cat.key}>

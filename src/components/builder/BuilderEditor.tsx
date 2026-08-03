@@ -90,7 +90,11 @@ export function BuilderEditor({ project }: Props) {
   }, [user, authLoading, openAuthModal, project.slug, project.id]);
   const [name, setName] = useState(project.name);
   const [components, setComponents] = useState<BuilderComponent[]>(project.components || []);
-  const [theme, setTheme] = useState<SiteTheme>(project.theme || DEFAULT_THEME);
+  const initialTheme = project.theme || DEFAULT_THEME;
+  const [theme, setTheme] = useState<SiteTheme>({
+    ...initialTheme,
+    backgroundColor: (!initialTheme.backgroundColor || initialTheme.backgroundColor === "#ffffff" || initialTheme.backgroundColor === "#f8fafc") ? "#f1f5f9" : initialTheme.backgroundColor
+  });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
