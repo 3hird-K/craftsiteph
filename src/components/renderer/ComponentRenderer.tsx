@@ -702,12 +702,16 @@ function LogoEditItem({
 function LinkEditItem({
   link,
   sectionOptions,
+  alignRight = false,
+  positionUp = false,
   onSave,
   onRemove,
   onClose,
 }: {
   link: { label: string; href?: string; variant?: string; icon?: string };
   sectionOptions: { label: string; anchorId: string }[];
+  alignRight?: boolean;
+  positionUp?: boolean;
   onSave: (label: string, href: string, icon?: string) => void;
   onRemove: () => void;
   onClose: () => void;
@@ -740,7 +744,7 @@ function LinkEditItem({
       ref={popoverRef}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
-      className="absolute top-full left-0 mt-2.5 w-76 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-[9999] space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
+      className={`absolute ${positionUp ? "bottom-full mb-2.5" : "top-full mt-2.5"} ${alignRight ? "right-0" : "left-0"} w-76 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-[9999] space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal`}
     >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -821,12 +825,16 @@ function LinkEditItem({
 function ButtonEditItem({
   button,
   sectionOptions,
+  alignRight = false,
+  positionUp = false,
   onSave,
   onRemove,
   onClose,
 }: {
   button: { label: string; href?: string; variant?: "solid" | "outline" | "ghost"; icon?: string };
   sectionOptions: { label: string; anchorId: string }[];
+  alignRight?: boolean;
+  positionUp?: boolean;
   onSave: (label: string, href: string, variant: "solid" | "outline" | "ghost", icon?: string) => void;
   onRemove: () => void;
   onClose: () => void;
@@ -860,7 +868,7 @@ function ButtonEditItem({
       ref={popoverRef}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
-      className="absolute top-full right-0 mt-2.5 w-76 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-[9999] space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
+      className={`absolute ${positionUp ? "bottom-full mb-2.5" : "top-full mt-2.5"} ${alignRight ? "right-0" : "left-0"} w-76 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-[9999] space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal`}
     >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -2380,6 +2388,7 @@ export function ComponentRenderer({
                       <LinkEditItem
                         link={{ label: l.label, href: l.href || "#" }}
                         sectionOptions={sectionOptions}
+                        positionUp={true}
                         onSave={(label, newHref) => {
                           const next = [...navLinks];
                           next[idx] = { ...next[idx], label, href: newHref };
@@ -2585,6 +2594,8 @@ export function ComponentRenderer({
                         <LinkEditItem
                           link={{ label: l.label, href: l.href || "#" }}
                           sectionOptions={sectionOptions}
+                          alignRight={true}
+                          positionUp={true}
                           onSave={(label, newHref) => {
                             const next = [...navLinks];
                             next[idx] = { ...next[idx], label, href: newHref };
@@ -2714,6 +2725,8 @@ export function ComponentRenderer({
                         <LinkEditItem
                           link={{ label: l.label, href: l.href || "#" }}
                           sectionOptions={sectionOptions}
+                          alignRight={true}
+                          positionUp={true}
                           onSave={(label, newHref) => {
                             const next = [...navLinks];
                             next[idx] = { ...next[idx], label, href: newHref };
