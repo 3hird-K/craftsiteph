@@ -1909,7 +1909,7 @@ export function ComponentRenderer({
       >
         <Center maxWidth={effectiveMaxWidth}>
           {isSplit ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className={`grid gap-12 items-center ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
               <div className={`space-y-6 ${isImageLeft ? "md:order-2" : "md:order-1"}`}>
                 {props.heading && (
                   <h1
@@ -2171,7 +2171,7 @@ export function ComponentRenderer({
       >
         <Center maxWidth={effectiveMaxWidth}>
           {isSplitLayout ? (
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 text-left">
+            <div className={`flex justify-between gap-8 text-left ${isMobile ? "flex-col items-start text-left" : "flex-col md:flex-row items-center"}`}>
               <div className="space-y-3 max-w-2xl">
                 {props.heading && (
                   <h2
@@ -2581,7 +2581,7 @@ export function ComponentRenderer({
                   ))}
                 </div>
               </div>
-              <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
+              <div className={`pt-6 border-t flex items-center justify-between text-xs gap-4 ${isMobile ? "flex-col text-center" : "flex-col md:flex-row"}`} style={{ borderColor }}>
                 <span
                   contentEditable={interactive}
                   suppressContentEditableWarning
