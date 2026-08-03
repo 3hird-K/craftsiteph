@@ -2338,7 +2338,7 @@ export function ComponentRenderer({
           color: textColor,
           borderRadius: footerRadius,
         }}
-        className="py-12 md:py-16 transition-all relative"
+        className={`py-12 md:py-16 transition-all relative ${activeFooterPopover ? "z-[9999]" : "z-40"}`}
       >
         <Center maxWidth={effectiveMaxWidth}>
           {variant === "centered-minimal" ? (
