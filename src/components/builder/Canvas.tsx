@@ -121,40 +121,55 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
     );
   }
 
-  // Desktop macOS Browser Frame
+  // Laptop Hardware Device Frame
   return (
-    <div className="relative mx-auto w-full h-full p-4 flex flex-col transition-all duration-300">
-      <div className="w-full h-full rounded-2xl border border-border/80 bg-background shadow-2xl overflow-hidden flex flex-col ring-1 ring-black/5">
-        {/* Desktop macOS Browser Topbar */}
-        <div className="bg-muted/80 backdrop-blur-md px-4 py-2.5 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
-          <div className="flex items-center gap-2">
+    <div className="relative mx-auto my-4 w-full h-full max-w-6xl p-2 flex flex-col items-center transition-all duration-300 select-none">
+      {/* Laptop Screen Lid Outer Frame */}
+      <div className="w-full flex-1 rounded-t-[28px] bg-[#1c1c1e] p-3 pt-2.5 border-t-4 border-x-4 border-[#3a3a3c] shadow-2xl ring-1 ring-black/50 flex flex-col overflow-hidden">
+        
+        {/* Laptop Webcam Camera */}
+        <div className="w-full flex justify-center items-center pb-2 shrink-0">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#09090b] border border-white/20 shadow-inner" />
+        </div>
+
+        {/* Inner Screen Display Box */}
+        <div className="w-full flex-1 rounded-xl overflow-hidden bg-background relative flex flex-col z-10 border border-black/30 shadow-inner">
+          
+          {/* macOS Browser Window Topbar */}
+          <div className="bg-muted/80 backdrop-blur-md px-4 py-2 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-rose-500/80 border border-rose-600/40" />
               <div className="w-3 h-3 rounded-full bg-amber-500/80 border border-amber-600/40" />
               <div className="w-3 h-3 rounded-full bg-emerald-500/80 border border-emerald-600/40" />
             </div>
-          </div>
-          
-          {/* Desktop Browser URL Bar */}
-          <div className="flex-1 max-w-lg bg-background/90 border border-border/80 rounded-xl px-3 py-1 flex items-center justify-between text-xs text-muted-foreground shadow-xs mx-4">
-            <div className="flex items-center gap-2 text-foreground font-mono text-[11px]">
-              <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
-              <span className="font-medium">https://craftsite.app/preview</span>
+
+            {/* Browser Address Bar */}
+            <div className="flex-1 max-w-md bg-background/90 border border-border/70 rounded-lg px-3 py-1 flex items-center justify-between text-xs text-muted-foreground shadow-xs mx-4">
+              <div className="flex items-center gap-2 text-foreground font-mono text-[11px]">
+                <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
+                <span className="font-medium tracking-tight">https://craftsite.app/preview</span>
+              </div>
+              <RotateCw className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
             </div>
-            <RotateCw className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
+
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] font-bold text-foreground flex items-center gap-1.5 bg-background/80 px-2 py-0.5 rounded-md border border-border">
+                <Monitor className="h-3 w-3 text-primary" /> Laptop Screen
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] font-bold text-foreground flex items-center gap-1.5 bg-background/80 px-2.5 py-1 rounded-lg border border-border">
-              <Monitor className="h-3.5 w-3.5 text-primary" /> Desktop (100%)
-            </span>
+          {/* Scrollable Content Viewport */}
+          <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+            {children}
           </div>
         </div>
+      </div>
 
-        {/* Scrollable Content Viewport */}
-        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
-          {children}
-        </div>
+      {/* Laptop Keyboard Base & Hinge Lip */}
+      <div className="w-[102%] h-4 bg-gradient-to-b from-[#27272a] to-[#18181b] border-t border-[#3a3a3c] rounded-b-xl shadow-2xl flex items-center justify-center relative shrink-0">
+        {/* Center Trackpad Opening Notch */}
+        <div className="w-28 h-1.5 bg-[#3f3f46] rounded-b-md shadow-inner" />
       </div>
     </div>
   );
