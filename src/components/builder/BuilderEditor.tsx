@@ -273,9 +273,12 @@ export function BuilderEditor({ project }: Props) {
     markDirty();
   };
 
+  const [isPublishing, setIsPublishing] = useState(false);
+
   // --- Save Function ---
   const save = async (opts?: { publish?: boolean; unpublish?: boolean; auto?: boolean }) => {
     setSaving(true);
+    if (opts?.publish) setIsPublishing(true);
     if (!opts?.auto) setMessage(null);
     try {
       const payload: Record<string, unknown> = {
@@ -324,6 +327,7 @@ export function BuilderEditor({ project }: Props) {
       throw new Error("Save failed");
     } finally {
       setSaving(false);
+      if (opts?.publish) setIsPublishing(false);
     }
   };
 
@@ -635,7 +639,7 @@ export function BuilderEditor({ project }: Props) {
               className="rounded-lg px-4 py-1.5 text-xs font-bold text-white shadow-md transition-all hover:brightness-110 disabled:opacity-50 cursor-pointer"
               style={{ backgroundColor: theme.primaryColor || "#ea580c" }}
             >
-              {saving ? "Publishing..." : "Publish"}
+              {isPublishing ? "Publishing..." : "Publish"}
             </button>
           )}
 
