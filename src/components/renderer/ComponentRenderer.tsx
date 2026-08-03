@@ -2428,7 +2428,7 @@ export function ComponentRenderer({
             <div className="space-y-12">
               <div
                 className={`p-6 md:p-8 border flex justify-between gap-6 ${
-                  isMobile ? "flex-col items-start text-left" : "flex-col sm:flex-row sm:items-center"
+                  isMobileOrTablet ? "flex-col items-start text-left" : "flex-col lg:flex-row lg:items-center"
                 }`}
                 style={{
                   borderColor,
@@ -2436,7 +2436,7 @@ export function ComponentRenderer({
                   borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "16px"),
                 }}
               >
-                <div className={`space-y-1 text-left ${isMobile ? "w-full" : "flex-1 min-w-0 pr-2 sm:pr-4"}`}>
+                <div className={`space-y-1 text-left ${isMobileOrTablet ? "w-full" : "flex-1 min-w-0 pr-4"}`}>
                   <h4
                     contentEditable={interactive}
                     suppressContentEditableWarning
@@ -2468,7 +2468,7 @@ export function ComponentRenderer({
                   className={`flex gap-2.5 shrink-0 ${
                     isMobile
                       ? "flex-col items-stretch w-full"
-                      : "flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto"
+                      : "flex-col sm:flex-row items-stretch sm:items-center w-full lg:w-auto"
                   }`}
                 >
                   <input
