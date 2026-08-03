@@ -33,23 +33,47 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
   if (device === "mobile") {
     return (
       <div
-        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col shadow-2xl rounded-2xl border border-border/80 bg-background overflow-hidden ring-1 ring-black/5"
-        style={{ width: "440px", height: "860px" }}
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col rounded-[52px] bg-[#1c1c1e] p-3.5 border-4 border-[#3a3a3c] shadow-2xl ring-1 ring-black/50 select-none"
+        style={{ width: "430px", height: "860px" }}
       >
-        {/* Browser Top Bar */}
-        <div className="bg-muted/80 backdrop-blur-md px-4 py-2 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-          </div>
-          <span className="font-mono text-[11px] font-bold text-foreground">Mobile Viewport (440px)</span>
-          <span className="text-[10px] bg-background/80 px-2 py-0.5 rounded-full border border-border font-mono">440 × 860</span>
-        </div>
+        {/* Inner Screen Canvas Container */}
+        <div className="w-full h-full rounded-[38px] overflow-hidden bg-background relative flex flex-col z-10 border border-black/20">
+          
+          {/* iOS Status Bar */}
+          <div className="bg-background text-foreground px-6 pt-3 pb-1 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 relative">
+            <span className="font-semibold text-[13px] tracking-tight pl-1">9:41</span>
+            
+            {/* Dynamic Island Notch */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-24 h-5.5 bg-black rounded-full border border-white/10 shadow-inner flex items-center justify-end px-2 gap-1 z-40 pointer-events-none">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#09090b] border border-white/20" />
+            </div>
 
-        {/* Scrollable Content Viewport */}
-        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
-          {children}
+            <div className="flex items-center gap-1.5 text-[11px] opacity-80 pr-1">
+              <span className="text-[10px] font-bold">5G</span>
+              <span>📶</span>
+              <span>🔋</span>
+            </div>
+          </div>
+
+          {/* Scrollable Content Viewport */}
+          <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+            {children}
+          </div>
+
+          {/* Safari Mobile Bottom Bar & Home Indicator */}
+          <div className="bg-background/95 backdrop-blur-md text-foreground border-t border-border/40 pt-2 pb-1.5 px-4 flex flex-col gap-1.5 shrink-0 z-30 select-none">
+            <div className="flex items-center justify-between gap-3 px-2">
+              <span className="text-xs font-bold opacity-60">AA</span>
+              <div className="flex-1 max-w-[220px] bg-muted/60 border border-border/60 rounded-full px-3 py-1 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground shadow-xs">
+                <span>🔒</span>
+                <span className="font-medium text-foreground tracking-tight">craftsite.app</span>
+                <span className="text-[10px] opacity-60">🔄</span>
+              </div>
+              <span className="text-sm font-medium opacity-60">⧉</span>
+            </div>
+            {/* iOS Home Indicator Pill */}
+            <div className="w-32 h-1 bg-foreground/30 rounded-full mx-auto mt-1" />
+          </div>
         </div>
       </div>
     );
@@ -58,23 +82,38 @@ function DeviceFrame({ device, children }: { device: Props["device"]; children: 
   if (device === "tablet") {
     return (
       <div
-        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col shadow-2xl rounded-2xl border border-border/80 bg-background overflow-hidden ring-1 ring-black/5"
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col rounded-[38px] bg-[#1c1c1e] p-4 border-4 border-[#3a3a3c] shadow-2xl ring-1 ring-black/50 select-none"
         style={{ width: "768px", height: "960px" }}
       >
-        {/* Browser Top Bar */}
-        <div className="bg-muted/80 backdrop-blur-md px-4 py-2 border-b border-border/60 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-          </div>
-          <span className="font-mono text-[11px] font-bold text-foreground">Tablet Viewport (768px)</span>
-          <span className="text-[10px] bg-background/80 px-2 py-0.5 rounded-full border border-border font-mono">768 × 960</span>
-        </div>
+        {/* Inner Screen Canvas Container */}
+        <div className="w-full h-full rounded-[24px] overflow-hidden bg-background relative flex flex-col z-10 border border-black/20">
+          
+          {/* iPadOS Status Bar */}
+          <div className="bg-background text-foreground px-6 py-2 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 border-b border-border/30">
+            <div className="flex items-center gap-2 text-[12px]">
+              <span className="font-bold">9:41 AM</span>
+              <span className="opacity-60 text-[11px]">Mon Aug 3</span>
+            </div>
+            
+            {/* Front Camera Dot */}
+            <div className="w-2.5 h-2.5 rounded-full bg-black border border-white/20 shadow-inner" />
 
-        {/* Scrollable Content Viewport */}
-        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
-          {children}
+            <div className="flex items-center gap-2 text-[11px] opacity-80">
+              <span>📶</span>
+              <span>100%</span>
+              <span>🔋</span>
+            </div>
+          </div>
+
+          {/* Scrollable Content Viewport */}
+          <div className="w-full flex-1 overflow-y-auto overflow-x-hidden bg-background relative z-10">
+            {children}
+          </div>
+
+          {/* iPadOS Home Indicator */}
+          <div className="bg-background/90 backdrop-blur-md py-2 shrink-0 z-30 select-none border-t border-border/30">
+            <div className="w-36 h-1 bg-foreground/30 rounded-full mx-auto" />
+          </div>
         </div>
       </div>
     );
