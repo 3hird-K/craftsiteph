@@ -1047,58 +1047,180 @@ export function PropertiesPanel({
                   onChange={(v) => onChangeTheme({ secondaryColor: v })}
                 />
               </Field>
-              <Field label="Accent Color">
-                <ColorInput
-                  value={theme.accentColor}
-                  onChange={(v) => onChangeTheme({ accentColor: v })}
-                />
-              </Field>
-              <Field label="Global Page Background">
-                <ColorInput
-                  value={theme.backgroundColor}
-                  onChange={(v) => onChangeTheme({ backgroundColor: v })}
-                />
-              </Field>
-              <Field label="Global Default Text">
-                <ColorInput
-                  value={theme.textColor}
-                  onChange={(v) => onChangeTheme({ textColor: v })}
-                />
-              </Field>
-              <Field label="Font Family">
-                <SelectInput
-                  value={theme.fontFamily}
-                  onChange={(v) => onChangeTheme({ fontFamily: v })}
-                  options={FONT_OPTIONS}
-                />
-              </Field>
-              <Field label="Default Corner Radius">
-                <SelectInput
-                  value={theme.borderRadius}
-                  onChange={(v) => onChangeTheme({ borderRadius: v })}
-                  options={[
-                    { label: "Sharp (0px)", value: "0px" },
-                    { label: "Soft (8px)", value: "8px" },
-                    { label: "Rounded (12px)", value: "12px" },
-                    { label: "Large (16px)", value: "16px" },
-                    { label: "Pill (24px)", value: "24px" },
-                    { label: "Full Pill (9999px)", value: "9999px" },
-                  ]}
-                />
-              </Field>
-              <Field label="Default Box Shadow">
-                <SelectInput
-                  value={theme.boxShadow || "none"}
-                  onChange={(v) => onChangeTheme({ boxShadow: v })}
-                  options={[
-                    { label: "None (Flat)", value: "none" },
-                    { label: "Subtle Soft", value: "0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)" },
-                    { label: "Medium Card", value: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)" },
-                    { label: "Elevated High", value: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)" },
-                    { label: "Floating Glow", value: "0 20px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)" },
-                  ]}
-                />
-              </Field>
+              {/* Headings & Titles Settings */}
+              <div className="space-y-3 p-3.5 rounded-xl border border-border/80 bg-muted/20">
+                <div className="flex items-center gap-1.5 pb-1 border-b border-border/50">
+                  <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wide">
+                    Headings & Titles (H1–H6)
+                  </span>
+                </div>
+                <Field label="Heading Font Family">
+                  <SelectInput
+                    value={theme.headingFontFamily || theme.fontFamily}
+                    onChange={(v) => onChangeTheme({ headingFontFamily: v })}
+                    options={FONT_OPTIONS}
+                  />
+                </Field>
+                <Field label="Heading Text Color">
+                  <ColorInput
+                    value={theme.headingColor || theme.textColor}
+                    onChange={(v) => onChangeTheme({ headingColor: v })}
+                  />
+                </Field>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Font Weight">
+                    <SelectInput
+                      value={theme.headingWeight || "800"}
+                      onChange={(v) => onChangeTheme({ headingWeight: v })}
+                      options={[
+                        { label: "Semi-Bold (600)", value: "600" },
+                        { label: "Bold (700)", value: "700" },
+                        { label: "Extra Bold (800)", value: "800" },
+                        { label: "Black (900)", value: "900" },
+                      ]}
+                    />
+                  </Field>
+                  <Field label="Text Case">
+                    <SelectInput
+                      value={theme.headingTransform || "none"}
+                      onChange={(v) => onChangeTheme({ headingTransform: v })}
+                      options={[
+                        { label: "As Typed", value: "none" },
+                        { label: "UPPERCASE", value: "uppercase" },
+                        { label: "Capitalize", value: "capitalize" },
+                      ]}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              {/* Body Text & Paragraph Settings */}
+              <div className="space-y-3 p-3.5 rounded-xl border border-border/80 bg-muted/20">
+                <div className="flex items-center gap-1.5 pb-1 border-b border-border/50">
+                  <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wide">
+                    Body Text & Paragraphs
+                  </span>
+                </div>
+                <Field label="Body Font Family">
+                  <SelectInput
+                    value={theme.bodyFontFamily || theme.fontFamily}
+                    onChange={(v) => onChangeTheme({ bodyFontFamily: v })}
+                    options={FONT_OPTIONS}
+                  />
+                </Field>
+                <Field label="Body Text Color">
+                  <ColorInput
+                    value={theme.bodyColor || theme.textColor}
+                    onChange={(v) => onChangeTheme({ bodyColor: v })}
+                  />
+                </Field>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Base Font Size">
+                    <SelectInput
+                      value={theme.bodyFontSize || "16px"}
+                      onChange={(v) => onChangeTheme({ bodyFontSize: v })}
+                      options={[
+                        { label: "Small (14px)", value: "14px" },
+                        { label: "Medium (15px)", value: "15px" },
+                        { label: "Standard (16px)", value: "16px" },
+                        { label: "Large (18px)", value: "18px" },
+                        { label: "Extra Large (20px)", value: "20px" },
+                      ]}
+                    />
+                  </Field>
+                  <Field label="Line Height">
+                    <SelectInput
+                      value={theme.bodyLineHeight || "1.6"}
+                      onChange={(v) => onChangeTheme({ bodyLineHeight: v })}
+                      options={[
+                        { label: "Compact (1.4)", value: "1.4" },
+                        { label: "Standard (1.6)", value: "1.6" },
+                        { label: "Relaxed (1.8)", value: "1.8" },
+                        { label: "Spaced (2.0)", value: "2.0" },
+                      ]}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              {/* Global Colors & Styling */}
+              <div className="space-y-3 p-3.5 rounded-xl border border-border/80 bg-muted/20">
+                <div className="flex items-center gap-1.5 pb-1 border-b border-border/50">
+                  <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wide">
+                    Colors & Layout
+                  </span>
+                </div>
+                <Field label="Global Container Width">
+                  <SelectInput
+                    value={theme.containerWidth || "1120px"}
+                    onChange={(v) => onChangeTheme({ containerWidth: v })}
+                    options={[
+                      { label: "Standard (1120px)", value: "1120px" },
+                      { label: "Wide (1280px)", value: "1280px" },
+                      { label: "Compact (960px)", value: "960px" },
+                      { label: "Narrow (800px)", value: "800px" },
+                      { label: "Full Width (100%)", value: "100%" },
+                    ]}
+                  />
+                </Field>
+                <Field label="Primary Color">
+                  <ColorInput
+                    value={theme.primaryColor}
+                    onChange={(v) => onChangeTheme({ primaryColor: v })}
+                  />
+                </Field>
+                <Field label="Secondary Color">
+                  <ColorInput
+                    value={theme.secondaryColor}
+                    onChange={(v) => onChangeTheme({ secondaryColor: v })}
+                  />
+                </Field>
+                <Field label="Accent Color">
+                  <ColorInput
+                    value={theme.accentColor}
+                    onChange={(v) => onChangeTheme({ accentColor: v })}
+                  />
+                </Field>
+                <Field label="Global Page Background">
+                  <ColorInput
+                    value={theme.backgroundColor}
+                    onChange={(v) => onChangeTheme({ backgroundColor: v })}
+                  />
+                </Field>
+                <Field label="Global Base Text Color">
+                  <ColorInput
+                    value={theme.textColor}
+                    onChange={(v) => onChangeTheme({ textColor: v })}
+                  />
+                </Field>
+                <Field label="Default Corner Radius">
+                  <SelectInput
+                    value={theme.borderRadius}
+                    onChange={(v) => onChangeTheme({ borderRadius: v })}
+                    options={[
+                      { label: "Sharp (0px)", value: "0px" },
+                      { label: "Soft (8px)", value: "8px" },
+                      { label: "Rounded (12px)", value: "12px" },
+                      { label: "Large (16px)", value: "16px" },
+                      { label: "Pill (24px)", value: "24px" },
+                      { label: "Full Pill (9999px)", value: "9999px" },
+                    ]}
+                  />
+                </Field>
+                <Field label="Default Box Shadow">
+                  <SelectInput
+                    value={theme.boxShadow || "none"}
+                    onChange={(v) => onChangeTheme({ boxShadow: v })}
+                    options={[
+                      { label: "None (Flat)", value: "none" },
+                      { label: "Subtle Soft", value: "0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)" },
+                      { label: "Medium Card", value: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)" },
+                      { label: "Elevated High", value: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)" },
+                      { label: "Floating Glow", value: "0 20px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)" },
+                    ]}
+                  />
+                </Field>
+              </div>
             </section>
           </>
         ) : (
@@ -1112,90 +1234,189 @@ export function PropertiesPanel({
               </p>
             </div>
 
-            <section className="space-y-3 pt-2">
+            {/* GLOBAL THEME SECTION */}
+            <section className="space-y-4 pt-2">
               <h3
                 className="text-xs font-extrabold uppercase tracking-[0.12em]"
                 style={{ color: theme.primaryColor || "#ea580c" }}
               >
                 Global Page Theme
               </h3>
-              <Field label="Global Container Width">
-                <SelectInput
-                  value={theme.containerWidth || "1120px"}
-                  onChange={(v) => onChangeTheme({ containerWidth: v })}
-                  options={[
-                    { label: "Standard (1120px)", value: "1120px" },
-                    { label: "Wide (1280px)", value: "1280px" },
-                    { label: "Compact (960px)", value: "960px" },
-                    { label: "Narrow (800px)", value: "800px" },
-                    { label: "Full Width (100%)", value: "100%" },
-                  ]}
-                />
-              </Field>
-              <Field label="Primary Color">
-                <ColorInput
-                  value={theme.primaryColor}
-                  onChange={(v) => onChangeTheme({ primaryColor: v })}
-                />
-              </Field>
-              <Field label="Secondary Color">
-                <ColorInput
-                  value={theme.secondaryColor}
-                  onChange={(v) => onChangeTheme({ secondaryColor: v })}
-                />
-              </Field>
-              <Field label="Accent Color">
-                <ColorInput
-                  value={theme.accentColor}
-                  onChange={(v) => onChangeTheme({ accentColor: v })}
-                />
-              </Field>
-              <Field label="Global Page Background">
-                <ColorInput
-                  value={theme.backgroundColor}
-                  onChange={(v) => onChangeTheme({ backgroundColor: v })}
-                />
-              </Field>
-              <Field label="Global Default Text Color">
-                <ColorInput
-                  value={theme.textColor}
-                  onChange={(v) => onChangeTheme({ textColor: v })}
-                />
-              </Field>
-              <Field label="Font Family">
-                <SelectInput
-                  value={theme.fontFamily}
-                  onChange={(v) => onChangeTheme({ fontFamily: v })}
-                  options={FONT_OPTIONS}
-                />
-              </Field>
-              <Field label="Default Corner Radius">
-                <SelectInput
-                  value={theme.borderRadius}
-                  onChange={(v) => onChangeTheme({ borderRadius: v })}
-                  options={[
-                    { label: "Sharp (0px)", value: "0px" },
-                    { label: "Soft (8px)", value: "8px" },
-                    { label: "Rounded (12px)", value: "12px" },
-                    { label: "Large (16px)", value: "16px" },
-                    { label: "Pill (24px)", value: "24px" },
-                    { label: "Full Pill (9999px)", value: "9999px" },
-                  ]}
-                />
-              </Field>
-              <Field label="Default Box Shadow">
-                <SelectInput
-                  value={theme.boxShadow || "none"}
-                  onChange={(v) => onChangeTheme({ boxShadow: v })}
-                  options={[
-                    { label: "None (Flat)", value: "none" },
-                    { label: "Subtle Soft", value: "0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)" },
-                    { label: "Medium Card", value: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)" },
-                    { label: "Elevated High", value: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)" },
-                    { label: "Floating Glow", value: "0 20px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)" },
-                  ]}
-                />
-              </Field>
+
+              {/* Headings & Titles Settings */}
+              <div className="space-y-3 p-3.5 rounded-xl border border-border/80 bg-muted/20">
+                <div className="flex items-center gap-1.5 pb-1 border-b border-border/50">
+                  <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wide">
+                    Headings & Titles (H1–H6)
+                  </span>
+                </div>
+                <Field label="Heading Font Family">
+                  <SelectInput
+                    value={theme.headingFontFamily || theme.fontFamily}
+                    onChange={(v) => onChangeTheme({ headingFontFamily: v })}
+                    options={FONT_OPTIONS}
+                  />
+                </Field>
+                <Field label="Heading Text Color">
+                  <ColorInput
+                    value={theme.headingColor || theme.textColor}
+                    onChange={(v) => onChangeTheme({ headingColor: v })}
+                  />
+                </Field>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Font Weight">
+                    <SelectInput
+                      value={theme.headingWeight || "800"}
+                      onChange={(v) => onChangeTheme({ headingWeight: v })}
+                      options={[
+                        { label: "Semi-Bold (600)", value: "600" },
+                        { label: "Bold (700)", value: "700" },
+                        { label: "Extra Bold (800)", value: "800" },
+                        { label: "Black (900)", value: "900" },
+                      ]}
+                    />
+                  </Field>
+                  <Field label="Text Case">
+                    <SelectInput
+                      value={theme.headingTransform || "none"}
+                      onChange={(v) => onChangeTheme({ headingTransform: v })}
+                      options={[
+                        { label: "As Typed", value: "none" },
+                        { label: "UPPERCASE", value: "uppercase" },
+                        { label: "Capitalize", value: "capitalize" },
+                      ]}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              {/* Body Text & Paragraph Settings */}
+              <div className="space-y-3 p-3.5 rounded-xl border border-border/80 bg-muted/20">
+                <div className="flex items-center gap-1.5 pb-1 border-b border-border/50">
+                  <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wide">
+                    Body Text & Paragraphs
+                  </span>
+                </div>
+                <Field label="Body Font Family">
+                  <SelectInput
+                    value={theme.bodyFontFamily || theme.fontFamily}
+                    onChange={(v) => onChangeTheme({ bodyFontFamily: v })}
+                    options={FONT_OPTIONS}
+                  />
+                </Field>
+                <Field label="Body Text Color">
+                  <ColorInput
+                    value={theme.bodyColor || theme.textColor}
+                    onChange={(v) => onChangeTheme({ bodyColor: v })}
+                  />
+                </Field>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Base Font Size">
+                    <SelectInput
+                      value={theme.bodyFontSize || "16px"}
+                      onChange={(v) => onChangeTheme({ bodyFontSize: v })}
+                      options={[
+                        { label: "Small (14px)", value: "14px" },
+                        { label: "Medium (15px)", value: "15px" },
+                        { label: "Standard (16px)", value: "16px" },
+                        { label: "Large (18px)", value: "18px" },
+                        { label: "Extra Large (20px)", value: "20px" },
+                      ]}
+                    />
+                  </Field>
+                  <Field label="Line Height">
+                    <SelectInput
+                      value={theme.bodyLineHeight || "1.6"}
+                      onChange={(v) => onChangeTheme({ bodyLineHeight: v })}
+                      options={[
+                        { label: "Compact (1.4)", value: "1.4" },
+                        { label: "Standard (1.6)", value: "1.6" },
+                        { label: "Relaxed (1.8)", value: "1.8" },
+                        { label: "Spaced (2.0)", value: "2.0" },
+                      ]}
+                    />
+                  </Field>
+                </div>
+              </div>
+
+              {/* Global Colors & Styling */}
+              <div className="space-y-3 p-3.5 rounded-xl border border-border/80 bg-muted/20">
+                <div className="flex items-center gap-1.5 pb-1 border-b border-border/50">
+                  <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wide">
+                    Colors & Layout
+                  </span>
+                </div>
+                <Field label="Global Container Width">
+                  <SelectInput
+                    value={theme.containerWidth || "1120px"}
+                    onChange={(v) => onChangeTheme({ containerWidth: v })}
+                    options={[
+                      { label: "Standard (1120px)", value: "1120px" },
+                      { label: "Wide (1280px)", value: "1280px" },
+                      { label: "Compact (960px)", value: "960px" },
+                      { label: "Narrow (800px)", value: "800px" },
+                      { label: "Full Width (100%)", value: "100%" },
+                    ]}
+                  />
+                </Field>
+                <Field label="Primary Color">
+                  <ColorInput
+                    value={theme.primaryColor}
+                    onChange={(v) => onChangeTheme({ primaryColor: v })}
+                  />
+                </Field>
+                <Field label="Secondary Color">
+                  <ColorInput
+                    value={theme.secondaryColor}
+                    onChange={(v) => onChangeTheme({ secondaryColor: v })}
+                  />
+                </Field>
+                <Field label="Accent Color">
+                  <ColorInput
+                    value={theme.accentColor}
+                    onChange={(v) => onChangeTheme({ accentColor: v })}
+                  />
+                </Field>
+                <Field label="Global Page Background">
+                  <ColorInput
+                    value={theme.backgroundColor}
+                    onChange={(v) => onChangeTheme({ backgroundColor: v })}
+                  />
+                </Field>
+                <Field label="Global Base Text Color">
+                  <ColorInput
+                    value={theme.textColor}
+                    onChange={(v) => onChangeTheme({ textColor: v })}
+                  />
+                </Field>
+                <Field label="Default Corner Radius">
+                  <SelectInput
+                    value={theme.borderRadius}
+                    onChange={(v) => onChangeTheme({ borderRadius: v })}
+                    options={[
+                      { label: "Sharp (0px)", value: "0px" },
+                      { label: "Soft (8px)", value: "8px" },
+                      { label: "Rounded (12px)", value: "12px" },
+                      { label: "Large (16px)", value: "16px" },
+                      { label: "Pill (24px)", value: "24px" },
+                      { label: "Full Pill (9999px)", value: "9999px" },
+                    ]}
+                  />
+                </Field>
+                <Field label="Default Box Shadow">
+                  <SelectInput
+                    value={theme.boxShadow || "none"}
+                    onChange={(v) => onChangeTheme({ boxShadow: v })}
+                    options={[
+                      { label: "None (Flat)", value: "none" },
+                      { label: "Subtle Soft", value: "0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)" },
+                      { label: "Medium Card", value: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)" },
+                      { label: "Elevated High", value: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)" },
+                      { label: "Floating Glow", value: "0 20px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)" },
+                    ]}
+                  />
+                </Field>
+              </div>
             </section>
           </div>
         )}

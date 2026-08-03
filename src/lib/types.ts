@@ -91,6 +91,18 @@ export type SiteTheme = {
   borderRadius: string;
   containerWidth?: string;
   boxShadow?: string;
+
+  // Global Headings & Titles Typography (H1-H6)
+  headingFontFamily?: string;
+  headingColor?: string;
+  headingWeight?: string;
+  headingTransform?: string;
+
+  // Global Body Text & Paragraph Typography
+  bodyFontFamily?: string;
+  bodyColor?: string;
+  bodyFontSize?: string;
+  bodyLineHeight?: string;
 };
 
 export type Project = {
@@ -127,14 +139,28 @@ export const DEFAULT_THEME: SiteTheme = {
   borderRadius: "12px",
   containerWidth: "1120px",
   boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+
+  // Default Global Headings Typography
+  headingFontFamily: "Inter, system-ui, sans-serif",
+  headingColor: "#0f172a",
+  headingWeight: "800",
+  headingTransform: "none",
+
+  // Default Global Body Paragraph Typography
+  bodyFontFamily: "Inter, system-ui, sans-serif",
+  bodyColor: "#475569",
+  bodyFontSize: "16px",
+  bodyLineHeight: "1.6",
 };
 
 export const FONT_OPTIONS = [
-  { label: "Inter", value: "Inter, system-ui, sans-serif" },
-  { label: "Georgia", value: "Georgia, serif" },
-  { label: "Playfair", value: '"Playfair Display", Georgia, serif' },
-  { label: "Roboto", value: "Roboto, system-ui, sans-serif" },
-  { label: "Poppins", value: "Poppins, system-ui, sans-serif" },
-  { label: "Mono", value: "ui-monospace, SFMono-Regular, monospace" },
-  { label: "Space Grotesk", value: '"Space Grotesk", system-ui, sans-serif' },
+  { label: "Inter (Modern Clean)", value: "Inter, system-ui, sans-serif" },
+  { label: "Outfit (Trendy Sans)", value: '"Outfit", system-ui, sans-serif' },
+  { label: "Plus Jakarta Sans", value: '"Plus Jakarta Sans", system-ui, sans-serif' },
+  { label: "Space Grotesk (Tech/Modern)", value: '"Space Grotesk", system-ui, sans-serif' },
+  { label: "Playfair Display (Serif/Luxury)", value: '"Playfair Display", Georgia, serif' },
+  { label: "Poppins (Friendly Geometric)", value: "Poppins, system-ui, sans-serif" },
+  { label: "Roboto (Clean Standard)", value: "Roboto, system-ui, sans-serif" },
+  { label: "Georgia (Editorial Serif)", value: "Georgia, serif" },
+  { label: "Mono (Developer/Code)", value: "ui-monospace, SFMono-Regular, monospace" },
 ];
