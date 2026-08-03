@@ -651,24 +651,13 @@ export function BuilderEditor({ project }: Props) {
                     <MoreVertical className="h-3.5 w-3.5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 rounded-xl p-1">
+                <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
                   <DropdownMenuItem
                     className="cursor-pointer flex items-center gap-2 text-xs font-semibold"
                     onClick={() => window.open(`/p/${slug}`, "_blank")}
                   >
                     <ExternalLink className="h-3.5 w-3.5 text-emerald-500" />
                     <span>Open Live Site</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer flex items-center gap-2 text-xs font-semibold"
-                    onClick={() => {
-                      const liveUrl = `${window.location.origin}/p/${slug}`;
-                      navigator.clipboard.writeText(liveUrl);
-                      toast.success("Live website link copied to clipboard!");
-                    }}
-                  >
-                    <Copy className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span>Copy URL Link</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="cursor-pointer flex items-center gap-2 text-xs font-semibold text-rose-600 dark:text-rose-400 focus:text-rose-600"
