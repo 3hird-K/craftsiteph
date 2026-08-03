@@ -2319,6 +2319,8 @@ export function ComponentRenderer({
           { title: "Resources", links: ["Documentation", "Community", "Guides", "API Status"] },
         ];
 
+    const [activeFooterPopover, setActiveFooterPopover] = useState<string | null>(null);
+
     return (
       <footer
         id={currentSectionId}
@@ -2328,26 +2330,85 @@ export function ComponentRenderer({
           color: textColor,
           borderRadius: footerRadius,
         }}
-        className="py-12 md:py-16 transition-all"
+        className="py-12 md:py-16 transition-all relative"
       >
         <Center maxWidth={effectiveMaxWidth}>
           {variant === "centered-minimal" ? (
             <div className="text-center space-y-6 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-black tracking-tight" style={{ color: textColor }}>
+              <h3
+                contentEditable={interactive}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const next = e.currentTarget.innerText.trim();
+                  if (next && next !== logoText) onUpdateProps?.({ logoText: next });
+                }}
+                style={{ outline: "none", color: textColor }}
+                className={`text-2xl font-black tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
+              >
                 {logoText}
               </h3>
-              <p className="text-sm" style={{ color: subtextColor }}>
+              <p
+                contentEditable={interactive}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const next = e.currentTarget.innerText.trim();
+                  if (next && next !== tagline) onUpdateProps?.({ tagline: next });
+                }}
+                style={{ outline: "none", color: subtextColor }}
+                className={`text-sm ${interactive ? "cursor-text transition-all" : ""}`}
+              >
                 {tagline}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium">
                 {navLinks.map((l: any, idx: number) => (
-                  <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity" style={{ color: textColor }}>
-                    {l.label}
-                  </a>
+                  <div key={idx} className="group/link relative inline-flex items-center">
+                    <a
+                      href={l.href || "#"}
+                      className="hover:opacity-100 transition-opacity"
+                      style={{ color: textColor }}
+                      onClick={(e) => {
+                        if (interactive) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setActiveFooterPopover(activeFooterPopover === `nav-${idx}` ? null : `nav-${idx}`);
+                        }
+                      }}
+                    >
+                      {l.label}
+                    </a>
+                    {interactive && activeFooterPopover === `nav-${idx}` && (
+                      <LinkEditItem
+                        link={{ label: l.label, href: l.href || "#" }}
+                        sectionOptions={sectionOptions}
+                        onSave={(label, newHref) => {
+                          const next = [...navLinks];
+                          next[idx] = { ...next[idx], label, href: newHref };
+                          onUpdateProps?.({ links: next });
+                          setActiveFooterPopover(null);
+                        }}
+                        onRemove={() => {
+                          const next = [...navLinks];
+                          next.splice(idx, 1);
+                          onUpdateProps?.({ links: next });
+                          setActiveFooterPopover(null);
+                        }}
+                        onClose={() => setActiveFooterPopover(null)}
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
               <div className="pt-6 border-t" style={{ borderColor }}>
-                <p className="text-xs opacity-60" style={{ color: subtextColor }}>
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== copyright) onUpdateProps?.({ copyright: next });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className={`text-xs opacity-60 ${interactive ? "cursor-text transition-all" : ""}`}
+                >
                   {copyright}
                 </p>
               </div>
@@ -2356,8 +2417,32 @@ export function ComponentRenderer({
             <div className="space-y-12">
               <div className="p-8 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor, backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.05)" }}>
                 <div className="space-y-1 text-center md:text-left">
-                  <h4 className="text-xl font-bold" style={{ color: textColor }}>Stay updated with our latest news</h4>
-                  <p className="text-xs" style={{ color: subtextColor }}>{tagline}</p>
+                  <h4
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== (props.heading || "Stay updated with our latest news")) {
+                        onUpdateProps?.({ heading: next });
+                      }
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-xl font-bold ${interactive ? "cursor-text transition-all" : ""}`}
+                  >
+                    {props.heading || "Stay updated with our latest news"}
+                  </h4>
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== tagline) onUpdateProps?.({ tagline: next });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-xs ${interactive ? "cursor-text transition-all" : ""}`}
+                  >
+                    {tagline}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto max-w-md">
                   <input
@@ -2366,27 +2451,100 @@ export function ComponentRenderer({
                     className="px-4 py-2.5 rounded-xl border bg-transparent text-sm outline-none w-full md:w-64 placeholder:opacity-50"
                     style={{ borderColor, color: textColor }}
                   />
-                  <button
-                    type="button"
-                    className="px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md hover:brightness-110 shrink-0 cursor-pointer"
-                    style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
-                  >
-                    Subscribe
-                  </button>
+                  <div className="relative group/btn inline-flex items-center">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        if (!interactive) return;
+                        e.stopPropagation();
+                        setActiveFooterPopover(activeFooterPopover === "cta-btn" ? null : "cta-btn");
+                      }}
+                      className="px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md hover:brightness-110 shrink-0 cursor-pointer"
+                      style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                    >
+                      {props.buttonText || "Subscribe"}
+                    </button>
+                    {interactive && activeFooterPopover === "cta-btn" && (
+                      <ButtonEditItem
+                        button={{ label: props.buttonText || "Subscribe", href: props.buttonHref || "#" }}
+                        sectionOptions={sectionOptions}
+                        onSave={(label, newHref) => {
+                          onUpdateProps?.({ buttonText: label, buttonHref: newHref });
+                          setActiveFooterPopover(null);
+                        }}
+                        onRemove={() => setActiveFooterPopover(null)}
+                        onClose={() => setActiveFooterPopover(null)}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div className="col-span-2 space-y-3">
-                  <h3 className="text-xl font-black" style={{ color: textColor }}>{logoText}</h3>
-                  <p className="text-xs max-w-sm" style={{ color: subtextColor }}>{tagline}</p>
+                  <h3
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== logoText) onUpdateProps?.({ logoText: next });
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-xl font-black ${interactive ? "cursor-text transition-all" : ""}`}
+                  >
+                    {logoText}
+                  </h3>
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== tagline) onUpdateProps?.({ tagline: next });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-xs max-w-sm ${interactive ? "cursor-text transition-all" : ""}`}
+                  >
+                    {tagline}
+                  </p>
                 </div>
                 {columnsList.map((col: any, cIdx: number) => (
                   <div key={cIdx} className="space-y-3 text-xs">
-                    <h5 className="font-bold uppercase tracking-wider text-[11px]" style={{ color: textColor }}>{col.title}</h5>
+                    <h5
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== col.title) {
+                          const updatedCols = [...columnsList];
+                          updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
+                          onUpdateProps?.({ columns: updatedCols });
+                        }
+                      }}
+                      style={{ outline: "none", color: textColor }}
+                      className={`font-bold uppercase tracking-wider text-[11px] ${interactive ? "cursor-text transition-all" : ""}`}
+                    >
+                      {col.title}
+                    </h5>
                     <ul className="space-y-2">
                       {col.links.map((lnk: string, lIdx: number) => (
-                        <li key={lIdx}>
-                          <a href="#" className="hover:opacity-100 transition-opacity" style={{ color: subtextColor }}>{lnk}</a>
+                        <li key={lIdx} className="group/link relative inline-flex items-center">
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerText.trim();
+                              if (next && next !== lnk) {
+                                const updatedCols = [...columnsList];
+                                const nextLinks = [...updatedCols[cIdx].links];
+                                nextLinks[lIdx] = next;
+                                updatedCols[cIdx] = { ...updatedCols[cIdx], links: nextLinks };
+                                onUpdateProps?.({ columns: updatedCols });
+                              }
+                            }}
+                            style={{ outline: "none", color: subtextColor }}
+                            className={`hover:opacity-100 transition-opacity ${interactive ? "cursor-text" : ""}`}
+                          >
+                            {lnk}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -2394,70 +2552,57 @@ export function ComponentRenderer({
                 ))}
               </div>
               <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
-                <span style={{ color: subtextColor }}>{copyright}</span>
+                <span
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== copyright) onUpdateProps?.({ copyright: next });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className={interactive ? "cursor-text transition-all" : ""}
+                >
+                  {copyright}
+                </span>
                 <div className="flex gap-4" style={{ color: subtextColor }}>
-                  <a href="#" className="hover:opacity-100 transition-opacity">Privacy</a>
-                  <a href="#" className="hover:opacity-100 transition-opacity">Terms</a>
-                  <a href="#" className="hover:opacity-100 transition-opacity">Security</a>
-                </div>
-              </div>
-            </div>
-          ) : variant === "dark-tech-dock" ? (
-            <div className="space-y-8">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b" style={{ borderColor }}>
-                <div className="space-y-1">
-                  <h3 className="text-xl font-black" style={{ color: textColor }}>{logoText}</h3>
-                  <p className="text-xs" style={{ color: subtextColor }}>{tagline}</p>
-                </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>All Systems Operational</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
-                <div className="flex flex-wrap gap-6 font-medium" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
-                    <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity">
-                      {l.label}
-                    </a>
+                    <div key={idx} className="group/link relative inline-flex items-center">
+                      <a
+                        href={l.href || "#"}
+                        className="hover:opacity-100 transition-opacity"
+                        style={{ color: subtextColor }}
+                        onClick={(e) => {
+                          if (interactive) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setActiveFooterPopover(activeFooterPopover === `nav-${idx}` ? null : `nav-${idx}`);
+                          }
+                        }}
+                      >
+                        {l.label}
+                      </a>
+                      {interactive && activeFooterPopover === `nav-${idx}` && (
+                        <LinkEditItem
+                          link={{ label: l.label, href: l.href || "#" }}
+                          sectionOptions={sectionOptions}
+                          onSave={(label, newHref) => {
+                            const next = [...navLinks];
+                            next[idx] = { ...next[idx], label, href: newHref };
+                            onUpdateProps?.({ links: next });
+                            setActiveFooterPopover(null);
+                          }}
+                          onRemove={() => {
+                            const next = [...navLinks];
+                            next.splice(idx, 1);
+                            onUpdateProps?.({ links: next });
+                            setActiveFooterPopover(null);
+                          }}
+                          onClose={() => setActiveFooterPopover(null)}
+                        />
+                      )}
+                    </div>
                   ))}
                 </div>
-                <span style={{ color: subtextColor }}>{copyright}</span>
-              </div>
-            </div>
-          ) : variant === "stacked-brand-statement" ? (
-            <div className="text-center space-y-8">
-              <h2 className="text-4xl md:text-7xl font-black tracking-tighter opacity-30 uppercase" style={{ color: textColor }}>
-                {logoText}
-              </h2>
-              <div className="max-w-md mx-auto space-y-2">
-                <p className="text-sm font-semibold tracking-wider uppercase opacity-90" style={{ color: textColor }}>
-                  {tagline}
-                </p>
-                <div className="flex justify-center gap-6 text-xs font-bold pt-2" style={{ color: textColor }}>
-                  {navLinks.map((l: any, idx: number) => (
-                    <a key={idx} href={l.href || "#"} className="hover:underline">
-                      {l.label}
-                    </a>
-                  ))}
-                </div>
-              </div>
-              <div className="pt-6 border-t text-xs opacity-75" style={{ borderColor, color: subtextColor }}>
-                {copyright}
-              </div>
-            </div>
-          ) : variant === "compact-bottom-bar" ? (
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-3">
-                <span className="font-extrabold text-sm" style={{ color: textColor }}>{logoText}</span>
-                <span style={{ color: subtextColor }}>{copyright}</span>
-              </div>
-              <div className="flex items-center gap-5 font-medium">
-                {navLinks.map((l: any, idx: number) => (
-                  <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity" style={{ color: subtextColor }}>
-                    {l.label}
-                  </a>
-                ))}
               </div>
             </div>
           ) : (
@@ -2465,16 +2610,70 @@ export function ComponentRenderer({
             <div className="space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
                 <div className="md:col-span-2 space-y-3">
-                  <h3 className="text-2xl font-black" style={{ color: textColor }}>{logoText}</h3>
-                  <p className="text-sm max-w-sm" style={{ color: subtextColor }}>{tagline}</p>
+                  <h3
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== logoText) onUpdateProps?.({ logoText: next });
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`text-2xl font-black ${interactive ? "cursor-text transition-all" : ""}`}
+                  >
+                    {logoText}
+                  </h3>
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerText.trim();
+                      if (next && next !== tagline) onUpdateProps?.({ tagline: next });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`text-sm max-w-sm ${interactive ? "cursor-text transition-all" : ""}`}
+                  >
+                    {tagline}
+                  </p>
                 </div>
                 {columnsList.map((col: any, cIdx: number) => (
                   <div key={cIdx} className="space-y-3 text-sm">
-                    <h5 className="font-bold uppercase tracking-wider text-xs" style={{ color: textColor }}>{col.title}</h5>
+                    <h5
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerText.trim();
+                        if (next && next !== col.title) {
+                          const updatedCols = [...columnsList];
+                          updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
+                          onUpdateProps?.({ columns: updatedCols });
+                        }
+                      }}
+                      style={{ outline: "none", color: textColor }}
+                      className={`font-bold uppercase tracking-wider text-xs ${interactive ? "cursor-text transition-all" : ""}`}
+                    >
+                      {col.title}
+                    </h5>
                     <ul className="space-y-2.5">
                       {col.links.map((lnk: string, lIdx: number) => (
                         <li key={lIdx}>
-                          <a href="#" className="hover:opacity-100 transition-opacity" style={{ color: subtextColor }}>{lnk}</a>
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerText.trim();
+                              if (next && next !== lnk) {
+                                const updatedCols = [...columnsList];
+                                const nextLinks = [...updatedCols[cIdx].links];
+                                nextLinks[lIdx] = next;
+                                updatedCols[cIdx] = { ...updatedCols[cIdx], links: nextLinks };
+                                onUpdateProps?.({ columns: updatedCols });
+                              }
+                            }}
+                            style={{ outline: "none", color: subtextColor }}
+                            className={`hover:opacity-100 transition-opacity ${interactive ? "cursor-text" : ""}`}
+                          >
+                            {lnk}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -2482,12 +2681,55 @@ export function ComponentRenderer({
                 ))}
               </div>
               <div className="pt-8 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
-                <span style={{ color: subtextColor }}>{copyright}</span>
+                <span
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerText.trim();
+                    if (next && next !== copyright) onUpdateProps?.({ copyright: next });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className={interactive ? "cursor-text transition-all" : ""}
+                >
+                  {copyright}
+                </span>
                 <div className="flex items-center gap-6" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
-                    <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity">
-                      {l.label}
-                    </a>
+                    <div key={idx} className="group/link relative inline-flex items-center">
+                      <a
+                        href={l.href || "#"}
+                        className="hover:opacity-100 transition-opacity"
+                        style={{ color: subtextColor }}
+                        onClick={(e) => {
+                          if (interactive) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setActiveFooterPopover(activeFooterPopover === `nav-${idx}` ? null : `nav-${idx}`);
+                          }
+                        }}
+                      >
+                        {l.label}
+                      </a>
+                      {interactive && activeFooterPopover === `nav-${idx}` && (
+                        <LinkEditItem
+                          link={{ label: l.label, href: l.href || "#" }}
+                          sectionOptions={sectionOptions}
+                          onSave={(label, newHref) => {
+                            const next = [...navLinks];
+                            next[idx] = { ...next[idx], label, href: newHref };
+                            onUpdateProps?.({ links: next });
+                            setActiveFooterPopover(null);
+                          }}
+                          onRemove={() => {
+                            const next = [...navLinks];
+                            next.splice(idx, 1);
+                            onUpdateProps?.({ links: next });
+                            setActiveFooterPopover(null);
+                          }}
+                          onClose={() => setActiveFooterPopover(null)}
+                        />
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>

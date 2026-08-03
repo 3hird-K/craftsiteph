@@ -626,10 +626,10 @@ export function PropertiesPanel({
                 </div>
               ) : null}
               {component.props.heading !== undefined ||
-              ["hero", "heading", "features", "card-grid", "cta", "form", "testimonial"].includes(
+              ["hero", "heading", "features", "card-grid", "cta", "form", "testimonial", "footer"].includes(
                 component.type,
               ) ? (
-                <Field label="Heading">
+                <Field label="Heading / Newsletter Title">
                   <TextInput
                     value={component.props.heading}
                     onChange={(v) => onChangeProps(component.id, { heading: v })}
@@ -645,8 +645,24 @@ export function PropertiesPanel({
                   />
                 </Field>
               ) : null}
+              {component.type === "footer" && (
+                <>
+                  <Field label="Tagline / Brand Subtext">
+                    <TextInput
+                      value={component.props.tagline}
+                      onChange={(v) => onChangeProps(component.id, { tagline: v })}
+                    />
+                  </Field>
+                  <Field label="Copyright Line">
+                    <TextInput
+                      value={component.props.copyright}
+                      onChange={(v) => onChangeProps(component.id, { copyright: v })}
+                    />
+                  </Field>
+                </>
+              )}
               {component.props.text !== undefined ||
-              ["text", "testimonial", "footer"].includes(component.type) ? (
+              ["text", "testimonial"].includes(component.type) ? (
                 <Field label="Text / Paragraph">
                   <TextArea
                     value={component.props.text}
@@ -657,7 +673,7 @@ export function PropertiesPanel({
               ) : null}
               {/* BUTTONS REPEATER */}
               {(Array.isArray(component.props.buttons) || component.props.buttonText !== undefined ||
-                ["navbar", "hero", "button", "cta", "form"].includes(component.type)) && (
+                ["navbar", "hero", "button", "cta", "form", "footer"].includes(component.type)) && (
                 <div className="space-y-3 pt-3 border-t border-border/60">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-foreground">Buttons (Component Style)</span>
