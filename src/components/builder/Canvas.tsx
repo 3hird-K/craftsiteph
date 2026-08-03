@@ -292,7 +292,8 @@ export function Canvas({
         >
           <DeviceFrame device={device} showDeviceFrame={showDeviceFrame}>
         <div
-          className="h-full min-h-[500px] transition-colors duration-300"
+          id="canvas-host"
+          className="relative h-full min-h-[500px] transition-colors duration-300"
           style={{
             backgroundColor: canvasBg,
             color: canvasTextColor,

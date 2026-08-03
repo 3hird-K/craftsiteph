@@ -360,14 +360,17 @@ function EditModalPortal({ children, onClose }: { children: React.ReactNode; onC
 
   if (!mounted || typeof document === "undefined") return null;
 
+  const host = document.getElementById("canvas-host") || document.body;
+  const isCanvas = host.id === "canvas-host";
+
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 sm:p-6 pl-0 md:pl-88 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0 transition-all"
+      className={`${isCanvas ? "absolute" : "fixed"} inset-0 z-[9999999] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0`}
       onClick={onClose}
     >
       {children}
     </div>,
-    document.body
+    host
   );
 }
 
