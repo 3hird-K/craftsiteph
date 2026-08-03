@@ -520,12 +520,103 @@ export function PropertiesPanel({
               {"logoText" in component.props ||
               component.type === "navbar" ||
               component.type === "footer" ? (
-                <Field label="Logo / Brand Title">
-                  <TextInput
-                    value={component.props.logoText}
-                    onChange={(v) => onChangeProps(component.id, { logoText: v })}
-                  />
-                </Field>
+                <div className="space-y-3">
+                  <Field label="Logo / Brand Title">
+                    <TextInput
+                      value={component.props.logoText}
+                      onChange={(v) => onChangeProps(component.id, { logoText: v })}
+                    />
+                  </Field>
+                  <div className="space-y-2.5 pt-2 border-t border-border/50">
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                      Logo Font & Style
+                    </div>
+                    <Field label="Font Family">
+                      <SelectInput
+                        value={component.props.logoFontFamily || ""}
+                        onChange={(v) => onChangeProps(component.id, { logoFontFamily: v || undefined })}
+                        options={[
+                          { label: "Default (Theme Font)", value: "" },
+                          { label: "Inter", value: "Inter, system-ui, sans-serif" },
+                          { label: "Playfair Display (Serif)", value: '"Playfair Display", Georgia, serif' },
+                          { label: "Outfit", value: '"Outfit", system-ui, sans-serif' },
+                          { label: "Poppins", value: '"Poppins", system-ui, sans-serif' },
+                          { label: "Roboto", value: "Roboto, system-ui, sans-serif" },
+                          { label: "Cinzel", value: '"Cinzel", serif' },
+                          { label: "Pacifico (Cursive)", value: '"Pacifico", cursive' },
+                          { label: "Plus Jakarta Sans", value: '"Plus Jakarta Sans", sans-serif' },
+                          { label: "Lora (Serif)", value: '"Lora", serif' },
+                          { label: "IBM Plex Mono", value: '"IBM Plex Mono", monospace' },
+                          { label: "Space Grotesk", value: '"Space Grotesk", sans-serif' },
+                        ]}
+                      />
+                    </Field>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Field label="Font Size">
+                        <SelectInput
+                          value={component.props.logoFontSize || ""}
+                          onChange={(v) => onChangeProps(component.id, { logoFontSize: v || undefined })}
+                          options={[
+                            { label: "Default (18px)", value: "" },
+                            { label: "14px", value: "14px" },
+                            { label: "16px", value: "16px" },
+                            { label: "18px", value: "18px" },
+                            { label: "20px", value: "20px" },
+                            { label: "24px", value: "24px" },
+                            { label: "28px", value: "28px" },
+                            { label: "32px", value: "32px" },
+                            { label: "36px", value: "36px" },
+                          ]}
+                        />
+                      </Field>
+                      <Field label="Font Weight">
+                        <SelectInput
+                          value={component.props.logoFontWeight || ""}
+                          onChange={(v) => onChangeProps(component.id, { logoFontWeight: v || undefined })}
+                          options={[
+                            { label: "Default (800)", value: "" },
+                            { label: "Normal (400)", value: "400" },
+                            { label: "Medium (500)", value: "500" },
+                            { label: "Semibold (600)", value: "600" },
+                            { label: "Bold (700)", value: "700" },
+                            { label: "Extrabold (800)", value: "800" },
+                            { label: "Black (900)", value: "900" },
+                          ]}
+                        />
+                      </Field>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Field label="Font Style">
+                        <SelectInput
+                          value={component.props.logoFontStyle || "normal"}
+                          onChange={(v) => onChangeProps(component.id, { logoFontStyle: v || "normal" })}
+                          options={[
+                            { label: "Normal", value: "normal" },
+                            { label: "Italic", value: "italic" },
+                          ]}
+                        />
+                      </Field>
+                      <Field label="Text Case">
+                        <SelectInput
+                          value={component.props.logoTextTransform || "none"}
+                          onChange={(v) => onChangeProps(component.id, { logoTextTransform: v || "none" })}
+                          options={[
+                            { label: "As Typed", value: "none" },
+                            { label: "UPPERCASE", value: "uppercase" },
+                            { label: "lowercase", value: "lowercase" },
+                            { label: "Capitalize", value: "capitalize" },
+                          ]}
+                        />
+                      </Field>
+                    </div>
+                    <Field label="Logo Color">
+                      <ColorInput
+                        value={component.props.logoColor}
+                        onChange={(v) => onChangeProps(component.id, { logoColor: v })}
+                      />
+                    </Field>
+                  </div>
+                </div>
               ) : null}
               {component.props.heading !== undefined ||
               ["hero", "heading", "features", "card-grid", "cta", "form", "testimonial"].includes(
@@ -641,13 +732,32 @@ export function PropertiesPanel({
               )}
               {component.props.imageUrl !== undefined ||
               ["hero", "image", "testimonial"].includes(component.type) ? (
-                <Field label="Image URL">
-                  <TextInput
-                    value={component.props.imageUrl}
-                    onChange={(v) => onChangeProps(component.id, { imageUrl: v })}
-                    placeholder="https://..."
-                  />
-                </Field>
+                <div className="space-y-3">
+                  <Field label="Image URL">
+                    <TextInput
+                      value={component.props.imageUrl}
+                      onChange={(v) => onChangeProps(component.id, { imageUrl: v })}
+                      placeholder="https://..."
+                    />
+                  </Field>
+                  {["hero", "image"].includes(component.type) || component.props.imageUrl ? (
+                    <Field label="Image / Grid Side">
+                      <SelectInput
+                        value={component.props.imagePosition || (component.props.reverseLayout ? "left" : "right")}
+                        onChange={(v) =>
+                          onChangeProps(component.id, {
+                            imagePosition: v as "left" | "right",
+                            reverseLayout: v === "left",
+                          })
+                        }
+                        options={[
+                          { label: "Image Right, Text Left (Default)", value: "right" },
+                          { label: "Image Left, Text Right (Swapped)", value: "left" },
+                        ]}
+                      />
+                    </Field>
+                  ) : null}
+                </div>
               ) : null}
 
               {/* NAVIGATION LINKS REPEATER (Navbar & Footer) */}

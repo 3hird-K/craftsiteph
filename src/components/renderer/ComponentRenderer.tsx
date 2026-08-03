@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import type { BuilderComponent, ComponentProps, SiteTheme } from "@/lib/types";
+import type { BuilderComponent, ComponentProps, ComponentStyle, SiteTheme } from "@/lib/types";
 import { styleToCss } from "@/lib/style";
 import { PALETTE } from "@/lib/presets";
 import {
@@ -40,6 +40,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 export const ICON_MAP: Record<string, React.ElementType> = {
   home: Home,
@@ -153,6 +160,7 @@ type Props = {
   interactive?: boolean;
   device?: "desktop" | "tablet" | "mobile";
   onUpdateProps?: (props: Partial<ComponentProps>) => void;
+  onUpdateStyle?: (style: Partial<ComponentStyle>) => void;
 };
 
 function Center({
@@ -256,9 +264,101 @@ function SectionSelectDropdown({
   );
 }
 
+function CustomSelectDropdown({
+  value,
+  options,
+  onChange,
+  placeholder = "Select option...",
+}: {
+  value: string;
+  options: { label: string; value: string; sublabel?: string }[];
+  onChange: (val: string) => void;
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      window.addEventListener("mousedown", handleOutside);
+    }
+    return () => window.removeEventListener("mousedown", handleOutside);
+  }, [isOpen]);
+
+  const selectedOption = options.find((opt) => opt.value === value) || options[0];
+
+  return (
+    <div ref={dropdownRef} className="relative w-full">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+        className={`w-full flex items-center justify-between px-3 py-2 bg-muted/40 hover:bg-muted/60 border rounded-xl text-xs font-medium text-foreground transition-all cursor-pointer outline-none ${
+          isOpen
+            ? "border-primary ring-1 ring-primary bg-background"
+            : "border-border/80 focus:border-primary focus:ring-1 focus:ring-primary"
+        }`}
+      >
+        <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+        <ChevronDown
+          className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 shrink-0 ${
+            isOpen ? "rotate-180 text-primary" : ""
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-full left-0 mt-1 w-full max-h-52 overflow-y-auto bg-background border border-border shadow-2xl rounded-xl p-1.5 z-50 space-y-0.5 animate-in fade-in-0 zoom-in-95 cursor-default"
+        >
+          {options.map((opt, i) => {
+            const isSelected = (value || "") === opt.value;
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange(opt.value);
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-left ${
+                  isSelected ? "bg-primary/10 text-primary font-bold" : "text-foreground hover:bg-muted"
+                }`}
+              >
+                <div className="flex items-center gap-1.5 truncate">
+                  <span>{opt.label}</span>
+                  {opt.sublabel && (
+                    <span className="text-[10px] font-mono text-muted-foreground">({opt.sublabel})</span>
+                  )}
+                </div>
+                {isSelected && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LogoEditItem({
   logoText,
   logoHref = "#top",
+  logoFontFamily = "",
+  logoFontSize = "",
+  logoFontWeight = "",
+  logoFontStyle = "normal",
+  logoTextTransform = "none",
+  logoColor = "",
   sectionOptions,
   onSave,
   onRemove,
@@ -266,13 +366,34 @@ function LogoEditItem({
 }: {
   logoText: string;
   logoHref?: string;
+  logoFontFamily?: string;
+  logoFontSize?: string;
+  logoFontWeight?: string;
+  logoFontStyle?: string;
+  logoTextTransform?: string;
+  logoColor?: string;
   sectionOptions: { label: string; anchorId: string }[];
-  onSave: (text: string, href: string) => void;
+  onSave: (data: {
+    logoText: string;
+    logoHref: string;
+    logoFontFamily?: string;
+    logoFontSize?: string;
+    logoFontWeight?: string;
+    logoFontStyle?: string;
+    logoTextTransform?: string;
+    logoColor?: string;
+  }) => void;
   onRemove: () => void;
   onClose: () => void;
 }) {
   const [draftText, setDraftText] = useState(logoText || "");
   const [draftHref, setDraftHref] = useState(logoHref || "#top");
+  const [draftFontFamily, setDraftFontFamily] = useState(logoFontFamily || "");
+  const [draftFontSize, setDraftFontSize] = useState(logoFontSize || "");
+  const [draftFontWeight, setDraftFontWeight] = useState(logoFontWeight || "");
+  const [draftFontStyle, setDraftFontStyle] = useState(logoFontStyle || "normal");
+  const [draftTextTransform, setDraftTextTransform] = useState(logoTextTransform || "none");
+  const [draftColor, setDraftColor] = useState(logoColor || "");
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -293,16 +414,77 @@ function LogoEditItem({
     };
   }, [onClose]);
 
+  const presetColors = [
+    { label: "Default", value: "" },
+    { label: "Black", value: "#000000" },
+    { label: "White", value: "#ffffff" },
+    { label: "Indigo", value: "#4f46e5" },
+    { label: "Emerald", value: "#10b981" },
+    { label: "Rose", value: "#e11d48" },
+    { label: "Amber", value: "#f59e0b" },
+    { label: "Purple", value: "#9333ea" },
+  ];
+
+  const fontFamilyOptions = [
+    { label: "Default Theme Font", value: "" },
+    { label: "Inter (Sans-serif)", value: "Inter, system-ui, sans-serif" },
+    { label: "Playfair Display (Serif)", value: '"Playfair Display", Georgia, serif' },
+    { label: "Outfit (Modern)", value: '"Outfit", system-ui, sans-serif' },
+    { label: "Poppins (Geometric)", value: '"Poppins", system-ui, sans-serif' },
+    { label: "Roboto (Clean)", value: "Roboto, system-ui, sans-serif" },
+    { label: "Cinzel (Luxury Serif)", value: '"Cinzel", serif' },
+    { label: "Pacifico (Handwritten)", value: '"Pacifico", cursive' },
+    { label: "Plus Jakarta Sans", value: '"Plus Jakarta Sans", sans-serif' },
+    { label: "Lora (Classic Serif)", value: '"Lora", serif' },
+    { label: "IBM Plex Mono (Code)", value: '"IBM Plex Mono", monospace' },
+    { label: "Space Grotesk (Display)", value: '"Space Grotesk", sans-serif' },
+    { label: "Georgia (Serif)", value: "Georgia, serif" },
+  ];
+
+  const fontSizeOptions = [
+    { label: "Default (18px)", value: "" },
+    { label: "14px (Small)", value: "14px" },
+    { label: "16px (Base)", value: "16px" },
+    { label: "18px (Medium)", value: "18px" },
+    { label: "20px (Large)", value: "20px" },
+    { label: "24px (XL)", value: "24px" },
+    { label: "28px (2XL)", value: "28px" },
+    { label: "32px (3XL)", value: "32px" },
+    { label: "36px (4XL)", value: "36px" },
+  ];
+
+  const fontWeightOptions = [
+    { label: "Default (Extrabold)", value: "" },
+    { label: "Normal (400)", value: "400" },
+    { label: "Medium (500)", value: "500" },
+    { label: "Semibold (600)", value: "600" },
+    { label: "Bold (700)", value: "700" },
+    { label: "Extrabold (800)", value: "800" },
+    { label: "Black (900)", value: "900" },
+  ];
+
+  const fontStyleOptions = [
+    { label: "Normal", value: "normal" },
+    { label: "Italic", value: "italic" },
+  ];
+
+  const textTransformOptions = [
+    { label: "As Typed", value: "none" },
+    { label: "UPPERCASE", value: "uppercase" },
+    { label: "lowercase", value: "lowercase" },
+    { label: "Capitalize", value: "capitalize" },
+  ];
+
   return (
     <div
       ref={popoverRef}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
-      className="absolute top-full left-0 mt-2.5 w-72 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
+      className="absolute top-full left-0 mt-2.5 w-84 p-4 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3.5 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal max-h-[85vh] overflow-y-auto"
     >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-          <Link2 className="h-3.5 w-3.5 text-primary" /> Edit Logo & Link
+          <Link2 className="h-3.5 w-3.5 text-primary" /> Edit Logo & Typography
         </span>
         <button
           type="button"
@@ -313,6 +495,29 @@ function LogoEditItem({
         </button>
       </div>
 
+      {/* Live Preview */}
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Live Logo Preview
+        </label>
+        <div className="p-3 rounded-xl border border-border/80 bg-muted/30 flex items-center justify-center overflow-hidden min-h-[48px]">
+          <span
+            style={{
+              fontFamily: draftFontFamily || undefined,
+              fontSize: draftFontSize || "18px",
+              fontWeight: draftFontWeight || "800",
+              fontStyle: draftFontStyle || "normal",
+              textTransform: (draftTextTransform as React.CSSProperties["textTransform"]) || "none",
+              color: draftColor || "inherit",
+            }}
+            className="truncate transition-all max-w-full text-center"
+          >
+            {draftText || "Brand"}
+          </span>
+        </div>
+      </div>
+
+      {/* Logo Text */}
       <div className="space-y-1.5">
         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           Logo Text Name
@@ -326,34 +531,143 @@ function LogoEditItem({
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Scroll To Section
-        </label>
-        <SectionSelectDropdown
-          value={draftHref}
-          options={sectionOptions}
-          onChange={(val) => {
-            if (val !== "CUSTOM_URL") {
-              setDraftHref(val);
-            }
-          }}
-        />
+      {/* Typography Controls */}
+      <div className="space-y-2 pt-2 border-t border-border/60">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+          Font Style & Typography
+        </span>
+
+        {/* Font Family */}
+        <div className="space-y-1">
+          <label className="text-[10px] font-medium text-muted-foreground">Font Family</label>
+          <CustomSelectDropdown
+            value={draftFontFamily}
+            onChange={(val) => setDraftFontFamily(val)}
+            options={fontFamilyOptions}
+            placeholder="Select Font Family"
+          />
+        </div>
+
+        {/* Font Size & Weight */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground">Font Size</label>
+            <CustomSelectDropdown
+              value={draftFontSize}
+              onChange={(val) => setDraftFontSize(val)}
+              options={fontSizeOptions}
+              placeholder="Font Size"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground">Font Weight</label>
+            <CustomSelectDropdown
+              value={draftFontWeight}
+              onChange={(val) => setDraftFontWeight(val)}
+              options={fontWeightOptions}
+              placeholder="Font Weight"
+            />
+          </div>
+        </div>
+
+        {/* Font Style (Italic) & Text Transform */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground">Style</label>
+            <CustomSelectDropdown
+              value={draftFontStyle}
+              onChange={(val) => setDraftFontStyle(val)}
+              options={fontStyleOptions}
+              placeholder="Font Style"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-medium text-muted-foreground">Text Case</label>
+            <CustomSelectDropdown
+              value={draftTextTransform}
+              onChange={(val) => setDraftTextTransform(val)}
+              options={textTransformOptions}
+              placeholder="Text Case"
+            />
+          </div>
+        </div>
+
+        {/* Custom Text Color */}
+        <div className="space-y-1.5 pt-1">
+          <label className="text-[10px] font-medium text-muted-foreground">Text Color</label>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {presetColors.map((c) => (
+              <button
+                key={c.value || "default"}
+                type="button"
+                onClick={() => setDraftColor(c.value)}
+                className={`h-5 w-5 rounded-full border transition-transform cursor-pointer ${
+                  draftColor === c.value ? "scale-110 ring-2 ring-primary ring-offset-1" : "hover:scale-105 opacity-80"
+                }`}
+                style={{
+                  backgroundColor: c.value || "transparent",
+                  borderColor: c.value === "#ffffff" ? "#ccc" : "transparent",
+                }}
+                title={c.label}
+              />
+            ))}
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="color"
+              value={draftColor || "#000000"}
+              onChange={(e) => setDraftColor(e.target.value)}
+              className="h-7 w-8 rounded-md border border-border cursor-pointer bg-transparent p-0.5"
+            />
+            <input
+              type="text"
+              value={draftColor}
+              onChange={(e) => setDraftColor(e.target.value)}
+              placeholder="e.g. #4f46e5 or transparent"
+              className="flex-1 px-2.5 py-1 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary transition-all"
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Target URL
-        </label>
-        <input
-          type="text"
-          value={draftHref}
-          onChange={(e) => setDraftHref(e.target.value)}
-          placeholder="e.g. #top or https://..."
-          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-        />
+      {/* Link Settings */}
+      <div className="space-y-2 pt-2 border-t border-border/60">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+          Link & Destination
+        </span>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Scroll To Section
+          </label>
+          <SectionSelectDropdown
+            value={draftHref}
+            options={sectionOptions}
+            onChange={(val) => {
+              if (val !== "CUSTOM_URL") {
+                setDraftHref(val);
+              }
+            }}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Target URL
+          </label>
+          <input
+            type="text"
+            value={draftHref}
+            onChange={(e) => setDraftHref(e.target.value)}
+            placeholder="e.g. #top or https://..."
+            className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          />
+        </div>
       </div>
 
+      {/* Action Buttons */}
       <div className="pt-2 border-t border-border/60 flex items-center gap-2 w-full">
         <button
           type="button"
@@ -364,7 +678,18 @@ function LogoEditItem({
         </button>
         <button
           type="button"
-          onClick={() => onSave(draftText, draftHref)}
+          onClick={() =>
+            onSave({
+              logoText: draftText,
+              logoHref: draftHref,
+              logoFontFamily: draftFontFamily || undefined,
+              logoFontSize: draftFontSize || undefined,
+              logoFontWeight: draftFontWeight || undefined,
+              logoFontStyle: draftFontStyle || undefined,
+              logoTextTransform: draftTextTransform || undefined,
+              logoColor: draftColor || undefined,
+            })
+          }
           className="flex-1 w-1/2 py-2 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
         >
           <Check className="h-3.5 w-3.5" /> Done
@@ -638,16 +963,19 @@ function ButtonEditItem({
 function ImageEditItem({
   currentUrl,
   currentAlt,
+  currentBorderRadius,
   onSave,
   onClose,
 }: {
   currentUrl?: string;
   currentAlt?: string;
-  onSave: (url: string, alt?: string) => void;
+  currentBorderRadius?: string;
+  onSave: (url: string, alt?: string, imageBorderRadius?: string) => void;
   onClose: () => void;
 }) {
   const [draftUrl, setDraftUrl] = useState(currentUrl || "");
   const [draftAlt, setDraftAlt] = useState(currentAlt || "");
+  const [draftBorderRadius, setDraftBorderRadius] = useState(currentBorderRadius || "16px");
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -672,6 +1000,16 @@ function ImageEditItem({
     { label: "Mobile App Screen", url: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80" },
   ];
 
+  const borderRadiusOptions = [
+    { label: "Default Rounded (16px)", value: "16px" },
+    { label: "Square / Sharp (0px)", value: "0px" },
+    { label: "Subtle Round (8px)", value: "8px" },
+    { label: "Medium Round (12px)", value: "12px" },
+    { label: "Large Round (24px)", value: "24px" },
+    { label: "Extra Large (32px)", value: "32px" },
+    { label: "Full Round (Circle / Oval)", value: "9999px" },
+  ];
+
   return (
     <div
       ref={popoverRef}
@@ -681,7 +1019,7 @@ function ImageEditItem({
     >
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-          <ImageIcon className="h-3.5 w-3.5 text-primary" /> Edit Image
+          <ImageIcon className="h-3.5 w-3.5 text-primary" /> Edit Image & Shape
         </span>
         <button
           type="button"
@@ -707,19 +1045,39 @@ function ImageEditItem({
 
       <div className="space-y-1.5">
         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Photo Border Radius / Shape
+        </label>
+        <CustomSelectDropdown
+          value={draftBorderRadius}
+          onChange={(val) => setDraftBorderRadius(val)}
+          options={borderRadiusOptions}
+          placeholder="Select Border Radius"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           Sample Image Presets
         </label>
         <div className="grid grid-cols-2 gap-1.5">
-          {sampleImages.map((img) => (
-            <button
-              key={img.label}
-              type="button"
-              onClick={() => setDraftUrl(img.url)}
-              className="p-1.5 rounded-lg border border-border/60 bg-muted/30 hover:bg-muted hover:border-primary text-[10px] font-medium text-left truncate transition-all cursor-pointer"
-            >
-              {img.label}
-            </button>
-          ))}
+          {sampleImages.map((img) => {
+            const isSelected = draftUrl === img.url;
+            return (
+              <button
+                key={img.label}
+                type="button"
+                onClick={() => setDraftUrl(img.url)}
+                className={`p-2 rounded-xl border text-[10px] font-bold text-left truncate transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                  isSelected
+                    ? "bg-primary text-white border-primary shadow-xs"
+                    : "bg-muted/40 hover:bg-muted border-border/80 text-foreground hover:border-primary/50"
+                }`}
+              >
+                <span className="truncate">{img.label}</span>
+                {isSelected && <Check className="h-3 w-3 text-white shrink-0" />}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -733,7 +1091,7 @@ function ImageEditItem({
         </button>
         <button
           type="button"
-          onClick={() => onSave(draftUrl, draftAlt)}
+          onClick={() => onSave(draftUrl, draftAlt, draftBorderRadius)}
           className="flex-1 py-2 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
         >
           <Check className="h-3.5 w-3.5" /> Save Image
@@ -743,6 +1101,87 @@ function ImageEditItem({
   );
 }
 
+function SpacerEditItem({
+  currentHeight,
+  onSave,
+  onClose,
+}: {
+  currentHeight: string;
+  onSave: (height: string) => void;
+  onClose: () => void;
+}) {
+  const [draftHeight, setDraftHeight] = useState(currentHeight || "48px");
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    const timer = setTimeout(() => {
+      window.addEventListener("click", handleOutsideClick);
+    }, 50);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleOutsideClick);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      ref={popoverRef}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+      className="absolute top-full right-0 mt-2.5 w-64 p-3.5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs z-50 space-y-3 animate-in fade-in-0 zoom-in-95 cursor-default text-left font-normal"
+    >
+      <div className="flex items-center justify-between pb-2 border-b border-border/60">
+        <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+          <Settings className="h-3.5 w-3.5 text-primary" /> Custom Spacer Height
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          Height Value (px / rem)
+        </label>
+        <input
+          type="text"
+          value={draftHeight}
+          onChange={(e) => setDraftHeight(e.target.value)}
+          placeholder="e.g. 64px or 4rem"
+          className="w-full px-3 py-2 bg-muted/40 border border-border/80 rounded-xl text-xs font-mono text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+        />
+      </div>
+
+      <div className="pt-2 border-t border-border/60 flex items-center gap-2 w-full">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex-1 py-1.5 text-xs font-bold text-muted-foreground hover:bg-muted border border-border rounded-xl transition-colors shrink-0"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => onSave(draftHeight)}
+          className="flex-1 py-1.5 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+        >
+          <Check className="h-3.5 w-3.5" /> Apply
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
 export function ComponentRenderer({
   component,
   allComponents = [],
@@ -750,6 +1189,7 @@ export function ComponentRenderer({
   interactive = false,
   device = "desktop",
   onUpdateProps,
+  onUpdateStyle,
 }: Props) {
   const { type, props, style } = component;
   const css = styleToCss(style);
@@ -769,6 +1209,88 @@ export function ComponentRenderer({
   };
 
   const currentSectionId = getSectionAnchorId(component);
+
+  if (type === "spacer") {
+    const currentHeight = style.paddingY || style.padding || (style as any).height || "48px";
+    const [isEditingSpacer, setIsEditingSpacer] = useState(false);
+
+    return (
+      <section
+        id={currentSectionId}
+        style={{
+          ...css,
+          minHeight: interactive ? "40px" : currentHeight,
+          height: !interactive ? currentHeight : undefined,
+        }}
+        className="relative w-full group/spacer transition-all my-1"
+      >
+        <div
+          className={`w-full flex items-center justify-center relative transition-all ${
+            interactive
+              ? "bg-primary/5 border border-dashed border-primary/40 rounded-xl hover:border-primary"
+              : ""
+          }`}
+          style={{ height: currentHeight }}
+        >
+          {interactive && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border shadow-xl text-foreground text-xs font-semibold z-20 transition-all cursor-default select-none">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Spacer:</span>
+              <span className="font-bold text-primary font-mono">{currentHeight}</span>
+
+              <div className="flex items-center gap-1 ml-1.5 pl-2 border-l border-border/60">
+                {["24px", "48px", "64px", "96px", "128px"].map((h) => (
+                  <button
+                    key={h}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUpdateStyle?.({ paddingY: h });
+                    }}
+                    className={`px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+                      currentHeight === h
+                        ? "bg-primary text-white shadow-xs scale-105"
+                        : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60"
+                    }`}
+                  >
+                    {h}
+                  </button>
+                ))}
+
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditingSpacer(!isEditingSpacer);
+                    }}
+                    className={`p-1 rounded-lg border transition-all cursor-pointer ${
+                      isEditingSpacer
+                        ? "bg-primary text-white border-primary"
+                        : "bg-muted/40 hover:bg-muted border-border/60 text-muted-foreground hover:text-foreground"
+                    }`}
+                    title="Custom Height Input"
+                  >
+                    <Settings className="h-3.5 w-3.5" />
+                  </button>
+
+                  {isEditingSpacer && (
+                    <SpacerEditItem
+                      currentHeight={currentHeight}
+                      onSave={(newHeight) => {
+                        onUpdateStyle?.({ paddingY: newHeight });
+                        setIsEditingSpacer(false);
+                      }}
+                      onClose={() => setIsEditingSpacer(false)}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
 
   const sectionOptions = allComponents
     .filter((c) => c.type !== "navbar")
@@ -847,13 +1369,22 @@ export function ComponentRenderer({
         ) : <div />;
       }
 
+      const logoStyle: React.CSSProperties = {
+        color: props.logoColor || headerTextColor,
+        fontFamily: props.logoFontFamily || undefined,
+        fontSize: props.logoFontSize || undefined,
+        fontWeight: props.logoFontWeight || undefined,
+        fontStyle: props.logoFontStyle || undefined,
+        textTransform: (props.logoTextTransform as React.CSSProperties["textTransform"]) || undefined,
+      };
+
       return (
         <div className="group/logo relative inline-flex items-center shrink-0">
           {!interactive ? (
             <a
               href={href}
               className="text-lg font-extrabold tracking-tight cursor-pointer select-none hover:opacity-85 transition-opacity"
-              style={{ color: headerTextColor }}
+              style={logoStyle}
             >
               {text}
             </a>
@@ -865,7 +1396,7 @@ export function ComponentRenderer({
                 setIsEditingLogo(!isEditingLogo);
               }}
               className="text-lg font-extrabold tracking-tight cursor-pointer select-none text-left"
-              style={{ color: headerTextColor }}
+              style={logoStyle}
             >
               {text}
             </button>
@@ -890,9 +1421,15 @@ export function ComponentRenderer({
             <LogoEditItem
               logoText={text}
               logoHref={href}
+              logoFontFamily={props.logoFontFamily}
+              logoFontSize={props.logoFontSize}
+              logoFontWeight={props.logoFontWeight}
+              logoFontStyle={props.logoFontStyle}
+              logoTextTransform={props.logoTextTransform}
+              logoColor={props.logoColor}
               sectionOptions={sectionOptions}
-              onSave={(newText, newHref) => {
-                onUpdateProps?.({ logoText: newText, logoHref: newHref });
+              onSave={(updated) => {
+                onUpdateProps?.(updated);
                 setIsEditingLogo(false);
               }}
               onRemove={() => {
@@ -1349,6 +1886,7 @@ export function ComponentRenderer({
     };
 
     const [isEditingHeroImage, setIsEditingHeroImage] = useState(false);
+    const isImageLeft = props.imagePosition === "left" || props.reverseLayout;
 
     return (
       <section
@@ -1363,7 +1901,7 @@ export function ComponentRenderer({
         <Center maxWidth={effectiveMaxWidth}>
           {isSplit ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
+              <div className={`space-y-6 ${isImageLeft ? "md:order-2" : "md:order-1"}`}>
                 {props.heading && (
                   <h1
                     contentEditable={interactive}
@@ -1403,15 +1941,20 @@ export function ComponentRenderer({
                 <ButtonsBlock />
               </div>
               {props.imageUrl && (
-                <div
-                  className="relative group overflow-hidden border border-border/80 transition-all"
-                  style={{ borderRadius: radius, boxShadow: shadow !== "none" ? shadow : undefined }}
-                >
-                  <img
-                    src={props.imageUrl}
-                    alt={props.imageAlt || "Hero"}
-                    className="w-full h-auto object-cover max-h-[450px]"
-                  />
+                <div className={`relative group z-30 ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
+                  <div
+                    className="w-full overflow-hidden border border-border/80 transition-all"
+                    style={{
+                      borderRadius: props.imageBorderRadius || "16px",
+                      boxShadow: shadow !== "none" ? shadow : undefined,
+                    }}
+                  >
+                    <img
+                      src={props.imageUrl}
+                      alt={props.imageAlt || "Hero"}
+                      className="w-full h-auto object-cover max-h-[450px]"
+                    />
+                  </div>
                   {interactive && (
                     <button
                       type="button"
@@ -1419,7 +1962,7 @@ export function ComponentRenderer({
                         e.stopPropagation();
                         setIsEditingHeroImage(!isEditingHeroImage);
                       }}
-                      className="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-20"
+                      className="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-30"
                       style={{ borderRadius: theme.borderRadius || "12px" }}
                     >
                       <ImageIcon className="h-3.5 w-3.5" /> Edit Image
@@ -1429,8 +1972,9 @@ export function ComponentRenderer({
                     <ImageEditItem
                       currentUrl={props.imageUrl}
                       currentAlt={props.imageAlt}
-                      onSave={(url, alt) => {
-                        onUpdateProps?.({ imageUrl: url, imageAlt: alt });
+                      currentBorderRadius={props.imageBorderRadius}
+                      onSave={(url, alt, imageBorderRadius) => {
+                        onUpdateProps?.({ imageUrl: url, imageAlt: alt, imageBorderRadius: imageBorderRadius });
                         setIsEditingHeroImage(false);
                       }}
                       onClose={() => setIsEditingHeroImage(false)}

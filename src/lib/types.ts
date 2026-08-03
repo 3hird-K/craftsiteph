@@ -36,6 +36,9 @@ export type ComponentProps = {
   buttons?: { label: string; href?: string; variant?: "solid" | "outline" | "ghost"; icon?: string }[];
   imageUrl?: string;
   imageAlt?: string;
+  imageBorderRadius?: string;
+  imagePosition?: "left" | "right";
+  reverseLayout?: boolean;
   items?: { title: string; description: string; icon?: string }[];
   links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string; icon?: string }[];
   columns?: number;
@@ -43,6 +46,12 @@ export type ComponentProps = {
   placeholder?: string;
   logoText?: string;
   logoHref?: string;
+  logoFontFamily?: string;
+  logoFontSize?: string;
+  logoFontWeight?: string;
+  logoFontStyle?: string;
+  logoTextTransform?: string;
+  logoColor?: string;
   socialLinks?: { platform: string; href?: string; url?: string }[];
 };
 

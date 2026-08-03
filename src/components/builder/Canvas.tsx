@@ -3,7 +3,7 @@
 import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "@/lib/types";
 import { ComponentRenderer } from "@/components/renderer/ComponentRenderer";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
-import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -377,6 +377,22 @@ export function Canvas({
                           <LayoutGrid className="h-3 w-3" /> Layouts
                         </button>
                       )}
+                      {(c.type === "hero" || c.props.imageUrl !== undefined) && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const currentPos = c.props.imagePosition || (c.props.reverseLayout ? "left" : "right");
+                            const nextPos = currentPos === "left" ? "right" : "left";
+                            onUpdateProps?.(c.id, { imagePosition: nextPos, reverseLayout: nextPos === "left" });
+                          }}
+                          className="rounded-lg bg-muted/90 hover:bg-primary hover:text-white px-2 py-1 text-xs font-bold text-foreground border border-border shadow-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                          title="Switch / Flip Left & Right Grid Items"
+                        >
+                          <ArrowLeftRight className="h-3 w-3" />
+                          <span>{c.props.imagePosition === "left" || c.props.reverseLayout ? "Image: Left" : "Flip Sides"}</span>
+                        </button>
+                      )}
                       {c.type !== "navbar" && (
                         <div
                           className="flex items-center gap-1 bg-muted/80 hover:bg-muted focus-within:bg-background border border-border/80 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary rounded-lg px-2 py-0.5 transition-all text-xs shrink-0 shadow-xs"
@@ -447,6 +463,7 @@ export function Canvas({
                     interactive={editing}
                     device={device}
                     onUpdateProps={(props) => onUpdateProps?.(c.id, props)}
+                    onUpdateStyle={(style) => onUpdateStyle?.(c.id, style)}
                   />
                 </div>
               </React.Fragment>

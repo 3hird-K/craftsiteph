@@ -39,12 +39,21 @@ export type ComponentProps = {
   buttonHref?: string;
   imageUrl?: string;
   imageAlt?: string;
+  imageBorderRadius?: string;
+  imagePosition?: "left" | "right";
+  reverseLayout?: boolean;
   items?: { title: string; description: string; icon?: string }[];
   links?: { label: string; href: string }[];
   columns?: number;
   variant?: string;
   placeholder?: string;
   logoText?: string;
+  logoFontFamily?: string;
+  logoFontSize?: string;
+  logoFontWeight?: string;
+  logoFontStyle?: string;
+  logoTextTransform?: string;
+  logoColor?: string;
   socialLinks?: { platform: string; href?: string; url?: string }[];
 };
 
