@@ -362,7 +362,7 @@ function EditModalPortal({ children, onClose }: { children: React.ReactNode; onC
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0"
+      className="fixed inset-0 z-[9999999] flex items-center justify-center p-4 sm:p-6 pl-0 md:pl-88 bg-black/40 backdrop-blur-xs overflow-y-auto animate-in fade-in-0 transition-all"
       onClick={onClose}
     >
       {children}
