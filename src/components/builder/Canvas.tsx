@@ -522,6 +522,7 @@ export function Canvas({
                       backgroundColor: canvasBg,
                       textColor: canvasTextColor,
                     }}
+                    selected={selected}
                     interactive={editing}
                     device={device}
                     onUpdateProps={(props) => onUpdateProps?.(c.id, props)}

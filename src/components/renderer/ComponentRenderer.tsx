@@ -1194,11 +1194,21 @@ export function ComponentRenderer({
   component,
   allComponents = [],
   theme,
+  selected = false,
   interactive = false,
   device = "desktop",
   onUpdateProps,
   onUpdateStyle,
-}: Props) {
+}: {
+  component: BuilderComponent;
+  allComponents?: BuilderComponent[];
+  theme: SiteTheme;
+  selected?: boolean;
+  interactive?: boolean;
+  device?: "desktop" | "tablet" | "mobile";
+  onUpdateProps?: (props: Partial<ComponentProps>) => void;
+  onUpdateStyle?: (style: Partial<ComponentStyle>) => void;
+}) {
   const { type, props, style } = component;
   const css = styleToCss(style);
   const radius = style.borderRadius || theme.borderRadius || "12px";
@@ -1364,6 +1374,12 @@ export function ComponentRenderer({
     }
 
     const [activeEditPopover, setActiveEditPopover] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (!selected) {
+        setActiveEditPopover(null);
+      }
+    }, [selected]);
 
     const LogoElement = () => {
       const text = props.logoText ?? "Brand";
