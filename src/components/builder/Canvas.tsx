@@ -3,7 +3,7 @@
 import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "@/lib/types";
 import { ComponentRenderer } from "@/components/renderer/ComponentRenderer";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
-import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight, Wifi, Battery, Signal, Lock, RotateCw, Copy, Monitor } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight, Wifi, Battery, Signal, Lock, RotateCw, Copy, Monitor, Type } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -455,6 +455,49 @@ export function Canvas({
                         >
                           <ArrowLeftRight className="h-3 w-3" />
                           <span>{c.props.imagePosition === "left" || c.props.reverseLayout ? "Image: Left" : "Flip Sides"}</span>
+                        </button>
+                      )}
+                      
+                      {/* Add Text */}
+                      {["hero", "heading", "cta", "form", "testimonial", "text"].includes(c.type) && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!c.props.subheading && !c.props.text) {
+                               onUpdateProps?.(c.id, { subheading: "New subheading text..." });
+                            } else if (!c.props.text) {
+                               onUpdateProps?.(c.id, { text: "New paragraph text..." });
+                            } else if (!c.props.subheading) {
+                               onUpdateProps?.(c.id, { subheading: "New subheading text..." });
+                            }
+                          }}
+                          className="rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border border-blue-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                          title="Add text block"
+                        >
+                          <Type className="h-3 w-3" /> Text
+                        </button>
+                      )}
+                      
+                      {/* Add Button */}
+                      {["navbar", "hero", "button", "cta", "form", "footer", "heading", "features"].includes(c.type) && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const currentButtons = c.props.buttons || (c.props.buttonText ? [{ label: c.props.buttonText, href: c.props.buttonHref, variant: "solid" as const }] : []);
+                            onUpdateProps?.(c.id, {
+                              buttons: [
+                                ...currentButtons,
+                                { label: "New Button", variant: currentButtons.length ? "outline" : "solid" }
+                              ],
+                              buttonText: undefined,
+                            });
+                          }}
+                          className="rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border border-emerald-500/30 px-2 py-1 text-xs font-bold shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1 shrink-0"
+                          title="Add a new button"
+                        >
+                          <Plus className="h-3 w-3" /> Button
                         </button>
                       )}
                       {c.type !== "navbar" && (
