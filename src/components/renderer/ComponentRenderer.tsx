@@ -2273,6 +2273,7 @@ export function ComponentRenderer({
     const footerBg = style.backgroundColor || defaultBg;
     const footerRadius = "0px";
 
+    // Dynamic contrast detection
     const isLightBg =
       footerBg === "#ffffff" ||
       footerBg === "#f8fafc" ||
@@ -2280,9 +2281,25 @@ export function ComponentRenderer({
       footerBg === "#f0f9ff" ||
       (typeof footerBg === "string" && (footerBg.toUpperCase() === "#FFFFFF" || footerBg.toUpperCase() === "#F8FAFC" || footerBg.toUpperCase() === "#FAFAFA" || footerBg.toUpperCase() === "#F0F9FF"));
 
-    const textColor = isLightBg ? (style.textColor || theme.textColor || "#0f172a") : (style.textColor || "#ffffff");
-    const subtextColor = isLightBg ? "#64748b" : "rgba(255, 255, 255, 0.75)";
-    const borderColor = isLightBg ? "rgba(15, 23, 42, 0.1)" : "rgba(255, 255, 255, 0.12)";
+    const isDarkBg = !isLightBg;
+
+    const isDarkTextColor =
+      style.textColor === "#0f172a" ||
+      style.textColor === "#0F172A" ||
+      style.textColor === "#000000" ||
+      style.textColor === "black";
+
+    const isWhiteTextColor =
+      style.textColor === "#ffffff" ||
+      style.textColor === "#FFFFFF" ||
+      style.textColor === "#fff";
+
+    const textColor = isDarkBg
+      ? (isDarkTextColor || !style.textColor ? "#ffffff" : style.textColor)
+      : (isWhiteTextColor || !style.textColor ? (theme.textColor || "#0f172a") : style.textColor);
+
+    const subtextColor = isDarkBg ? "rgba(255, 255, 255, 0.75)" : "#64748b";
+    const borderColor = isDarkBg ? "rgba(255, 255, 255, 0.12)" : "rgba(15, 23, 42, 0.1)";
 
     const logoText = props.logoText || "CraftSite";
     const tagline = props.tagline || "Building the future of visual web creation.";
@@ -2330,14 +2347,14 @@ export function ComponentRenderer({
                 ))}
               </div>
               <div className="pt-6 border-t" style={{ borderColor }}>
-                <p className="text-xs opacity-60" style={{ color: textColor }}>
+                <p className="text-xs opacity-60" style={{ color: subtextColor }}>
                   {copyright}
                 </p>
               </div>
             </div>
           ) : variant === "newsletter-split-footer" ? (
             <div className="space-y-12">
-              <div className="p-8 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor, backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.03)" }}>
+              <div className="p-8 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor, backgroundColor: isLightBg ? "rgba(15,23,42,0.03)" : "rgba(255,255,255,0.05)" }}>
                 <div className="space-y-1 text-center md:text-left">
                   <h4 className="text-xl font-bold" style={{ color: textColor }}>Stay updated with our latest news</h4>
                   <p className="text-xs" style={{ color: subtextColor }}>{tagline}</p>
@@ -2346,7 +2363,7 @@ export function ComponentRenderer({
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="px-4 py-2.5 rounded-xl border bg-transparent text-sm outline-none w-full md:w-64"
+                    className="px-4 py-2.5 rounded-xl border bg-transparent text-sm outline-none w-full md:w-64 placeholder:opacity-50"
                     style={{ borderColor, color: textColor }}
                   />
                   <button
@@ -2379,9 +2396,9 @@ export function ComponentRenderer({
               <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between text-xs gap-4" style={{ borderColor }}>
                 <span style={{ color: subtextColor }}>{copyright}</span>
                 <div className="flex gap-4" style={{ color: subtextColor }}>
-                  <a href="#">Privacy</a>
-                  <a href="#">Terms</a>
-                  <a href="#">Security</a>
+                  <a href="#" className="hover:opacity-100 transition-opacity">Privacy</a>
+                  <a href="#" className="hover:opacity-100 transition-opacity">Terms</a>
+                  <a href="#" className="hover:opacity-100 transition-opacity">Security</a>
                 </div>
               </div>
             </div>
@@ -2389,8 +2406,8 @@ export function ComponentRenderer({
             <div className="space-y-8">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b" style={{ borderColor }}>
                 <div className="space-y-1">
-                  <h3 className="text-xl font-black text-white">{logoText}</h3>
-                  <p className="text-xs text-slate-400">{tagline}</p>
+                  <h3 className="text-xl font-black" style={{ color: textColor }}>{logoText}</h3>
+                  <p className="text-xs" style={{ color: subtextColor }}>{tagline}</p>
                 </div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-400">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -2398,34 +2415,34 @@ export function ComponentRenderer({
                 </div>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
-                <div className="flex flex-wrap gap-6 font-medium text-slate-300">
+                <div className="flex flex-wrap gap-6 font-medium" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
-                    <a key={idx} href={l.href || "#"} className="hover:text-white transition-colors">
+                    <a key={idx} href={l.href || "#"} className="hover:opacity-100 transition-opacity">
                       {l.label}
                     </a>
                   ))}
                 </div>
-                <span className="text-slate-400">{copyright}</span>
+                <span style={{ color: subtextColor }}>{copyright}</span>
               </div>
             </div>
           ) : variant === "stacked-brand-statement" ? (
             <div className="text-center space-y-8">
-              <h2 className="text-4xl md:text-7xl font-black tracking-tighter opacity-20 uppercase" style={{ color: textColor }}>
+              <h2 className="text-4xl md:text-7xl font-black tracking-tighter opacity-30 uppercase" style={{ color: textColor }}>
                 {logoText}
               </h2>
               <div className="max-w-md mx-auto space-y-2">
-                <p className="text-sm font-semibold tracking-wider uppercase" style={{ color: textColor }}>
+                <p className="text-sm font-semibold tracking-wider uppercase opacity-90" style={{ color: textColor }}>
                   {tagline}
                 </p>
-                <div className="flex justify-center gap-6 text-xs font-bold pt-2">
+                <div className="flex justify-center gap-6 text-xs font-bold pt-2" style={{ color: textColor }}>
                   {navLinks.map((l: any, idx: number) => (
-                    <a key={idx} href={l.href || "#"} className="hover:underline" style={{ color: textColor }}>
+                    <a key={idx} href={l.href || "#"} className="hover:underline">
                       {l.label}
                     </a>
                   ))}
                 </div>
               </div>
-              <div className="pt-6 border-t text-xs opacity-60" style={{ borderColor, color: textColor }}>
+              <div className="pt-6 border-t text-xs opacity-75" style={{ borderColor, color: subtextColor }}>
                 {copyright}
               </div>
             </div>
