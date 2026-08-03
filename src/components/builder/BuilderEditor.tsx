@@ -1010,26 +1010,12 @@ export function BuilderEditor({ project }: Props) {
         }}
         onSelectLayout={(type, variantId) => {
           if (editingLayoutTargetId) {
-            const targetComp = components.find((c) => c.id === editingLayoutTargetId);
             const variantPreset = (COMPONENT_VARIANTS[type] || []).find((v) => v.id === variantId);
-
-            // Preserve user-customized background color & text color if manually customized
-            const rawBg = targetComp?.style?.backgroundColor;
-            const isLegacyPresetBg = rawBg === "#ea580c" || rawBg === "#4f46e5" || rawBg === "#4F46E5";
-            const existingBg = isLegacyPresetBg ? undefined : rawBg;
-            const rawTextColor = targetComp?.style?.textColor;
-            const isLegacyWhiteText = rawTextColor === "#ffffff" || rawTextColor === "#fff";
-            const existingTextColor = isLegacyWhiteText ? undefined : rawTextColor;
 
             changeProps(editingLayoutTargetId, { variant: variantId, ...(variantPreset?.applyProps || {}) });
 
             if (variantPreset?.applyStyle) {
-              const updatedStyle = { ...variantPreset.applyStyle };
-              if (existingBg) updatedStyle.backgroundColor = existingBg;
-              else delete updatedStyle.backgroundColor;
-              if (existingTextColor) updatedStyle.textColor = existingTextColor;
-              else if (!variantPreset.applyStyle.textColor) delete updatedStyle.textColor;
-              changeStyle(editingLayoutTargetId, updatedStyle);
+              changeStyle(editingLayoutTargetId, variantPreset.applyStyle);
             }
             toast.success(`Updated ${type} layout design`);
             setEditingLayoutTargetId(null);
