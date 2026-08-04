@@ -29,6 +29,8 @@ export type ComponentStyle = {
 export type ComponentProps = {
   sectionId?: string;
   scrollBehavior?: "overlay" | "sticky" | "sticky-hide" | "static";
+  scrollAnimation?: string;
+  scrollAnimationDuration?: string;
   text?: string;
   heading?: string;
   subheading?: string;

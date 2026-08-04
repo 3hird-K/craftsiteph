@@ -38,6 +38,8 @@ export type ComponentProps = {
   buttonText?: string;
   buttonHref?: string;
   scrollBehavior?: "overlay" | "sticky" | "sticky-hide" | "static";
+  scrollAnimation?: string;
+  scrollAnimationDuration?: string;
   imageUrl?: string;
   imageAlt?: string;
   imageBorderRadius?: string;

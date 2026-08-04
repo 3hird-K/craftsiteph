@@ -1481,6 +1481,25 @@ export function ComponentRenderer({
   const isTablet = device === "tablet";
   const isMobileOrTablet = isMobile || isTablet;
 
+  const aosAttrs = !interactive && props.scrollAnimation
+    ?     ({
+        "data-aos": props.scrollAnimation,
+        ...(props.scrollAnimationDuration
+          ? { "data-aos-duration": props.scrollAnimationDuration }
+          : {}),
+      } as const)
+    : null;
+
+  const isFollowingNavbar = React.useMemo(() => {
+    if (!allComponents || allComponents.length < 2) return false;
+    const idx = allComponents.findIndex((c) => c.id === component.id);
+    const navOverlay =
+      allComponents[0].props?.variant === "floating-glass"
+        ? "overlay"
+        : (allComponents[0].props?.scrollBehavior ?? "overlay");
+    return idx === 1 && allComponents[0].type === "navbar" && navOverlay === "overlay";
+  }, [allComponents, component.id]);
+
   const pageBgDark = theme.mode === "dark" || isDarkColor(theme.backgroundColor) === true;
   const compBgDark = isDarkColor(style.backgroundColor);
   const isDarkSection = compBgDark !== undefined ? compBgDark : pageBgDark;
@@ -1509,6 +1528,7 @@ export function ComponentRenderer({
 
     return (
       <section
+        {...aosAttrs}
         id={currentSectionId}
         style={{
           ...css,
@@ -2062,6 +2082,7 @@ export function ComponentRenderer({
 
     return (
       <header
+        {...aosAttrs}
         id={currentSectionId}
         style={{
           ...css,
@@ -2308,18 +2329,9 @@ export function ComponentRenderer({
     const setIsEditingHeroImage = (val: boolean) => setActiveHeroPopover(val ? "image" : null);
     const isImageLeft = props.imagePosition === "left" || props.reverseLayout;
 
-    const isFollowingNavbar = React.useMemo(() => {
-      if (!allComponents || allComponents.length < 2) return false;
-      const idx = allComponents.findIndex((c) => c.id === component.id);
-      const navOverlay =
-        allComponents[0].props?.variant === "floating-glass"
-          ? "overlay"
-          : (allComponents[0].props?.scrollBehavior ?? "overlay");
-      return idx === 1 && allComponents[0].type === "navbar" && navOverlay === "overlay";
-    }, [allComponents, component.id]);
-
     return (
       <section
+        {...aosAttrs}
         id={currentSectionId}
         style={{
           borderRadius: heroSectionRadius,
@@ -2333,7 +2345,7 @@ export function ComponentRenderer({
           isBgLayout ? "text-white flex flex-col justify-center" : ""
         } ${
           isFollowingNavbar
-            ? "min-h-[80vh] lg:min-h-[92vh] !pt-[130px] md:!pt-[170px]"
+            ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px]"
             : isBgLayout
               ? "min-h-[60vh] lg:min-h-[75vh]"
               : ""
@@ -2897,6 +2909,7 @@ export function ComponentRenderer({
     
     return (
       <section
+        {...aosAttrs}
         id={currentSectionId}
         style={{
           ...css,
@@ -3172,6 +3185,7 @@ export function ComponentRenderer({
 
     return (
       <section
+        {...aosAttrs}
         id={currentSectionId}
         style={{
           ...css,
@@ -3345,6 +3359,7 @@ export function ComponentRenderer({
 
     return (
       <footer
+        {...aosAttrs}
         id={currentSectionId}
         style={{
           ...css,
@@ -3835,6 +3850,7 @@ export function ComponentRenderer({
 
     return (
       <section
+        {...aosAttrs}
         id={currentSectionId}
         style={{ ...css, backgroundColor: sectionBg }}
         className="py-16 md:py-24 transition-all relative w-full"
@@ -4442,18 +4458,17 @@ export function ComponentRenderer({
   }
 
   // Fallback for default section types
-  const isFollowingNavbar = React.useMemo(() => {
-    if (!allComponents || allComponents.length < 2) return false;
-    const idx = allComponents.findIndex((c) => c.id === component.id);
-    const navOverlay =
-      allComponents[0].props?.variant === "floating-glass"
-        ? "overlay"
-        : (allComponents[0].props?.scrollBehavior ?? "overlay");
-    return idx === 1 && allComponents[0].type === "navbar" && navOverlay === "overlay";
-  }, [allComponents, component.id]);
-
   return (
-    <section id={currentSectionId} style={css} className={`py-12 ${isFollowingNavbar ? "!pt-[120px] md:!pt-[160px]" : ""}`}>
+    <section
+      {...aosAttrs}
+      id={currentSectionId}
+      style={css}
+      className={`py-12 ${
+        isFollowingNavbar
+          ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px]"
+          : ""
+      }`}
+    >
       <Center maxWidth={effectiveMaxWidth}>
         {props.heading && (
           <h2

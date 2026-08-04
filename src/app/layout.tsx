@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import Script from "next/script";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { AOSInit } from "@/components/providers/AOSInit";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Toaster position="bottom-right" richColors />
           </AuthProvider>
         </QueryProvider>
+        <AOSInit />
       </body>
     </html>
   );

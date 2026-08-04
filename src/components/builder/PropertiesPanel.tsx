@@ -295,6 +295,25 @@ export function PropertiesPanel({
                 />
               </Field>
 
+              <Field label="Animation on Scroll">
+                <SelectInput
+                  value={component.props.scrollAnimation || ""}
+                  onChange={(v) => onChangeProps(component.id, { scrollAnimation: v })}
+                  options={[
+                    { label: "None", value: "" },
+                    { label: "Fade", value: "fade" },
+                    { label: "Fade Up", value: "fade-up" },
+                    { label: "Fade Down", value: "fade-down" },
+                    { label: "Fade Left", value: "fade-left" },
+                    { label: "Fade Right", value: "fade-right" },
+                    { label: "Zoom In", value: "zoom-in" },
+                  ]}
+                />
+                <p className="text-[10px] text-muted-foreground/70 leading-snug">
+                  Applies when the section scrolls into view. Visible in Preview and on the published page.
+                </p>
+              </Field>
+
               {component.type === "navbar" && (
                 <Field label="Navbar Scroll Behavior">
                   <SelectInput
