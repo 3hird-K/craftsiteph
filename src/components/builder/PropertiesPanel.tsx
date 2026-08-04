@@ -338,6 +338,25 @@ export function PropertiesPanel({
                 </Field>
               )}
 
+              {component.type === "navbar" && (
+                <Field label="Navbar Height">
+                  <SelectInput
+                    value={component.style.paddingY || "16px"}
+                    onChange={(v) => onChangeStyle(component.id, { paddingY: v })}
+                    options={[
+                      { label: "Compact (8px)", value: "8px" },
+                      { label: "Slim (12px)", value: "12px" },
+                      { label: "Normal (16px)", value: "16px" },
+                      { label: "Tall (20px)", value: "20px" },
+                      { label: "Extra Tall (28px)", value: "28px" },
+                    ]}
+                  />
+                  <p className="text-[10px] text-muted-foreground/70 leading-snug">
+                    Adjusts the vertical padding of the navbar bar.
+                  </p>
+                </Field>
+              )}
+
               {component.type !== "navbar" && (
                 <Field label={`${compLabel} Background`}>
                   <ColorInput
