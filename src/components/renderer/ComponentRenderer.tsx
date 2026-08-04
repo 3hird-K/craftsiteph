@@ -1115,6 +1115,7 @@ function ImageEditItem({
   currentObjectFit,
   currentAspectRatio,
   currentImageLayout,
+  hideLayoutOptions,
   onSave,
   onClose,
 }: {
@@ -1126,6 +1127,7 @@ function ImageEditItem({
   currentObjectFit?: string;
   currentAspectRatio?: string;
   currentImageLayout?: string;
+  hideLayoutOptions?: boolean;
   onSave: (props: { url: string; url2?: string; url3?: string; imageLayout?: string; alt?: string; imageBorderRadius?: string; objectFit?: string; aspectRatio?: string }) => void;
   onClose: () => void;
 }) {
@@ -1212,25 +1214,27 @@ function ImageEditItem({
         </button>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Image Layout
-        </label>
-        <CustomSelectDropdown
-          value={draftImageLayout}
-          onChange={(val) => {
-            setDraftImageLayout(val);
-            if (val === "bento" && !draftUrl2) {
-              setDraftUrl2("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
-            }
-            if (val === "bento" && !draftUrl3) {
-              setDraftUrl3("https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80");
-            }
-          }}
-          options={imageLayoutOptions}
-          placeholder="Select Layout"
-        />
-      </div>
+      {!hideLayoutOptions && (
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Image Layout
+          </label>
+          <CustomSelectDropdown
+            value={draftImageLayout}
+            onChange={(val) => {
+              setDraftImageLayout(val);
+              if (val === "bento" && !draftUrl2) {
+                setDraftUrl2("https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80");
+              }
+              if (val === "bento" && !draftUrl3) {
+                setDraftUrl3("https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80");
+              }
+            }}
+            options={imageLayoutOptions}
+            placeholder="Select Layout"
+          />
+        </div>
+      )}
 
       <div className="space-y-1.5">
         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -2743,15 +2747,16 @@ export function ComponentRenderer({
                   </div>
                   
                   <div
-                    className="col-span-1 p-6 min-h-[140px] bg-card border border-border/80 shadow-2xl flex flex-col justify-center transition-all hover:border-primary/40 relative overflow-hidden group"
+                    className="col-span-1 p-6 min-h-[160px] bg-card border border-border/80 shadow-2xl flex flex-col justify-between transition-all hover:border-primary/40 relative overflow-hidden group"
                     style={{ borderRadius: btnRadius }}
                   >
                     <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-primary/10 rounded-full blur-2xl z-0 pointer-events-none" />
-                    <div className="absolute top-5 right-5 text-primary/15 group-hover:text-primary/30 transition-colors pointer-events-none">
-                      <Shield className="h-10 w-10" />
+                    
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary z-10 transition-transform group-hover:scale-110 group-hover:bg-primary/20">
+                      <Shield className="h-5 w-5" />
                     </div>
                     
-                    <div className="z-10 relative">
+                    <div className="z-10 relative mt-4">
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
@@ -2772,14 +2777,14 @@ export function ComponentRenderer({
                   </div>
                   
                   <div
-                    className="col-span-1 p-6 min-h-[140px] bg-card border border-border/80 shadow-2xl flex flex-col justify-center transition-all hover:border-primary/40 relative overflow-hidden group"
+                    className="col-span-1 p-6 min-h-[160px] bg-card border border-border/80 shadow-2xl flex flex-col justify-between transition-all hover:border-primary/40 relative overflow-hidden group"
                     style={{ borderRadius: btnRadius }}
                   >
-                    <div className="absolute top-5 right-5 text-foreground/5 group-hover:text-foreground/15 transition-colors pointer-events-none">
-                      <User className="h-10 w-10" />
+                    <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center text-foreground z-10 transition-transform group-hover:scale-110 group-hover:bg-foreground/10">
+                      <User className="h-5 w-5" />
                     </div>
                     
-                    <div className="z-10 relative">
+                    <div className="z-10 relative mt-4">
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
@@ -2822,6 +2827,43 @@ export function ComponentRenderer({
                           style={{ aspectRatio: props.imageAspectRatio && props.imageAspectRatio !== "auto" ? props.imageAspectRatio : undefined }}
                         />
                       </div>
+                      
+                      {props.imageLayout === "bento" && (
+                        <>
+                          <div
+                            className="col-span-1 overflow-hidden border border-border/80 transition-all h-[200px]"
+                            style={{
+                              borderRadius: props.imageBorderRadius || "16px",
+                              boxShadow: shadow !== "none" ? shadow : undefined,
+                            }}
+                          >
+                            <img
+                              src={props.imageUrl2 || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"}
+                              alt="Bento Image 2"
+                              onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"; }}
+                              className={`w-full h-full ${
+                                props.imageObjectFit === "contain" ? "object-contain" : props.imageObjectFit === "fill" ? "object-fill" : "object-cover"
+                              }`}
+                            />
+                          </div>
+                          <div
+                            className="col-span-1 overflow-hidden border border-border/80 transition-all h-[200px]"
+                            style={{
+                              borderRadius: props.imageBorderRadius || "16px",
+                              boxShadow: shadow !== "none" ? shadow : undefined,
+                            }}
+                          >
+                            <img
+                              src={props.imageUrl3 || "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80"}
+                              alt="Bento Image 3"
+                              onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80"; }}
+                              className={`w-full h-full ${
+                                props.imageObjectFit === "contain" ? "object-contain" : props.imageObjectFit === "fill" ? "object-fill" : "object-cover"
+                              }`}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div
