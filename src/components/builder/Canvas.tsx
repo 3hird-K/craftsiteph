@@ -51,26 +51,41 @@ function DeviceFrame({ device, showDeviceFrame = true, canvasBg, children }: { d
   if (device === "mobile") {
     return (
       <div
-        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col rounded-[52px] bg-[#1c1c1e] p-3.5 border-4 border-[#3a3a3c] shadow-2xl ring-1 ring-black/50 select-none"
-        style={{ width: "430px", height: "860px" }}
+        className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col rounded-[52px] bg-slate-900 p-3.5 border-[3px] border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] ring-1 ring-white/10 select-none"
+        style={{ width: "420px", height: "860px" }}
       >
+        {/* Physical Side Buttons */}
+        {/* Action Button */}
+        <div className="absolute -left-[5px] top-24 w-[5px] h-7 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
+        {/* Volume Up */}
+        <div className="absolute -left-[5px] top-36 w-[5px] h-12 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
+        {/* Volume Down */}
+        <div className="absolute -left-[5px] top-52 w-[5px] h-12 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
+        {/* Power Button */}
+        <div className="absolute -right-[5px] top-40 w-[5px] h-16 bg-slate-700 rounded-r-md border-r border-slate-500/80 shadow-md" />
+
         {/* Inner Screen Canvas Container */}
-        <div id="canvas-host" className="w-full h-full rounded-[38px] overflow-hidden relative flex flex-col z-10 border border-black/20" style={{ backgroundColor: canvasBg }}>
+        <div id="canvas-host" className="w-full h-full rounded-[42px] overflow-hidden relative flex flex-col z-10 border border-black/40 shadow-inner" style={{ backgroundColor: canvasBg }}>
           
           {/* iOS Status Bar */}
-          <div className="text-foreground px-6 pt-3 pb-1 flex items-center justify-between text-xs font-semibold shrink-0 select-none z-30 relative" style={{ backgroundColor: canvasBg }}>
-            <span className="font-semibold text-[13px] tracking-tight pl-1">9:41</span>
+          <div className="text-foreground px-7 pt-3 pb-1 flex items-center justify-between text-xs font-bold shrink-0 select-none z-30 relative" style={{ backgroundColor: canvasBg }}>
+            <span className="font-extrabold text-[13px] tracking-tight pl-1">11:41 AM</span>
             
-            {/* Dynamic Island Notch */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-24 h-5.5 bg-black rounded-full border border-white/10 shadow-inner flex items-center justify-end px-2 gap-1 z-40 pointer-events-none">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#09090b] border border-white/20" />
+            {/* Realistic Dynamic Island Notch */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-2.5 w-28 h-6 bg-black rounded-full border border-slate-800/80 shadow-md flex items-center justify-between px-2.5 z-40 pointer-events-none">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#0d0d0f] border border-slate-800 flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-[#1e293b]" />
+              </div>
+              <div className="w-2 h-2 rounded-full bg-[#09090b] border border-slate-800" />
             </div>
 
-            <div className="flex items-center gap-1.5 text-[11px] opacity-90 pr-1">
-              <span className="text-[10px] font-bold font-mono">5G</span>
+            <div className="flex items-center gap-1.5 text-[11px] opacity-90 pr-1 font-semibold">
+              <span className="text-[10px] font-extrabold font-mono tracking-tighter">5G</span>
               <Signal className="h-3 w-3" />
               <Wifi className="h-3 w-3" />
-              <Battery className="h-3.5 w-3.5 fill-foreground/30 text-foreground" />
+              <div className="w-5 h-2.5 rounded-[3px] border border-foreground/70 p-0.5 flex items-center shrink-0">
+                <div className="w-full h-full bg-emerald-500 rounded-[1px]" />
+              </div>
             </div>
           </div>
 
@@ -79,19 +94,22 @@ function DeviceFrame({ device, showDeviceFrame = true, canvasBg, children }: { d
             {children}
           </div>
 
-          {/* Safari Mobile Bottom Bar & Home Indicator */}
+          {/* Safari Mobile Bottom Navigation Bar & Home Indicator */}
           <div className="backdrop-blur-md text-foreground border-t border-border/40 pt-2 pb-1.5 px-4 flex flex-col gap-1.5 shrink-0 z-30 select-none" style={{ backgroundColor: canvasBg }}>
             <div className="flex items-center justify-between gap-3 px-2">
-              <span className="text-xs font-extrabold opacity-70 tracking-tighter">AA</span>
-              <div className="flex-1 max-w-[220px] bg-muted/60 border border-border/60 rounded-full px-3 py-1 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground shadow-xs">
+              <span className="text-xs font-black opacity-80 font-serif tracking-tighter">AA</span>
+              <div className="flex-1 max-w-[210px] bg-muted/60 border border-border/60 rounded-full px-3 py-1 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground shadow-xs">
                 <Lock className="h-3 w-3 text-emerald-500 shrink-0" />
-                <span className="font-medium text-foreground tracking-tight">craftsite.app</span>
+                <span className="font-semibold text-foreground tracking-tight">localhost</span>
                 <RotateCw className="h-2.5 w-2.5 opacity-60 shrink-0" />
               </div>
-              <Copy className="h-3.5 w-3.5 opacity-70 shrink-0" />
+              <div className="flex items-center gap-2 opacity-70">
+                <span className="text-xs font-bold">‹</span>
+                <span className="text-xs font-bold">›</span>
+              </div>
             </div>
             {/* iOS Home Indicator Pill */}
-            <div className="w-32 h-1 bg-foreground/30 rounded-full mx-auto mt-1" />
+            <div className="w-32 h-1 bg-foreground/40 rounded-full mx-auto mt-1" />
           </div>
         </div>
       </div>

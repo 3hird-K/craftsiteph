@@ -648,17 +648,14 @@ export function BuilderEditor({ project }: Props) {
                 });
                 toast.info(`Switched canvas to ${nextMode === "dark" ? "Dark Mode" : "Light Mode"}`);
               }}
-              title={theme.mode === "dark" ? "Switch Canvas to Light Mode" : "Switch Canvas to Dark Mode"}
-              className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition cursor-pointer select-none ${
+              title={theme.mode === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              className={`p-1.5 rounded-md transition cursor-pointer select-none flex items-center justify-center ${
                 theme.mode === "dark"
-                  ? "bg-slate-800 text-indigo-300 border border-slate-700 shadow-sm"
+                  ? "bg-slate-800 text-foreground border border-slate-700 shadow-sm"
                   : "bg-background text-foreground shadow-sm border border-border/80 hover:text-foreground"
               }`}
             >
-              {theme.mode === "dark" ? <Moon className="h-3.5 w-3.5 text-indigo-400" /> : <Sun className="h-3.5 w-3.5 text-amber-500" />}
-              <span className="text-[11px] font-medium hidden lg:inline">
-                {theme.mode === "dark" ? "Dark" : "Light"}
-              </span>
+              {theme.mode === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </button>
           </div>
 

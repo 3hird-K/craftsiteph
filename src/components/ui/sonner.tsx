@@ -1,48 +1,49 @@
-"use client"
+"use client";
 
-import {
-  CircleCheckIcon,
-  InfoIcon,
-  Loader2Icon,
-  OctagonXIcon,
-  TriangleAlertIcon,
-} from "lucide-react"
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { useEffect, useState } from "react";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { CheckCircle2, Info, AlertCircle, XCircle, Loader2 } from "lucide-react";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  let theme = "system";
-  try {
-    const themeContext = useTheme();
-    if (themeContext?.theme) theme = themeContext.theme;
-  } catch (_) {}
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
+    };
+    updateTheme();
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.attributeName === "class") {
+          updateTheme();
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={theme}
       className="toaster group"
       toastOptions={{
-        className:
-          "group toast group-[.toaster]:bg-popover group-[.toaster]:text-popover-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg text-xs font-medium rounded-xl border p-2 px-3 max-w-[280px]",
         style: {
-          fontSize: "12px",
-          lineHeight: "1.3",
-          padding: "8px 12px",
-          borderRadius: "12px",
-          maxWidth: "280px",
-          minHeight: "36px",
+          borderRadius: "14px",
         },
       }}
       icons={{
-        success: <CircleCheckIcon className="size-3.5 text-emerald-500 shrink-0" />,
-        info: <InfoIcon className="size-3.5 text-sky-500 shrink-0" />,
-        warning: <TriangleAlertIcon className="size-3.5 text-amber-500 shrink-0" />,
-        error: <OctagonXIcon className="size-3.5 text-rose-500 shrink-0" />,
-        loading: <Loader2Icon className="size-3.5 animate-spin text-primary shrink-0" />,
+        success: <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />,
+        info: <Info className="h-4 w-4 text-sky-500 shrink-0" />,
+        warning: <AlertCircle className="h-4 w-4 text-amber-500 shrink-0" />,
+        error: <XCircle className="h-4 w-4 text-rose-500 shrink-0" />,
+        loading: <Loader2 className="h-4 w-4 animate-spin text-primary shrink-0" />,
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

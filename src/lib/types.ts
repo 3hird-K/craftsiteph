@@ -64,6 +64,22 @@ export type ComponentProps = {
   contactPhone?: string;
   contactAddress?: string;
   contactHours?: string;
+  tags?: string[];
+  benefits?: string[];
+  bentoCard1Title?: string;
+  bentoCard1Value?: string;
+  bentoCard1Badge?: string;
+  bentoCard2Value?: string;
+  bentoCard2Label?: string;
+  bentoCard3Value?: string;
+  bentoCard3Label?: string;
+  badgeText?: string;
+  stat1Value?: string;
+  stat1Label?: string;
+  stat2Value?: string;
+  stat2Label?: string;
+  stat3Value?: string;
+  stat3Label?: string;
 };
 
 export type ComponentType =

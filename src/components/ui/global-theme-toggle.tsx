@@ -40,6 +40,10 @@ export function GlobalThemeToggle() {
     }
   };
 
+  if (pathname?.startsWith("/builder") || pathname?.startsWith("/p/")) {
+    return null;
+  }
+
   return (
     <button
       onClick={toggleTheme}

@@ -888,7 +888,7 @@ export function PropertiesPanel({
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <Sun className="h-3.5 w-3.5 text-amber-500" />
+                    <Sun className="h-3.5 w-3.5" />
                     Light Mode
                   </button>
                   <button
@@ -900,7 +900,7 @@ export function PropertiesPanel({
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <Moon className="h-3.5 w-3.5 text-indigo-400" />
+                    <Moon className="h-3.5 w-3.5" />
                     Dark Mode
                   </button>
                 </div>

@@ -285,19 +285,24 @@ function RealisticLayoutPreview({
       );
 
     // HERO VARIANTS
-    case "centered-hero":
+    case "fullbleed-image-hero":
       return (
         <div
-          className={`w-full p-3.5 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+          className="w-full p-3.5 text-center flex flex-col items-center justify-center gap-1.5 shadow-md relative overflow-hidden bg-cover bg-center text-white min-h-[76px]"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80')",
+            borderRadius: navRadius,
+          }}
         >
-          <span className="font-extrabold text-xs" style={{ color: cardTextColor }}>Build something people love</span>
-          <span className="text-[10px] opacity-75 line-clamp-1">Design landing pages in minutes. Customize every component.</span>
-          <span className="mt-1 px-3 py-1 text-[10px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-            Start building free
+          <div className="absolute inset-0 bg-black/60 z-0" />
+          <span className="font-extrabold text-xs relative z-10 text-white">Craft stunning websites with zero limits</span>
+          <span className="text-[9px] opacity-85 line-clamp-1 relative z-10 text-white/90">The ultimate visual web builder designed for modern teams.</span>
+          <span className="mt-0.5 px-3 py-1 text-[9px] font-bold text-white shadow-xs relative z-10" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            Start Building Free
           </span>
         </div>
       );
+    case "split-showcase-hero":
     case "split-image":
       return (
         <div
@@ -306,8 +311,8 @@ function RealisticLayoutPreview({
         >
           <div className="flex-1 space-y-1">
             <span className="font-bold text-[11px] leading-tight block" style={{ color: cardTextColor }}>Turn ideas into live websites</span>
-            <span className="text-[9px] opacity-75 block line-clamp-1">Visual page builder with drag-and-drop flexibility.</span>
-            <span className="inline-block mt-1 px-2.5 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+            <span className="text-[9px] opacity-75 block line-clamp-1">Visual drag-and-drop page builder for teams.</span>
+            <span className="inline-block mt-0.5 px-2.5 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
               Explore Platform
             </span>
           </div>
@@ -319,70 +324,48 @@ function RealisticLayoutPreview({
           </div>
         </div>
       );
-    case "minimalist-hero":
-      return (
-        <div
-          className={`w-full p-3.5 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1 transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
-        >
-          <span className="font-extrabold text-xs tracking-tight" style={{ color: cardTextColor }}>Simplicity in visual design.</span>
-          <span className="text-[10px] opacity-75">Minimalist layout for modern creators.</span>
-          <span className="px-3 py-1 text-[10px] font-bold text-white mt-1 shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-            Get Started →
-          </span>
-        </div>
-      );
+    case "centered-dashboard-hero":
     case "app-preview":
-      return (
-        <div
-          className={`w-full p-3 border ${borderStyle} flex flex-col items-center text-center gap-2 transition-all`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
-        >
-          <span className="font-extrabold text-[11px] leading-tight" style={{ color: cardTextColor }}>Manage everything in one workspace</span>
-          <div className="flex items-center gap-1.5">
-            <span className="px-2 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-              Start Free Trial
-            </span>
-            <span className="px-2 py-0.5 text-[9px] font-semibold border opacity-80" style={{ borderColor: primaryColor, borderRadius: navRadius }}>
-              Watch Demo
-            </span>
-          </div>
-          <div
-            className="w-full h-10 bg-muted/60 border border-border/60 flex items-center justify-center text-[9px] font-bold opacity-80"
-            style={{ borderRadius: navRadius }}
-          >
-            App Dashboard Preview
-          </div>
-        </div>
-      );
-    case "gradient-glow":
       return (
         <div
           className={`w-full p-3 border ${borderStyle} flex flex-col items-center text-center gap-1.5 transition-all`}
           style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
         >
-          <span
-            className="px-2 py-0.5 text-[9px] font-bold border"
-            style={{
-              backgroundColor: `${primaryColor}15`,
-              borderColor: `${primaryColor}30`,
-              color: primaryColor,
-              borderRadius: navRadius,
-            }}
-          >
-            Introducing Version 2.0
+          <span className="px-2 py-0.5 text-[8px] font-extrabold text-primary bg-primary/10 border border-primary/20 rounded-full">
+            ✦ NEW: AI Web Builder v2.0
           </span>
-          <span className="font-extrabold text-xs tracking-tight" style={{ color: cardTextColor }}>Build faster with intelligent components</span>
+          <span className="font-extrabold text-[11px] leading-tight" style={{ color: cardTextColor }}>Manage everything in one workspace</span>
           <div className="flex items-center gap-1.5">
             <span className="px-2.5 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-              Get Started Free
+              Start Free Trial
             </span>
-            <span className="text-[9px] font-semibold opacity-75">
-              Book a Demo
+            <span className="px-2 py-0.5 text-[9px] font-semibold border opacity-80" style={{ borderColor: primaryColor, borderRadius: navRadius }}>
+              Watch 2-Min Tour
             </span>
+          </div>
+          <div
+            className="w-full h-9 bg-muted/60 border border-border/60 flex items-center justify-center text-[8px] font-bold opacity-80"
+            style={{ borderRadius: navRadius }}
+          >
+            3D Dashboard Preview
           </div>
         </div>
       );
+    case "interactive-search-hero":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} flex flex-col items-center text-center gap-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-xs tracking-tight" style={{ color: cardTextColor }}>Find and build anything visually</span>
+          <span className="text-[9px] opacity-75 line-clamp-1">Search thousands of pre-built UI components.</span>
+          <div className="w-full max-w-[200px] h-7 bg-muted/80 border border-border flex items-center justify-between px-2 text-[8px] opacity-80" style={{ borderRadius: navRadius }}>
+            <span className="opacity-60">🔍 Search templates...</span>
+            <span className="px-1.5 py-0.5 text-[7px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>Search</span>
+          </div>
+        </div>
+      );
+    case "bento-grid-hero":
     case "bento-hero":
       return (
         <div
@@ -390,14 +373,33 @@ function RealisticLayoutPreview({
           style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
         >
           <div className="flex-1 space-y-1">
-            <span className="font-extrabold text-[10px] leading-tight block" style={{ color: cardTextColor }}>Engineered for digital products</span>
+            <span className="font-extrabold text-[10px] leading-tight block" style={{ color: cardTextColor }}>Intelligent components built for scale</span>
             <span className="px-2 py-0.5 text-[8px] font-bold text-white inline-block shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-              Explore Features
+              Explore Bento Grid
             </span>
           </div>
           <div className="grid grid-cols-2 gap-1 w-24">
             <div className="p-1 bg-muted/80 text-[8px] font-bold text-center opacity-80" style={{ borderRadius: navRadius }}>99.9% Uptime</div>
             <div className="p-1 bg-muted/80 text-[8px] font-bold text-center opacity-80" style={{ borderRadius: navRadius }}>Fast Setup</div>
+          </div>
+        </div>
+      );
+    case "mobile-app-hero":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="flex-1 space-y-1">
+            <span className="font-extrabold text-[10px] leading-tight block" style={{ color: cardTextColor }}>Workspace in your pocket</span>
+            <span className="text-[8px] opacity-75 block line-clamp-1">Download app for iOS & Android.</span>
+            <div className="flex gap-1 mt-0.5">
+              <span className="px-1.5 py-0.5 text-[7px] font-bold text-white" style={{ backgroundColor: primaryColor, borderRadius: "4px" }}>App Store</span>
+              <span className="px-1.5 py-0.5 text-[7px] font-bold border" style={{ borderColor: primaryColor, borderRadius: "4px" }}>Google Play</span>
+            </div>
+          </div>
+          <div className="w-10 h-14 bg-muted border border-border flex items-center justify-center text-[7px] font-bold shrink-0 opacity-80" style={{ borderRadius: "8px" }}>
+            iPhone
           </div>
         </div>
       );
@@ -478,12 +480,12 @@ function RealisticLayoutPreview({
     case "full-width-cta":
       return (
         <div
-          className="w-full p-3 text-center flex flex-col items-center justify-center gap-1.5 shadow-md transition-all"
-          style={{ backgroundColor: primaryColor, color: "#ffffff", borderRadius: "12px" }}
+          className={`w-full p-3 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all shadow-md`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
         >
-          <span className="font-extrabold text-xs">Ready to ship your next page?</span>
-          <span className="text-[9px] opacity-85 line-clamp-1">Join thousands of makers designing with CraftSite.</span>
-          <span className="mt-0.5 px-3 py-1 text-[9px] font-extrabold text-slate-900 bg-white shadow-xs rounded-lg">
+          <span className="font-extrabold text-xs" style={{ color: cardTextColor }}>Ready to ship your next page?</span>
+          <span className="text-[9px] opacity-75 line-clamp-1">Join thousands of makers designing with CraftSite.</span>
+          <span className="mt-0.5 px-3 py-1 text-[9px] font-extrabold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Create Free Project
           </span>
         </div>
@@ -494,10 +496,10 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-3 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all shadow-md`}
-          style={{ backgroundColor: isLightTheme ? "#0f172a" : "#1e293b", color: "#ffffff", borderRadius: "14px" }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
         >
-          <span className="font-bold text-xs text-white">Accelerate your workflow today</span>
-          <span className="text-[9px] opacity-75 line-clamp-1 text-slate-300">Get instant access to design templates.</span>
+          <span className="font-bold text-xs" style={{ color: cardTextColor }}>Accelerate your workflow today</span>
+          <span className="text-[9px] opacity-75 line-clamp-1">Get instant access to design templates.</span>
           <span className="mt-0.5 px-3 py-1 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
             Get Started Now
           </span>
