@@ -1,7 +1,7 @@
 "use client";
 
 import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "@/lib/types";
-import { ComponentRenderer } from "@/components/renderer/ComponentRenderer";
+import { ComponentRenderer, isDarkColor } from "@/components/renderer/ComponentRenderer";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
 import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight, Wifi, Battery, Signal, Lock, RotateCw, Copy, Monitor, Type } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -236,19 +236,15 @@ export function Canvas({
     return () => observer.disconnect();
   }, []);
 
-  const canvasBg =
-    theme.backgroundColor && theme.backgroundColor !== "transparent"
-      ? (theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc" ? "#f1f5f9" : theme.backgroundColor)
-      : isAppDark
-      ? "#09090b"
-      : "#f1f5f9";
+  const isPageDark =
+    theme.mode === "dark" ||
+    (theme.mode !== "light" && (theme.backgroundColor ? isDarkColor(theme.backgroundColor) === true : isAppDark));
 
-  const canvasTextColor =
-    theme.textColor && theme.textColor !== "#0f172a"
-      ? theme.textColor
-      : isAppDark
-      ? "#f8fafc"
-      : "#0f172a";
+  const canvasBg = isPageDark
+    ? (theme.backgroundColor && isDarkColor(theme.backgroundColor) === true ? theme.backgroundColor : "#09090b")
+    : (theme.backgroundColor && isDarkColor(theme.backgroundColor) === false ? theme.backgroundColor : "#f1f5f9");
+
+  const canvasTextColor = isPageDark ? "#f8fafc" : "#0f172a";
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement | null;

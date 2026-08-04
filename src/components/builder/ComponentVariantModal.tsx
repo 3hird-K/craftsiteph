@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { ComponentType, SiteTheme } from "@/lib/types";
 import { COMPONENT_VARIANTS, PALETTE, ComponentVariant } from "@/lib/presets";
 import {
@@ -140,15 +141,26 @@ function RealisticLayoutPreview({
   theme: SiteTheme;
 }) {
   const primaryColor = theme.primaryColor || "#ea580c";
-  const isLightTheme =
-    !theme.backgroundColor ||
-    theme.backgroundColor === "#ffffff" ||
-    theme.backgroundColor === "#fafafa" ||
-    theme.backgroundColor === "#f8fafc" ||
-    theme.backgroundColor === "#f1f5f9" ||
-    (theme.backgroundColor.startsWith("#f") && theme.backgroundColor.length === 7);
+  const [isAppDark, setIsAppDark] = useState(false);
 
-  const cardBg = isLightTheme ? "#ffffff" : "#0f172a";
+  useEffect(() => {
+    const checkDark = () => {
+      setIsAppDark(document.documentElement.classList.contains("dark"));
+    };
+    checkDark();
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.attributeName === "class") checkDark();
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
+  const isDark = theme.mode === "dark" || isAppDark;
+  const isLightTheme = !isDark;
+
+  const cardBg = isLightTheme ? "#ffffff" : "#0b1329";
   const cardTextColor = isLightTheme ? "#0f172a" : "#f8fafc";
   const navRadius = theme.borderRadius || "12px";
   const borderStyle = isLightTheme ? "border-slate-200" : "border-slate-800";

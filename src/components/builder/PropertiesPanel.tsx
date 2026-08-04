@@ -877,6 +877,34 @@ export function PropertiesPanel({
               <p className="text-[11px] text-muted-foreground leading-tight">
                 Controls overall page canvas background & global palette.
               </p>
+              <Field label="Theme Mode">
+                <div className="grid grid-cols-2 gap-2 p-1 bg-muted/60 rounded-xl border border-border/80">
+                  <button
+                    type="button"
+                    onClick={() => onChangeTheme({ mode: "light", backgroundColor: "#f1f5f9", textColor: "#0f172a", headingColor: "#0f172a", bodyColor: "#334155" })}
+                    className={`flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                      (theme.mode || "light") === "light"
+                        ? "bg-background text-foreground shadow-xs border border-border/60"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Sun className="h-3.5 w-3.5 text-amber-500" />
+                    Light Mode
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onChangeTheme({ mode: "dark", backgroundColor: "#000000", textColor: "#f8fafc", headingColor: "#f8fafc", bodyColor: "#e2e8f0" })}
+                    className={`flex items-center justify-center gap-1.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                      theme.mode === "dark"
+                        ? "bg-background text-foreground shadow-xs border border-border/60"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Moon className="h-3.5 w-3.5 text-indigo-400" />
+                    Dark Mode
+                  </button>
+                </div>
+              </Field>
               <Field label="Global Container Width">
                 <SelectInput
                   value={theme.containerWidth || "1120px"}
@@ -1038,13 +1066,21 @@ export function PropertiesPanel({
                 </Field>
                 <Field label="Global Page Background">
                   <ColorInput
-                    value={!theme.backgroundColor || theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc" ? "#f1f5f9" : theme.backgroundColor}
+                    value={
+                      theme.mode === "dark"
+                        ? (theme.backgroundColor || "#000000")
+                        : (!theme.backgroundColor || theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc" ? "#f1f5f9" : theme.backgroundColor)
+                    }
                     onChange={(v) => onChangeTheme({ backgroundColor: v })}
                   />
                 </Field>
                 <Field label="Global Base Text Color">
                   <ColorInput
-                    value={theme.textColor}
+                    value={
+                      theme.mode === "dark"
+                        ? (theme.textColor || "#f8fafc")
+                        : (theme.textColor || "#0f172a")
+                    }
                     onChange={(v) => onChangeTheme({ textColor: v })}
                   />
                 </Field>

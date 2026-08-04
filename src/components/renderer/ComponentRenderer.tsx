@@ -39,6 +39,8 @@ import {
   MapPin,
   Clock,
   Send,
+  Sun,
+  Moon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -91,6 +93,84 @@ export function RenderIcon({ icon, className = "h-4 w-4 shrink-0" }: { icon?: st
   const IconComp = ICON_MAP[key];
   if (!IconComp) return null;
   return <IconComp className={className} />;
+}
+
+export function isDarkColor(colorStr?: string): boolean | undefined {
+  if (!colorStr || colorStr === "transparent" || colorStr === "inherit" || colorStr === "initial") {
+    return undefined;
+  }
+  const str = colorStr.trim().toLowerCase();
+
+  if (
+    str === "black" ||
+    str === "#000" ||
+    str === "#000000" ||
+    str.includes("0f172a") ||
+    str.includes("020617") ||
+    str.includes("030712") ||
+    str.includes("0b1329") ||
+    str.includes("1e1b4b") ||
+    str.includes("18181b") ||
+    str.includes("09090b") ||
+    str.includes("1e293b") ||
+    str.includes("111827") ||
+    str.includes("slate-900") ||
+    str.includes("zinc-900") ||
+    str.includes("gray-900")
+  ) {
+    return true;
+  }
+  if (
+    str === "white" ||
+    str === "#fff" ||
+    str === "#ffffff" ||
+    str === "#fafafa" ||
+    str === "#f8fafc" ||
+    str === "#f1f5f9" ||
+    str === "#f0f9ff"
+  ) {
+    return false;
+  }
+
+  // Hex colors #rrggbb or #rgb
+  if (str.startsWith("#")) {
+    let hex = str.slice(1);
+    if (hex.length === 3) {
+      hex = hex.split("").map((c) => c + c).join("");
+    }
+    if (hex.length >= 6) {
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        return lum < 140;
+      }
+    }
+  }
+
+  // RGB / RGBA
+  if (str.startsWith("rgb")) {
+    const match = str.match(/\d+/g);
+    if (match && match.length >= 3) {
+      const r = parseInt(match[0], 10);
+      const g = parseInt(match[1], 10);
+      const b = parseInt(match[2], 10);
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      return lum < 140;
+    }
+  }
+
+  // HSL / HSLA
+  if (str.startsWith("hsl")) {
+    const match = str.match(/\d+/g);
+    if (match && match.length >= 3) {
+      const l = parseInt(match[2], 10);
+      return l < 50;
+    }
+  }
+
+  return undefined;
 }
 
 function IconSearchPicker({
@@ -1399,6 +1479,18 @@ export function ComponentRenderer({
   const isTablet = device === "tablet";
   const isMobileOrTablet = isMobile || isTablet;
 
+  const pageBgDark = theme.mode === "dark" || isDarkColor(theme.backgroundColor) === true;
+  const compBgDark = isDarkColor(style.backgroundColor);
+  const isDarkSection = compBgDark !== undefined ? compBgDark : pageBgDark;
+
+  const headingTextColor = isDarkSection
+    ? (theme.headingColor && isDarkColor(theme.headingColor) === false ? theme.headingColor : "#f8fafc")
+    : (theme.headingColor && isDarkColor(theme.headingColor) === true ? theme.headingColor : "#0f172a");
+
+  const bodyTextColor = isDarkSection
+    ? (theme.bodyColor && isDarkColor(theme.bodyColor) === false ? theme.bodyColor : "#cbd5e1")
+    : (theme.bodyColor && isDarkColor(theme.bodyColor) === true ? theme.bodyColor : "#475569");
+
   const getSectionAnchorId = (c: BuilderComponent): string => {
     const sameType = allComponents.filter((item) => item.type === c.type);
     const typeIndex = sameType.findIndex((item) => item.id === c.id) + 1;
@@ -1509,27 +1601,29 @@ export function ComponentRenderer({
     const variant = props.variant || "classic-split";
     const isFloating = variant === "floating-glass" || Boolean(style.maxWidth && style.maxWidth !== "100%" && style.maxWidth !== "auto");
     const headerRadius = style.borderRadius || (variant === "floating-glass" ? (theme.borderRadius || "12px") : "0px");
-    const isLightTheme =
-      !theme.backgroundColor ||
-      theme.backgroundColor === "#ffffff" ||
-      theme.backgroundColor === "#fafafa" ||
-      theme.backgroundColor === "#f8fafc" ||
-      theme.backgroundColor === "#f1f5f9" ||
-      (theme.backgroundColor.startsWith("#f") && theme.backgroundColor.length === 7);
+
+    const isDefaultPresetBg =
+      !style.backgroundColor ||
+      style.backgroundColor === "transparent" ||
+      style.backgroundColor === "#0f172a" ||
+      style.backgroundColor === "#0b1329" ||
+      style.backgroundColor === "#020617" ||
+      style.backgroundColor === "#ffffff" ||
+      style.backgroundColor === "#f8fafc" ||
+      style.backgroundColor === "#fafafa" ||
+      style.backgroundColor === "#f1f5f9";
 
     const defaultBg =
       variant === "floating-glass"
-        ? (isLightTheme ? "rgba(255, 255, 255, 0.9)" : "rgba(15, 23, 42, 0.85)")
-        : (isLightTheme ? "#ffffff" : "#0f172a");
+        ? (!pageBgDark ? "rgba(255, 255, 255, 0.9)" : "rgba(15, 23, 42, 0.85)")
+        : (!pageBgDark ? "#ffffff" : "#0f172a");
 
-    const headerBg = defaultBg;
+    const headerBg = isDefaultPresetBg ? defaultBg : style.backgroundColor;
 
-    // Smart contrast calculation for text & icon colors
-    const isDarkBg =
-      headerBg === "#0f172a" ||
-      headerBg.includes("15, 23, 42");
+    const navBgDark = isDarkColor(headerBg);
+    const isDarkNav = navBgDark !== undefined ? navBgDark : pageBgDark;
 
-    const headerTextColor = isDarkBg ? "#f8fafc" : "#0f172a";
+    const headerTextColor = isDarkNav ? "#f8fafc" : "#0f172a";
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     if (variant === "floating-glass") {
@@ -1666,7 +1760,7 @@ export function ComponentRenderer({
             const isBtn = link.variant === "button";
             
             const linkClass = isMobileNav
-              ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl ${isLightTheme ? "hover:bg-foreground/5" : "hover:bg-white/10"} text-sm font-semibold transition-all cursor-pointer select-none text-left ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""}`
+              ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl ${!isDarkNav ? "hover:bg-foreground/5" : "hover:bg-white/10"} text-sm font-semibold transition-all cursor-pointer select-none text-left ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""}`
               : `transition-all cursor-pointer select-none inline-flex items-center gap-1.5 ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""} ${
                   link.variant === "bold"
                     ? "font-bold opacity-100"
@@ -1972,7 +2066,7 @@ export function ComponentRenderer({
 
           {/* Seamless Unified Mobile Navigation Drawer Dropdown */}
           {isMobileMenuOpen && (
-            <div className={`w-full border-t ${isLightTheme ? "border-foreground/15" : "border-white/10"} pt-3 pb-4 my-1 space-y-3.5 animate-in fade-in-0 slide-in-from-top-2 duration-200`}>
+            <div className={`w-full border-t ${!isDarkNav ? "border-foreground/15" : "border-white/10"} pt-3 pb-4 my-1 space-y-3.5 animate-in fade-in-0 slide-in-from-top-2 duration-200`}>
               <LinksElement mobile />
               <ButtonsElement mobile />
             </div>
@@ -1985,10 +2079,36 @@ export function ComponentRenderer({
   if (type === "hero") {
     const heroSectionRadius = style.borderRadius || "0px";
     const variant = props.variant || "centered-hero";
-    const heroBg = style.backgroundColor || "transparent";
     const isBgLayout = props.imageLayout === "background" && !!props.imageUrl;
     const isSplit = (variant === "split-image" || variant === "bento-hero") && !isBgLayout;
     const [activeHeroPopover, setActiveHeroPopover] = useState<string | null>(null);
+    const isDefaultPresetHeroBg =
+      !style.backgroundColor ||
+      style.backgroundColor === "transparent" ||
+      style.backgroundColor === "#0f172a" ||
+      style.backgroundColor === "#0b1329" ||
+      style.backgroundColor === "#020617" ||
+      style.backgroundColor === "#ffffff" ||
+      style.backgroundColor === "#f8fafc" ||
+      style.backgroundColor === "#fafafa" ||
+      style.backgroundColor === "#f1f5f9";
+
+    const heroBg = (style.backgroundColor && !isDefaultPresetHeroBg)
+      ? style.backgroundColor
+      : "transparent";
+
+    const heroBgDark = isDarkColor(heroBg);
+    const isDarkHeroBg = Boolean(
+      isBgLayout || (heroBgDark !== undefined ? heroBgDark : pageBgDark)
+    );
+
+    const heroTextColor = isDarkHeroBg
+      ? (theme.headingColor && isDarkColor(theme.headingColor) === false ? theme.headingColor : "#f8fafc")
+      : (theme.headingColor && isDarkColor(theme.headingColor) === true ? theme.headingColor : "#0f172a");
+
+    const heroSubtextColor = isDarkHeroBg
+      ? (theme.bodyColor && isDarkColor(theme.bodyColor) === false ? theme.bodyColor : "rgba(248, 250, 252, 0.85)")
+      : (theme.bodyColor && isDarkColor(theme.bodyColor) === true ? theme.bodyColor : "#475569");
 
     const ButtonsBlock = () => {
       const buttonsList = props.buttons !== undefined ? props.buttons : (props.buttonText !== undefined ? [{ label: props.buttonText, variant: "solid" as const }] : undefined);
@@ -2212,7 +2332,7 @@ export function ComponentRenderer({
                         onUpdateProps?.({ heading: newText });
                       }
                     }}
-                    style={{ outline: "none" }}
+                    style={{ outline: "none", color: style.textColor || heroTextColor }}
                     className={`${
                       isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                     } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
@@ -2230,7 +2350,7 @@ export function ComponentRenderer({
                         onUpdateProps?.({ subheading: newText });
                       }
                     }}
-                    style={{ outline: "none" }}
+                    style={{ outline: "none", color: heroSubtextColor }}
                     className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
@@ -2368,7 +2488,7 @@ export function ComponentRenderer({
                       onUpdateProps?.({ heading: newText });
                     }
                   }}
-                  style={{ outline: "none" }}
+                  style={{ outline: "none", color: style.textColor || heroTextColor }}
                   className={`${
                     isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                   } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
@@ -2386,7 +2506,7 @@ export function ComponentRenderer({
                       onUpdateProps?.({ subheading: newText });
                     }
                   }}
-                  style={{ outline: "none" }}
+                  style={{ outline: "none", color: heroSubtextColor }}
                   className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
@@ -2524,45 +2644,12 @@ export function ComponentRenderer({
     const ctaBg = (style.backgroundColor && !isLegacyPresetColor) ? style.backgroundColor : defaultBg;
     const ctaRadius = "0px";
 
-    // Smart background & text contrast detection
-    const isLightBg =
-      ctaBg === "#f0f9ff" ||
-      ctaBg === "#ffffff" ||
-      ctaBg === "#f8fafc" ||
-      ctaBg === "#fafafa" ||
-      ctaBg === "#f1f5f9" ||
-      ctaBg === "transparent" ||
-      (typeof ctaBg === "string" && ctaBg.startsWith("#") && (
-        ctaBg.toUpperCase() === "#F0F9FF" ||
-        ctaBg.toUpperCase() === "#FFFFFF" ||
-        ctaBg.toUpperCase() === "#F8FAFC" ||
-        ctaBg.toUpperCase() === "#FAFAFA" ||
-        ctaBg.toUpperCase() === "#F1F5F9"
-      ));
-
-    const isDarkBg = !isLightBg && (
-      ctaBg === primary ||
-      ctaBg === "#020617" ||
-      ctaBg === "#0f172a" ||
-      ctaBg === "#1e1b4b" ||
-      ctaBg === "#000000" ||
-      (typeof ctaBg === "string" && ctaBg.startsWith("#") && ctaBg !== "#ffffff" && ctaBg !== "#f8fafc" && ctaBg !== "#f0f9ff" && ctaBg !== "#fafafa" && ctaBg !== "#f1f5f9")
-    );
-
-    const isDarkTextColor =
-      style.textColor === "#0f172a" ||
-      style.textColor === "#0F172A" ||
-      style.textColor === "#000000" ||
-      style.textColor === "black";
-
-    const isWhiteTextColor =
-      style.textColor === "#ffffff" ||
-      style.textColor === "#FFFFFF" ||
-      style.textColor === "#fff";
+    const ctaBgDark = isDarkColor(ctaBg);
+    const isDarkBg = ctaBgDark !== undefined ? ctaBgDark : (isDarkVariant || pageBgDark);
 
     const textColor = isDarkBg
-      ? (isDarkTextColor || !style.textColor ? "#ffffff" : style.textColor)
-      : (isWhiteTextColor || !style.textColor ? (theme.textColor || "#0f172a") : style.textColor);
+      ? (style.textColor && isDarkColor(style.textColor) === false ? style.textColor : "#ffffff")
+      : (style.textColor && isDarkColor(style.textColor) === true ? style.textColor : (theme.textColor || "#0f172a"));
 
     const subtextColor = isDarkBg ? "rgba(255, 255, 255, 0.85)" : "#475569";
 
@@ -2855,28 +2942,11 @@ export function ComponentRenderer({
   if (type === "footer") {
     const variant = props.variant || "multi-column-links";
     const effectiveBg = (!style.backgroundColor || style.backgroundColor === "transparent")
-      ? (theme.backgroundColor || "#f1f5f9")
+      ? (theme.backgroundColor || (pageBgDark ? "#09090b" : "#f1f5f9"))
       : style.backgroundColor;
 
-    const isDarkBg = Boolean(
-      effectiveBg &&
-      effectiveBg !== "transparent" &&
-      effectiveBg !== "#ffffff" &&
-      effectiveBg !== "#f8fafc" &&
-      effectiveBg !== "#fafafa" &&
-      effectiveBg !== "#f1f5f9" &&
-      effectiveBg !== "#f0f9ff" &&
-      (effectiveBg.includes("0f172a") ||
-       effectiveBg.includes("020617") ||
-       effectiveBg.includes("030712") ||
-       effectiveBg.includes("1e1b4b") ||
-       effectiveBg.includes("rgba(15") ||
-       effectiveBg === "#000000" ||
-       effectiveBg === "#0f172a" ||
-       effectiveBg === "#1e293b" ||
-       effectiveBg === "#09090b" ||
-       effectiveBg === "#18181b")
-    );
+    const footerBgDark = isDarkColor(effectiveBg);
+    const isDarkBg = footerBgDark !== undefined ? footerBgDark : pageBgDark;
 
     const isLightBg = !isDarkBg;
     const footerBg = style.backgroundColor || "transparent";
@@ -3371,19 +3441,8 @@ export function ComponentRenderer({
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
-    const isDarkBg =
-      css.backgroundColor === "#0f172a" ||
-      css.backgroundColor === "#020617" ||
-      css.backgroundColor === "#030712" ||
-      css.backgroundColor === "#1e1b4b";
-
-    const isDarkCard =
-      isDarkBg ||
-      (style.backgroundColor &&
-        (style.backgroundColor.includes("0f172a") ||
-         style.backgroundColor.includes("020617") ||
-         style.backgroundColor.includes("030712") ||
-         style.backgroundColor.includes("1e1b4b")));
+    const formBgDark = isDarkColor(style.backgroundColor);
+    const isDarkCard = formBgDark !== undefined ? formBgDark : pageBgDark;
 
     const textColor = isDarkCard ? "#f8fafc" : "#0f172a";
     const subtextColor = isDarkCard ? "#94a3b8" : "#475569";
@@ -4072,21 +4131,51 @@ export function PageRenderer({
   components: BuilderComponent[];
   theme: SiteTheme;
 }) {
+  const [mode, setMode] = useState<"light" | "dark">(theme.mode || "light");
+
+  useEffect(() => {
+    if (theme.mode) setMode(theme.mode);
+  }, [theme.mode]);
+
+  const isDark = mode === "dark";
+
+  const effectiveTheme: SiteTheme = {
+    ...theme,
+    mode,
+    backgroundColor: isDark
+      ? (theme.backgroundColor && isDarkColor(theme.backgroundColor) === true ? theme.backgroundColor : "#09090b")
+      : (theme.backgroundColor && isDarkColor(theme.backgroundColor) === false ? theme.backgroundColor : "#f1f5f9"),
+    textColor: isDark ? "#f8fafc" : (theme.textColor && theme.textColor !== "#f8fafc" ? theme.textColor : "#0f172a"),
+  };
+
   return (
     <main
-      className="min-h-screen transition-colors duration-200 pt-0.5"
+      className={`min-h-screen transition-colors duration-300 pt-0.5 relative ${isDark ? "dark bg-black text-slate-100" : "bg-[#f1f5f9] text-slate-900"}`}
       style={{
-        backgroundColor: (!theme.backgroundColor || theme.backgroundColor === "#ffffff" || theme.backgroundColor === "#f8fafc") ? "#f1f5f9" : theme.backgroundColor,
-        color: theme.textColor || "inherit",
+        backgroundColor: effectiveTheme.backgroundColor,
+        color: effectiveTheme.textColor,
         fontFamily: theme.fontFamily || "inherit",
       }}
     >
+      {/* Floating Theme Mode Toggle Button for Live / Published Pages */}
+      <div className="fixed bottom-6 right-6 z-[99999]">
+        <button
+          type="button"
+          onClick={() => setMode(isDark ? "light" : "dark")}
+          className="p-3 rounded-full shadow-2xl border border-border/80 bg-background/90 backdrop-blur-md text-foreground hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 group"
+          title={`Switch to ${isDark ? "Light" : "Dark"} Mode`}
+        >
+          {isDark ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-indigo-500" />}
+          <span className="text-xs font-bold pr-1 hidden sm:inline">{isDark ? "Light Mode" : "Dark Mode"}</span>
+        </button>
+      </div>
+
       {components.map((component) => (
         <ComponentRenderer
           key={component.id}
           component={component}
           allComponents={components}
-          theme={theme}
+          theme={effectiveTheme}
           interactive={false}
         />
       ))}

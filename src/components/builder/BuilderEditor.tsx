@@ -19,10 +19,11 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { Canvas } from "./Canvas";
 import { ComponentVariantModal } from "./ComponentVariantModal";
 import { PageSetupModal } from "./PageSetupModal";
+import { isDarkColor } from "@/components/renderer/ComponentRenderer";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useProjectRealtime } from "@/hooks/useProjectRealtime";
 import { createClient } from "@/lib/supabase/client";
-import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio, Square, ExternalLink, Globe, Copy, EyeOff, MoreVertical } from "lucide-react";
+import { Monitor, Tablet, Smartphone, LogOut, User, Shield, Check, Sparkles, Plus, Layers, Sliders, Undo2, Redo2, Loader2, CheckCircle2, Users, Radio, Square, ExternalLink, Globe, Copy, EyeOff, MoreVertical, Sun, Moon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -91,10 +92,47 @@ export function BuilderEditor({ project }: Props) {
   const [name, setName] = useState(project.name);
   const [components, setComponents] = useState<BuilderComponent[]>(project.components || []);
   const initialTheme = project.theme || DEFAULT_THEME;
+  const initialMode = initialTheme.mode || "light";
   const [theme, setTheme] = useState<SiteTheme>({
     ...initialTheme,
-    backgroundColor: (!initialTheme.backgroundColor || initialTheme.backgroundColor === "#ffffff" || initialTheme.backgroundColor === "#f8fafc") ? "#f1f5f9" : initialTheme.backgroundColor
+    mode: initialMode,
+    backgroundColor: initialMode === "dark"
+      ? (initialTheme.backgroundColor && isDarkColor(initialTheme.backgroundColor) === true ? initialTheme.backgroundColor : "#09090b")
+      : (initialTheme.backgroundColor && isDarkColor(initialTheme.backgroundColor) === false ? initialTheme.backgroundColor : "#f1f5f9"),
+    textColor: initialMode === "dark" ? "#f8fafc" : "#0f172a",
   });
+
+  // Sync Builder Canvas Theme Mode with global app UI dark class mutations
+  useEffect(() => {
+    const syncWithAppTheme = () => {
+      const isAppDark = document.documentElement.classList.contains("dark");
+      const currentMode = isAppDark ? "dark" : "light";
+      setTheme((prev) => {
+        if (prev.mode === currentMode) return prev;
+        return {
+          ...prev,
+          mode: currentMode,
+          backgroundColor: currentMode === "dark"
+            ? (prev.backgroundColor && isDarkColor(prev.backgroundColor) === true ? prev.backgroundColor : "#09090b")
+            : (prev.backgroundColor && isDarkColor(prev.backgroundColor) === false ? prev.backgroundColor : "#f1f5f9"),
+          textColor: currentMode === "dark" ? "#f8fafc" : "#0f172a",
+        };
+      });
+    };
+
+    syncWithAppTheme();
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.attributeName === "class") {
+          syncWithAppTheme();
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
@@ -273,6 +311,14 @@ export function BuilderEditor({ project }: Props) {
   };
 
   const changeTheme = (partial: Partial<SiteTheme>) => {
+    if (partial.mode) {
+      if (partial.mode === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+      localStorage.setItem("craftsite-theme", partial.mode);
+    }
     setTheme((prev) => ({ ...prev, ...partial }));
     markDirty();
   };
@@ -584,6 +630,34 @@ export function BuilderEditor({ project }: Props) {
               <Square className={`h-3.5 w-3.5 ${showDeviceFrame ? "text-primary fill-primary/20" : ""}`} />
               <span className="text-[11px] font-medium hidden md:inline">
                 {showDeviceFrame ? "With Frame" : "No Frame"}
+              </span>
+            </button>
+
+            <div className="h-4 w-px bg-border/80 mx-0.5" />
+
+            <button
+              type="button"
+              onClick={() => {
+                const nextMode = theme.mode === "dark" ? "light" : "dark";
+                changeTheme({
+                  mode: nextMode,
+                  backgroundColor: nextMode === "dark" ? "#09090b" : "#f1f5f9",
+                  textColor: nextMode === "dark" ? "#f8fafc" : "#0f172a",
+                  headingColor: nextMode === "dark" ? "#f8fafc" : "#0f172a",
+                  bodyColor: nextMode === "dark" ? "#cbd5e1" : "#334155",
+                });
+                toast.info(`Switched canvas to ${nextMode === "dark" ? "Dark Mode" : "Light Mode"}`);
+              }}
+              title={theme.mode === "dark" ? "Switch Canvas to Light Mode" : "Switch Canvas to Dark Mode"}
+              className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition cursor-pointer select-none ${
+                theme.mode === "dark"
+                  ? "bg-slate-800 text-indigo-300 border border-slate-700 shadow-sm"
+                  : "bg-background text-foreground shadow-sm border border-border/80 hover:text-foreground"
+              }`}
+            >
+              {theme.mode === "dark" ? <Moon className="h-3.5 w-3.5 text-indigo-400" /> : <Sun className="h-3.5 w-3.5 text-amber-500" />}
+              <span className="text-[11px] font-medium hidden lg:inline">
+                {theme.mode === "dark" ? "Dark" : "Light"}
               </span>
             </button>
           </div>

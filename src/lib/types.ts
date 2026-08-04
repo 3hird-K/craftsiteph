@@ -91,6 +91,7 @@ export type BuilderComponent = {
 };
 
 export type SiteTheme = {
+  mode?: "light" | "dark";
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
