@@ -1500,6 +1500,12 @@ export function ComponentRenderer({
     return idx === 1 && allComponents[0].type === "navbar" && navOverlay === "overlay";
   }, [allComponents, component.id]);
 
+  const isDirectlyBelowNavbar = React.useMemo(() => {
+    if (!allComponents || allComponents.length < 2) return false;
+    const idx = allComponents.findIndex((c) => c.id === component.id);
+    return idx === 1 && allComponents[0].type === "navbar";
+  }, [allComponents, component.id]);
+
   const pageBgDark = theme.mode === "dark" || isDarkColor(theme.backgroundColor) === true;
   const compBgDark = isDarkColor(style.backgroundColor);
   const isDarkSection = compBgDark !== undefined ? compBgDark : pageBgDark;
@@ -2087,7 +2093,7 @@ export function ComponentRenderer({
         style={{
           ...css,
           border: variant === "floating-glass" ? undefined : "none",
-          borderRadius: isMobileMenuOpen ? "24px 24px 12px 12px" : headerRadius,
+          borderRadius: isMobileMenuOpen ? "0px 0px 12px 12px" : headerRadius,
           backgroundColor: headerBg,
           color: headerTextColor,
           boxShadow: shadow !== "none" ? shadow : undefined,
@@ -2117,7 +2123,7 @@ export function ComponentRenderer({
                   e.stopPropagation();
                   setIsMobileMenuOpen(!isMobileMenuOpen);
                 }}
-                className="p-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center border border-foreground/15 hover:bg-foreground/10 shrink-0"
+                className="p-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-center hover:bg-foreground/10 shrink-0"
                 style={{ color: headerTextColor, borderRadius: theme.borderRadius || "12px" }}
                 title="Toggle Navigation Menu"
               >
@@ -2145,8 +2151,8 @@ export function ComponentRenderer({
   if (type === "hero") {
     const heroSectionRadius = style.borderRadius || "0px";
     const variant = props.variant || "fullbleed-image-hero";
-    const isBgLayout = props.imageLayout === "background" || variant === "fullbleed-image-hero";
-    const isSplit = variant === "split-showcase-hero" || variant === "bento-grid-hero" || variant === "mobile-app-hero" || variant === "split-image" || (variant === "bento-hero" && !isBgLayout);
+    const isBgLayout = props.imageLayout === "background" || variant === "fullbleed-image-hero" || variant === "split-bg-showcase-hero";
+    const isSplit = variant === "split-showcase-hero" || variant === "split-bg-showcase-hero" || variant === "bento-grid-hero" || variant === "three-images-hero" || variant === "split-image" || (variant === "bento-hero" && !isBgLayout);
     const [activeHeroPopover, setActiveHeroPopover] = useState<string | null>(null);
     const isDefaultPresetHeroBg =
       !style.backgroundColor ||
@@ -2327,6 +2333,10 @@ export function ComponentRenderer({
 
     const isEditingHeroImage = activeHeroPopover === "image";
     const setIsEditingHeroImage = (val: boolean) => setActiveHeroPopover(val ? "image" : null);
+    const isEditingHeroImage2 = activeHeroPopover === "image2";
+    const setIsEditingHeroImage2 = (val: boolean) => setActiveHeroPopover(val ? "image2" : null);
+    const isEditingHeroImage3 = activeHeroPopover === "image3";
+    const setIsEditingHeroImage3 = (val: boolean) => setActiveHeroPopover(val ? "image3" : null);
     const isImageLeft = props.imagePosition === "left" || props.reverseLayout;
 
     return (
@@ -2336,19 +2346,21 @@ export function ComponentRenderer({
         style={{
           borderRadius: heroSectionRadius,
           backgroundColor: heroBg,
-          backgroundImage: isBgLayout ? `url(${props.imageUrl})` : undefined,
+          backgroundImage: isBgLayout ? `url(${variant === "split-bg-showcase-hero" ? props.imageUrl2 : props.imageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
           ...css
         }}
         className={`relative py-16 md:py-24 transition-all ${
-          isBgLayout ? "text-white flex flex-col justify-center" : ""
-        } ${
+          isBgLayout || isDirectlyBelowNavbar ? "flex flex-col justify-center" : ""
+        } ${isBgLayout ? "text-white" : ""} ${
           isFollowingNavbar
             ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px]"
-            : isBgLayout
-              ? "min-h-[60vh] lg:min-h-[75vh]"
-              : ""
+            : isDirectlyBelowNavbar
+              ? "min-h-[85vh] lg:min-h-[calc(100vh-80px)]"
+              : isBgLayout
+                ? "min-h-[60vh] lg:min-h-[75vh]"
+                : ""
         }`}
       >
         {isBgLayout && (
@@ -2371,7 +2383,7 @@ export function ComponentRenderer({
             {isEditingHeroImage && (
               <div className="absolute bottom-12 right-0">
                 <ImageEditItem
-                  currentUrl={props.imageUrl}
+                  currentUrl={variant === "split-bg-showcase-hero" ? props.imageUrl2 : props.imageUrl}
                   currentUrl2={props.imageUrl2}
                   currentUrl3={props.imageUrl3}
                   currentAlt={props.imageAlt}
@@ -2380,16 +2392,27 @@ export function ComponentRenderer({
                   currentAspectRatio={props.imageAspectRatio}
                   currentImageLayout={props.imageLayout}
                   onSave={(editProps) => {
-                    onUpdateProps?.({ 
-                      imageUrl: editProps.url,
-                      imageUrl2: editProps.url2,
-                      imageUrl3: editProps.url3,
-                      imageAlt: editProps.alt, 
-                      imageBorderRadius: editProps.imageBorderRadius,
-                      imageObjectFit: editProps.objectFit as any,
-                      imageAspectRatio: editProps.aspectRatio as any,
-                      imageLayout: editProps.imageLayout as any
-                    });
+                    if (variant === "split-bg-showcase-hero") {
+                      onUpdateProps?.({ 
+                        imageUrl2: editProps.url,
+                        imageAlt: editProps.alt, 
+                        imageBorderRadius: editProps.imageBorderRadius,
+                        imageObjectFit: editProps.objectFit as any,
+                        imageAspectRatio: editProps.aspectRatio as any,
+                        imageLayout: editProps.imageLayout as any
+                      });
+                    } else {
+                      onUpdateProps?.({ 
+                        imageUrl: editProps.url,
+                        imageUrl2: editProps.url2,
+                        imageUrl3: editProps.url3,
+                        imageAlt: editProps.alt, 
+                        imageBorderRadius: editProps.imageBorderRadius,
+                        imageObjectFit: editProps.objectFit as any,
+                        imageAspectRatio: editProps.aspectRatio as any,
+                        imageLayout: editProps.imageLayout as any
+                      });
+                    }
                     setIsEditingHeroImage(false);
                   }}
                   onClose={() => setIsEditingHeroImage(false)}
@@ -2530,7 +2553,7 @@ export function ComponentRenderer({
                   </p>
                 )}
 
-                {variant === "split-showcase-hero" && (
+                {(variant === "split-showcase-hero" || variant === "split-bg-showcase-hero") && (
                   <div className={`space-y-2.5 pt-1 text-sm font-semibold flex flex-col ${isMobileOrTablet ? "items-center text-center" : "items-start text-left"}`} style={{ color: heroTextColor }}>
                     {(props.benefits || [
                       "Drag & drop visual page builder with live preview",
@@ -2566,56 +2589,121 @@ export function ComponentRenderer({
                 <ButtonsBlock />
               </div>
 
-              {variant === "mobile-app-hero" ? (
-                <div
-                  className={`relative mx-auto w-[280px] h-[500px] rounded-[44px] bg-slate-900 p-2.5 border-[3px] border-slate-700/80 ring-1 ring-white/10 select-none flex flex-col z-30 transition-all ${isImageLeft ? "md:order-1" : "md:order-2"}`}
-                  style={{ boxShadow: shadow !== "none" ? shadow : "none" }}
-                >
-                  {/* Physical Side Buttons */}
-                  <div className="absolute -left-[5px] top-24 w-[4px] h-6 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
-                  <div className="absolute -left-[5px] top-36 w-[4px] h-11 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
-                  <div className="absolute -left-[5px] top-50 w-[4px] h-11 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
-                  <div className="absolute -right-[5px] top-38 w-[4px] h-14 bg-slate-700 rounded-r-md border-r border-slate-500/80 shadow-md" />
-
-                  {/* Inner Screen Display Viewport */}
-                  <div className="w-full h-full rounded-[34px] overflow-hidden relative flex flex-col z-10 border border-black/40 shadow-inner bg-slate-950">
-                    {/* Clean Status Bar */}
-                    <div className="px-5 pt-2.5 pb-1 flex items-center justify-between text-[11px] font-bold text-white shrink-0 select-none z-30 relative bg-black/60 backdrop-blur-md">
-                      <span className="font-extrabold tracking-tight">11:41 AM</span>
-                      
-                      {/* Dynamic Island Notch */}
-                      <div className="absolute left-1/2 -translate-x-1/2 top-2 w-20 h-4 bg-black rounded-full border border-slate-800 shadow-md flex items-center justify-center z-40 pointer-events-none">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e293b]" />
-                      </div>
-
-                      <div className="flex items-center gap-1.5 opacity-90">
-                        <Wifi className="h-3 w-3" />
-                        <div className="w-4 h-2 rounded-[2px] border border-white/70 p-0.5 flex items-center shrink-0">
-                          <div className="w-full h-full bg-emerald-500 rounded-[0.5px]" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Clean Mobile App Interface Screenshot */}
+              {variant === "three-images-hero" ? (
+                <div className={`relative w-full h-[500px] z-30 flex items-center justify-center transition-all ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
+                  
+                  {/* Image 1: Main Large (Left) */}
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[65%] h-[85%] rounded-3xl overflow-hidden shadow-2xl z-20 border-[6px] border-background hover:scale-[1.02] transition-transform duration-300">
                     <img
-                      src={props.imageUrl || "https://images.unsplash.com/photo-1616469829941-c7200edec809?w=800&q=80"}
-                      alt="Mobile App Interface"
-                      className="w-full h-full object-cover flex-1"
+                      src={props.imageUrl || "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80"}
+                      alt="Hero Collage 1"
+                      className="w-full h-full object-cover"
                     />
+                    {interactive && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsEditingHeroImage(!isEditingHeroImage);
+                        }}
+                        className="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-40"
+                      >
+                        <ImageIcon className="h-3.5 w-3.5" /> Edit
+                      </button>
+                    )}
+                    {isEditingHeroImage && (
+                      <div className="absolute top-14 right-4 z-50">
+                        <ImageEditItem
+                          currentUrl={props.imageUrl}
+                          onSave={(editProps) => {
+                            onUpdateProps?.({ imageUrl: editProps.url });
+                            setIsEditingHeroImage(false);
+                          }}
+                          onClose={() => setIsEditingHeroImage(false)}
+                          hideLayoutOptions
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                    {/* iOS Home Indicator Pill */}
-                    <div className="py-1.5 bg-black/60 backdrop-blur-md flex justify-center shrink-0 z-30">
-                      <div className="w-24 h-1 bg-white/50 rounded-full" />
-                    </div>
+                  {/* Image 2: Top Right Small */}
+                  <div className="absolute right-0 top-[5%] w-[45%] h-[45%] rounded-3xl overflow-hidden shadow-xl z-10 border-[6px] border-background hover:scale-[1.02] transition-transform duration-300">
+                    <img
+                      src={props.imageUrl2 || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"}
+                      alt="Hero Collage 2"
+                      className="w-full h-full object-cover"
+                    />
+                    {interactive && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsEditingHeroImage2(!isEditingHeroImage2);
+                        }}
+                        className="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-40"
+                      >
+                        <ImageIcon className="h-3.5 w-3.5" /> Edit
+                      </button>
+                    )}
+                    {isEditingHeroImage2 && (
+                      <div className="absolute top-14 right-4 z-50">
+                        <ImageEditItem
+                          currentUrl={props.imageUrl2}
+                          onSave={(editProps) => {
+                            onUpdateProps?.({ imageUrl2: editProps.url });
+                            setIsEditingHeroImage2(false);
+                          }}
+                          onClose={() => setIsEditingHeroImage2(false)}
+                          hideLayoutOptions
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Image 3: Bottom Right Small */}
+                  <div className="absolute right-[5%] bottom-[5%] w-[50%] h-[42%] rounded-3xl overflow-hidden shadow-2xl z-30 border-[6px] border-background hover:scale-[1.02] transition-transform duration-300">
+                    <img
+                      src={props.imageUrl3 || "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80"}
+                      alt="Hero Collage 3"
+                      className="w-full h-full object-cover"
+                    />
+                    {interactive && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsEditingHeroImage3(!isEditingHeroImage3);
+                        }}
+                        className="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-40"
+                      >
+                        <ImageIcon className="h-3.5 w-3.5" /> Edit
+                      </button>
+                    )}
+                    {isEditingHeroImage3 && (
+                      <div className="absolute top-14 right-4 z-50">
+                        <ImageEditItem
+                          currentUrl={props.imageUrl3}
+                          onSave={(editProps) => {
+                            onUpdateProps?.({ imageUrl3: editProps.url });
+                            setIsEditingHeroImage3(false);
+                          }}
+                          onClose={() => setIsEditingHeroImage3(false)}
+                          hideLayoutOptions
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : variant === "bento-grid-hero" ? (
                 <div className={`grid grid-cols-2 gap-5 z-30 w-full h-full my-auto ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
                   <div
-                    className="col-span-2 p-7 min-h-[140px] bg-card border border-border/80 shadow-2xl flex items-center justify-between transition-all hover:border-primary/40"
+                    className="col-span-2 p-7 min-h-[140px] bg-card border border-border/80 shadow-2xl flex items-center justify-between transition-all hover:border-primary/40 relative overflow-hidden"
                     style={{ borderRadius: btnRadius }}
                   >
-                    <div>
+                    {/* Decorative glow */}
+                    <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl z-0 pointer-events-none" />
+                    
+                    <div className="z-10 relative">
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
@@ -2633,55 +2721,81 @@ export function ComponentRenderer({
                         {props.bentoCard1Value || "+142% Growth"}
                       </div>
                     </div>
-                    <div
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ bentoCard1Badge: e.currentTarget.innerText.trim() })}
-                      className={`px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs shadow-xs ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.bentoCard1Badge || "↑ Trending"}
+                    
+                    <div className="flex flex-col items-end z-10 relative">
+                      <div
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => onUpdateProps?.({ bentoCard1Badge: e.currentTarget.innerText.trim() })}
+                        className={`px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs shadow-xs ${interactive ? "cursor-text outline-none" : ""}`}
+                      >
+                        {props.bentoCard1Badge || "↑ Trending"}
+                      </div>
+                      <div className="mt-4 flex items-end gap-1.5 h-8 opacity-80 pointer-events-none">
+                         <div className="w-1.5 h-3 bg-emerald-500/40 rounded-t-sm" />
+                         <div className="w-1.5 h-5 bg-emerald-500/60 rounded-t-sm" />
+                         <div className="w-1.5 h-4 bg-emerald-500/50 rounded-t-sm" />
+                         <div className="w-1.5 h-7 bg-emerald-500/80 rounded-t-sm" />
+                         <div className="w-1.5 h-5 bg-emerald-500/60 rounded-t-sm" />
+                         <div className="w-1.5 h-9 bg-emerald-500 rounded-t-sm" />
+                      </div>
                     </div>
                   </div>
+                  
                   <div
-                    className="col-span-1 p-6 min-h-[140px] bg-card border border-border/80 shadow-2xl flex flex-col justify-center transition-all hover:border-primary/40"
+                    className="col-span-1 p-6 min-h-[140px] bg-card border border-border/80 shadow-2xl flex flex-col justify-center transition-all hover:border-primary/40 relative overflow-hidden group"
                     style={{ borderRadius: btnRadius }}
                   >
-                    <div
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ bentoCard2Value: e.currentTarget.innerText.trim() })}
-                      className={`text-3xl font-extrabold text-primary tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.bentoCard2Value || "99.99%"}
+                    <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-primary/10 rounded-full blur-2xl z-0 pointer-events-none" />
+                    <div className="absolute top-5 right-5 text-primary/15 group-hover:text-primary/30 transition-colors pointer-events-none">
+                      <Shield className="h-10 w-10" />
                     </div>
-                    <div
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ bentoCard2Label: e.currentTarget.innerText.trim() })}
-                      className={`text-sm text-muted-foreground font-semibold mt-1 ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.bentoCard2Label || "Uptime SLA"}
+                    
+                    <div className="z-10 relative">
+                      <div
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => onUpdateProps?.({ bentoCard2Value: e.currentTarget.innerText.trim() })}
+                        className={`text-3xl font-extrabold text-primary tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
+                      >
+                        {props.bentoCard2Value || "99.99%"}
+                      </div>
+                      <div
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => onUpdateProps?.({ bentoCard2Label: e.currentTarget.innerText.trim() })}
+                        className={`text-sm text-muted-foreground font-semibold mt-1 ${interactive ? "cursor-text outline-none" : ""}`}
+                      >
+                        {props.bentoCard2Label || "Uptime SLA"}
+                      </div>
                     </div>
                   </div>
+                  
                   <div
-                    className="col-span-1 p-6 min-h-[140px] bg-card border border-border/80 shadow-2xl flex flex-col justify-center transition-all hover:border-primary/40"
+                    className="col-span-1 p-6 min-h-[140px] bg-card border border-border/80 shadow-2xl flex flex-col justify-center transition-all hover:border-primary/40 relative overflow-hidden group"
                     style={{ borderRadius: btnRadius }}
                   >
-                    <div
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ bentoCard3Value: e.currentTarget.innerText.trim() })}
-                      className={`text-3xl font-extrabold text-foreground tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.bentoCard3Value || "50k+"}
+                    <div className="absolute top-5 right-5 text-foreground/5 group-hover:text-foreground/15 transition-colors pointer-events-none">
+                      <User className="h-10 w-10" />
                     </div>
-                    <div
-                      contentEditable={interactive}
-                      suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ bentoCard3Label: e.currentTarget.innerText.trim() })}
-                      className={`text-sm text-muted-foreground font-semibold mt-1 ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.bentoCard3Label || "Creators"}
+                    
+                    <div className="z-10 relative">
+                      <div
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => onUpdateProps?.({ bentoCard3Value: e.currentTarget.innerText.trim() })}
+                        className={`text-3xl font-extrabold text-foreground tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
+                      >
+                        {props.bentoCard3Value || "50k+"}
+                      </div>
+                      <div
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => onUpdateProps?.({ bentoCard3Label: e.currentTarget.innerText.trim() })}
+                        className={`text-sm text-muted-foreground font-semibold mt-1 ${interactive ? "cursor-text outline-none" : ""}`}
+                      >
+                        {props.bentoCard3Label || "Creators"}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2915,7 +3029,13 @@ export function ComponentRenderer({
           ...css,
           backgroundColor: style.backgroundColor || "transparent",
         }}
-        className={`w-full py-16 sm:py-24 ${style.padding || "px-4 md:px-8"}`}
+        className={`w-full py-16 sm:py-24 transition-all ${style.padding || "px-4 md:px-8"} ${
+          isFollowingNavbar
+            ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
+            : isDirectlyBelowNavbar
+              ? "min-h-[85vh] lg:min-h-[calc(100vh-80px)] flex flex-col justify-center"
+              : ""
+        }`}
       >
         <Center maxWidth={style.maxWidth}>
           {(props.heading || props.subheading) && (
@@ -3193,7 +3313,13 @@ export function ComponentRenderer({
           color: textColor,
           borderRadius: ctaRadius,
         }}
-        className="py-16 md:py-20 transition-all"
+        className={`py-16 md:py-20 transition-all ${
+          isFollowingNavbar
+            ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
+            : isDirectlyBelowNavbar
+              ? "min-h-[85vh] lg:min-h-[calc(100vh-80px)] flex flex-col justify-center"
+              : ""
+        }`}
       >
         <Center maxWidth={effectiveMaxWidth}>
           {isSplitLayout ? (
@@ -3853,7 +3979,13 @@ export function ComponentRenderer({
         {...aosAttrs}
         id={currentSectionId}
         style={{ ...css, backgroundColor: sectionBg }}
-        className="py-16 md:py-24 transition-all relative w-full"
+        className={`py-16 md:py-24 transition-all relative w-full ${
+          isFollowingNavbar
+            ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
+            : isDirectlyBelowNavbar
+              ? "min-h-[85vh] lg:min-h-[calc(100vh-80px)] flex flex-col justify-center"
+              : ""
+        }`}
       >
         <Center maxWidth={sectionMaxWidth}>
           {/* Variant 1: classic-centered-form */}
@@ -4463,10 +4595,12 @@ export function ComponentRenderer({
       {...aosAttrs}
       id={currentSectionId}
       style={css}
-      className={`py-12 ${
+      className={`py-12 transition-all ${
         isFollowingNavbar
-          ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px]"
-          : ""
+          ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
+          : isDirectlyBelowNavbar
+            ? "min-h-[85vh] lg:min-h-[calc(100vh-80px)] flex flex-col justify-center"
+            : ""
       }`}
     >
       <Center maxWidth={effectiveMaxWidth}>

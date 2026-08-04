@@ -68,7 +68,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Get Started", variant: "solid" }],
       },
       applyStyle: {
-        paddingY: "16px",
+        paddingY: "8px",
         paddingX: "32px",
         marginY: "0px",
         marginX: "0px",
@@ -92,7 +92,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Explore Platform", variant: "solid" }],
       },
       applyStyle: {
-        paddingY: "20px",
+        paddingY: "8px",
         paddingX: "32px",
         textAlign: "center",
         marginY: "0px",
@@ -116,7 +116,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Sign In", variant: "solid" }],
       },
       applyStyle: {
-        paddingY: "12px",
+        paddingY: "8px",
         paddingX: "28px",
         marginY: "0px",
         marginX: "auto",
@@ -140,7 +140,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Launch App", variant: "solid" }],
       },
       applyStyle: {
-        paddingY: "16px",
+        paddingY: "8px",
         paddingX: "32px",
         marginY: "0px",
         marginX: "0px",
@@ -166,7 +166,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         ],
       },
       applyStyle: {
-        paddingY: "16px",
+        paddingY: "8px",
         paddingX: "32px",
         marginY: "0px",
         marginX: "0px",
@@ -189,7 +189,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         buttons: [{ label: "Book Demo", variant: "solid" }],
       },
       applyStyle: {
-        paddingY: "16px",
+        paddingY: "8px",
         paddingX: "32px",
         marginY: "0px",
         marginX: "0px",
@@ -240,6 +240,30 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       applyStyle: {
         backgroundColor: "transparent",
         paddingY: "80px",
+        paddingX: "32px",
+        textAlign: "left",
+      },
+    },
+    {
+      id: "split-bg-showcase-hero",
+      name: "Split Showcase with Background Image",
+      description: "Left-aligned headline and benefits, floating showcase image on right, all set against a stunning full-bleed background image.",
+      badge: "High Conversion",
+      previewType: "split",
+      applyProps: {
+        variant: "split-bg-showcase-hero",
+        heading: "Turn ideas into live websites in minutes",
+        subheading: "Visual drag-and-drop page builder with production-ready code generation and instant publishing.",
+        imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80",
+        imageUrl2: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80",
+        buttons: [
+          { label: "Explore Platform", variant: "solid" },
+          { label: "Book a Demo", variant: "outline" },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "120px",
         paddingX: "32px",
         textAlign: "left",
       },
@@ -307,16 +331,18 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       },
     },
     {
-      id: "mobile-app-hero",
-      name: "Mobile App Showcase & Store Badges",
-      description: "App landing page hero with headline, App Store / Google Play badges, and dual floating mobile mockups.",
-      badge: "Mobile App",
+      id: "three-images-hero",
+      name: "3-Image Collage Showcase",
+      description: "App landing page hero with headline and a dynamic 3-image masonry collage layout.",
+      badge: "Collage",
       previewType: "split",
       applyProps: {
-        variant: "mobile-app-hero",
+        variant: "three-images-hero",
         heading: "Your entire workspace, now in your pocket",
         subheading: "Download the mobile app for iOS and Android to manage live builds, edit content, and track metrics anywhere.",
-        imageUrl: "https://images.unsplash.com/photo-1616469829941-c7200edec809?w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
+        imageUrl2: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+        imageUrl3: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80",
         buttons: [
           { label: "Download for iOS", variant: "solid" },
           { label: "Get Android App", variant: "outline" },

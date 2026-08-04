@@ -360,7 +360,7 @@ export function PropertiesPanel({
               {component.type === "navbar" && (
                 <Field label="Navbar Height">
                   <SelectInput
-                    value={component.style.paddingY || "16px"}
+                    value={component.style.paddingY || "8px"}
                     onChange={(v) => onChangeStyle(component.id, { paddingY: v })}
                     options={[
                       { label: "Compact (8px)", value: "8px" },
