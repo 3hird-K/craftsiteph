@@ -468,7 +468,13 @@ export function Canvas({
                           <LayoutGrid className="h-3 w-3" /> Layouts
                         </button>
                       )}
-                      {(c.type === "hero" || c.props.imageUrl !== undefined) && (
+                      {(c.type === "hero" && (
+                          c.props.variant === "split-showcase-hero" ||
+                          c.props.variant === "bento-grid-hero" ||
+                          c.props.variant === "mobile-app-hero" ||
+                          c.props.variant === "split-image" ||
+                          (c.props.variant === "bento-hero" && c.props.imageLayout !== "background")
+                      )) && (
                         <button
                           type="button"
                           onClick={(e) => {
@@ -481,7 +487,7 @@ export function Canvas({
                           title="Switch / Flip Left & Right Grid Items"
                         >
                           <ArrowLeftRight className="h-3 w-3" />
-                          <span>{c.props.imagePosition === "left" || c.props.reverseLayout ? "Image: Left" : "Flip Sides"}</span>
+                          <span>Flip Sides</span>
                         </button>
                       )}
 

@@ -689,7 +689,7 @@ export function PropertiesPanel({
                     />
                   </Field>
                   {["hero", "image"].includes(component.type) || component.props.imageUrl ? (
-                    <Field label="Image / Grid Side">
+                    <Field label="Side Layout">
                       <SelectInput
                         value={component.props.imagePosition || (component.props.reverseLayout ? "left" : "right")}
                         onChange={(v) =>
@@ -699,8 +699,8 @@ export function PropertiesPanel({
                           })
                         }
                         options={[
-                          { label: "Image Right, Text Left (Default)", value: "right" },
-                          { label: "Image Left, Text Right (Swapped)", value: "left" },
+                          { label: "Right Side First (Default)", value: "right" },
+                          { label: "Left Side First (Flipped)", value: "left" },
                         ]}
                       />
                     </Field>

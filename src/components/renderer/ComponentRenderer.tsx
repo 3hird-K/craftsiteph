@@ -2356,7 +2356,7 @@ export function ComponentRenderer({
         )}
         
         {interactive && isBgLayout && (
-          <div className="absolute top-4 right-4 z-40">
+          <div className="absolute bottom-4 right-4 z-40">
             <button
               type="button"
               onClick={(e) => {
@@ -2369,7 +2369,7 @@ export function ComponentRenderer({
               <ImageIcon className="h-4 w-4" /> Edit Background
             </button>
             {isEditingHeroImage && (
-              <div className="absolute top-12 right-0">
+              <div className="absolute bottom-12 right-0">
                 <ImageEditItem
                   currentUrl={props.imageUrl}
                   currentUrl2={props.imageUrl2}
@@ -2568,7 +2568,7 @@ export function ComponentRenderer({
 
               {variant === "mobile-app-hero" ? (
                 <div
-                  className="relative mx-auto w-[280px] h-[500px] rounded-[44px] bg-slate-900 p-2.5 border-[3px] border-slate-700/80 ring-1 ring-white/10 select-none flex flex-col z-30 transition-all"
+                  className={`relative mx-auto w-[280px] h-[500px] rounded-[44px] bg-slate-900 p-2.5 border-[3px] border-slate-700/80 ring-1 ring-white/10 select-none flex flex-col z-30 transition-all ${isImageLeft ? "md:order-1" : "md:order-2"}`}
                   style={{ boxShadow: shadow !== "none" ? shadow : "none" }}
                 >
                   {/* Physical Side Buttons */}
@@ -2610,7 +2610,7 @@ export function ComponentRenderer({
                   </div>
                 </div>
               ) : variant === "bento-grid-hero" ? (
-                <div className="grid grid-cols-2 gap-5 z-30 w-full h-full my-auto">
+                <div className={`grid grid-cols-2 gap-5 z-30 w-full h-full my-auto ${isImageLeft ? "md:order-1" : "md:order-2"}`}>
                   <div
                     className="col-span-2 p-7 min-h-[140px] bg-card border border-border/80 shadow-2xl flex items-center justify-between transition-all hover:border-primary/40"
                     style={{ borderRadius: btnRadius }}
