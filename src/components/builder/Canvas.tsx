@@ -369,6 +369,10 @@ export function Canvas({
               const baseLabel = PALETTE.find((p) => p.type === c.type)?.label || c.type;
               const label = `${baseLabel} ${typeIndex}`;
               const defaultAnchorId = `${c.type}-${typeIndex}`;
+              const isNavbarOverlay =
+                c.type === "navbar" &&
+                (c.props?.variant === "floating-glass" || (c.props?.scrollBehavior ?? "overlay") === "overlay");
+              const isFloatingNavbar = c.type === "navbar" && c.props?.variant === "floating-glass";
 
               return (
                 <React.Fragment key={c.id}>
@@ -408,7 +412,13 @@ export function Canvas({
                       setCanvasDragIndex(null);
                       setCanvasDragOverIndex(null);
                     }}
-                    className={`${c.type === "navbar" && !editing ? "sticky top-0" : "relative"} ${editing ? "cursor-pointer" : ""} ${
+                    className={`${
+                      isFloatingNavbar
+                        ? "absolute inset-0 pointer-events-none"
+                        : isNavbarOverlay
+                          ? "absolute top-0 left-0 right-0 w-full"
+                          : "relative"
+                    } ${editing ? "cursor-pointer" : ""} ${
                       c.type === "navbar" ? "z-[9999]" : selected ? "z-[500]" : "z-10"
                     } ${
                       isCanvasDragging ? "opacity-25 border-2 border-dashed border-primary scale-[0.99] transition-all" : ""
@@ -424,7 +434,9 @@ export function Canvas({
                     }}
                   >
                     {selected ? (
-                      <div className="absolute left-2 top-2 z-[10000] flex flex-wrap items-center gap-1.5 p-1 bg-background/95 backdrop-blur-md rounded-full border border-border shadow-lg max-w-[calc(100%-16px)]">
+                      <div className={`absolute left-2 z-[10000] pointer-events-auto flex flex-wrap items-center gap-1.5 p-1 bg-background/95 backdrop-blur-md rounded-full border border-border shadow-lg max-w-[calc(100%-16px)] ${
+                        index === 1 && components[0]?.type === "navbar" ? "top-[100px]" : "top-2"
+                      }`}>
                         <div
                           draggable
                           onDragStart={(e) => {

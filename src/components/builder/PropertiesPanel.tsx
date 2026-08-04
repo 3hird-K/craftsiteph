@@ -116,18 +116,23 @@ function SelectInput({
   value,
   onChange,
   options,
+  disabled,
 }: {
   value?: string;
   onChange: (v: string) => void;
   options: { label: string; value: string }[];
+  disabled?: boolean;
 }) {
   const hasMatch = value ? options.some((o) => o.value === value) : true;
   const allOptions = !hasMatch && value ? [{ label: value, value }, ...options] : options;
   const currentOption = allOptions.find((o) => o.value === value);
 
   return (
-    <Select value={value ?? ""} onValueChange={(v) => onChange(v)}>
-      <SelectTrigger className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold text-foreground shadow-xs hover:bg-muted/50 focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+    <Select value={value ?? ""} onValueChange={(v) => onChange(v)} disabled={disabled}>
+      <SelectTrigger
+        disabled={disabled}
+        className={`w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold text-foreground shadow-xs hover:bg-muted/50 focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+      >
         <SelectValue placeholder="Select option...">
           {currentOption ? currentOption.label : value || "Select..."}
         </SelectValue>
@@ -289,6 +294,33 @@ export function PropertiesPanel({
                   placeholder={`e.g. ${defaultAnchorId} or features`}
                 />
               </Field>
+
+              {component.type === "navbar" && (
+                <Field label="Navbar Scroll Behavior">
+                  <SelectInput
+                    value={
+                      component.props.variant === "floating-glass"
+                        ? "overlay"
+                        : (component.props.scrollBehavior || "overlay")
+                    }
+                    onChange={(v) =>
+                      onChangeProps(component.id, { scrollBehavior: v as ComponentProps["scrollBehavior"] })
+                    }
+                    disabled={component.props.variant === "floating-glass"}
+                    options={[
+                      { label: "Overlay — floats over next section", value: "overlay" },
+                      { label: "Sticky — pins to top on scroll", value: "sticky" },
+                      { label: "Sticky + hide on scroll down", value: "sticky-hide" },
+                      { label: "Static — scrolls away normally", value: "static" },
+                    ]}
+                  />
+                  <p className="text-[10px] text-muted-foreground/70 leading-snug">
+                    {component.props.variant === "floating-glass"
+                      ? "Floating Glass always floats over the next section."
+                      : "Overlay adds top clearance to the following section."}
+                  </p>
+                </Field>
+              )}
 
               {component.type === "navbar" && (
                 <Field label="Navbar Shadow">

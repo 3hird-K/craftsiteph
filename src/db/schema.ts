@@ -37,6 +37,7 @@ export type ComponentProps = {
   subheading?: string;
   buttonText?: string;
   buttonHref?: string;
+  scrollBehavior?: "overlay" | "sticky" | "sticky-hide" | "static";
   imageUrl?: string;
   imageAlt?: string;
   imageBorderRadius?: string;

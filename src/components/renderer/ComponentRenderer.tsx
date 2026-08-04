@@ -1601,6 +1601,7 @@ export function ComponentRenderer({
 
   if (type === "navbar") {
     const variant = props.variant || "classic-split";
+    const scrollBehavior = props.scrollBehavior || "overlay";
     const isFloating = variant === "floating-glass" || Boolean(style.maxWidth && style.maxWidth !== "100%" && style.maxWidth !== "auto");
     const headerRadius = style.borderRadius || (variant === "floating-glass" ? (theme.borderRadius || "12px") : "0px");
 
@@ -1627,6 +1628,7 @@ export function ComponentRenderer({
 
     const headerTextColor = isDarkNav ? "#f8fafc" : "#0f172a";
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isNavHidden, setIsNavHidden] = useState(false);
 
     if (variant === "floating-glass") {
       css.position = "sticky";
@@ -1638,6 +1640,7 @@ export function ComponentRenderer({
       css.maxWidth = effectiveMaxWidth;
       css.marginLeft = "auto";
       css.marginRight = "auto";
+      css.pointerEvents = "auto";
     } else {
       css.width = "100%";
       css.maxWidth = "100%";
@@ -1645,6 +1648,45 @@ export function ComponentRenderer({
         css.marginBottom = "16px";
       }
     }
+
+    // Apply the user-selected scroll behavior to non-floating variants.
+    // "overlay" (default) is positioned absolutely by the wrapper in Canvas/PageRenderer.
+    // "static" keeps the default relative in-flow layout.
+    if (variant !== "floating-glass") {
+      if (scrollBehavior === "sticky" || scrollBehavior === "sticky-hide") {
+        css.position = "sticky";
+        css.top = "0";
+        css.zIndex = 50;
+      }
+    }
+
+    // Hide on scroll down / reveal on scroll up for the sticky-hide behavior.
+    useEffect(() => {
+      if (scrollBehavior !== "sticky-hide" || interactive || variant === "floating-glass") return;
+      const container = document.getElementById("canvas-scroll-viewport");
+      const target: Window | HTMLElement = container || window;
+      let lastY = container ? container.scrollTop : (window.scrollY || 0);
+      let raf = 0;
+      const onScroll = () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const y = container ? container.scrollTop : (window.scrollY || 0);
+          if (y < 80) {
+            setIsNavHidden(false);
+          } else if (y > lastY + 4) {
+            setIsNavHidden(true);
+          } else if (y < lastY - 4) {
+            setIsNavHidden(false);
+          }
+          lastY = y;
+        });
+      };
+      target.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        cancelAnimationFrame(raf);
+        target.removeEventListener("scroll", onScroll);
+      };
+    }, [scrollBehavior, interactive]);
 
     const [activeEditPopover, setActiveEditPopover] = useState<string | null>(null);
 
@@ -2028,6 +2070,7 @@ export function ComponentRenderer({
           backgroundColor: headerBg,
           color: headerTextColor,
           boxShadow: shadow !== "none" ? shadow : undefined,
+          transform: isNavHidden ? "translateY(-100%)" : "translateY(0)",
         }}
         className={`relative z-30 transition-all duration-300 ${isMobileMenuOpen ? "overflow-hidden" : ""} ${
           variant === "floating-glass"
@@ -2136,11 +2179,17 @@ export function ComponentRenderer({
       }
       return (
         <div className={`pt-2 flex flex-wrap items-center ${(!isSplit || isMobileOrTablet) ? "justify-center" : "justify-start"}`} style={{ gap: style.gap || "1rem" }}>
+          <style>{`
+            .btn-variant-outline:hover {
+              background-color: ${primary} !important;
+              color: #ffffff !important;
+            }
+          `}</style>
           {buttonsList.map((btn, i) => {
             const href = btn.href || "#";
             const isEditingThis = interactive && activeHeroPopover === `button-${i}`;
-            const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold border-2 shadow-lg transition-all cursor-pointer select-none ${
-              btn.variant === "outline" ? "bg-transparent hover:bg-foreground/5" :
+            const btnClass = `inline-flex items-center gap-2 px-6 py-3 text-base font-semibold border-2 shadow-lg transition-all cursor-pointer select-none btn-variant-${btn.variant} ${
+              btn.variant === "outline" ? "bg-transparent" :
               btn.variant === "ghost" ? "bg-transparent shadow-none hover:bg-foreground/5" :
               "text-white hover:brightness-110 active:scale-95"
             }`;
@@ -2259,6 +2308,16 @@ export function ComponentRenderer({
     const setIsEditingHeroImage = (val: boolean) => setActiveHeroPopover(val ? "image" : null);
     const isImageLeft = props.imagePosition === "left" || props.reverseLayout;
 
+    const isFollowingNavbar = React.useMemo(() => {
+      if (!allComponents || allComponents.length < 2) return false;
+      const idx = allComponents.findIndex((c) => c.id === component.id);
+      const navOverlay =
+        allComponents[0].props?.variant === "floating-glass"
+          ? "overlay"
+          : (allComponents[0].props?.scrollBehavior ?? "overlay");
+      return idx === 1 && allComponents[0].type === "navbar" && navOverlay === "overlay";
+    }, [allComponents, component.id]);
+
     return (
       <section
         id={currentSectionId}
@@ -2270,7 +2329,15 @@ export function ComponentRenderer({
           backgroundPosition: "center",
           ...css
         }}
-        className={`relative py-16 md:py-24 transition-all ${isBgLayout ? "text-white flex flex-col justify-center min-h-[60vh] lg:min-h-[75vh]" : ""}`}
+        className={`relative py-16 md:py-24 transition-all ${
+          isBgLayout ? "text-white flex flex-col justify-center" : ""
+        } ${
+          isFollowingNavbar
+            ? "min-h-[80vh] lg:min-h-[92vh] !pt-[130px] md:!pt-[170px]"
+            : isBgLayout
+              ? "min-h-[60vh] lg:min-h-[75vh]"
+              : ""
+        }`}
       >
         {isBgLayout && (
           <div className="absolute inset-0 bg-black/60 z-0" style={{ borderRadius: heroSectionRadius }} />
@@ -2382,6 +2449,11 @@ export function ComponentRenderer({
 
               {/* Popular Tags Pills */}
               <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs">
+                <style>{`
+                  .hero-tag-pill:hover {
+                    border-color: ${primary} !important;
+                  }
+                `}</style>
                 <span className="font-bold opacity-75 mr-1" style={{ color: heroSubtextColor }}>Popular Searches:</span>
                 {(props.tags || ["Landing Pages", "E-commerce", "SaaS Dashboard", "Portfolio", "AI Apps"]).map((tag: string, idx: number) => (
                   <span
@@ -2396,7 +2468,7 @@ export function ComponentRenderer({
                         onUpdateProps?.({ tags: currentTags });
                       }
                     }}
-                    className="px-3.5 py-1.5 bg-muted/60 border border-border/60 font-semibold hover:border-primary/40 transition-all cursor-pointer select-none"
+                    className="hero-tag-pill px-3.5 py-1.5 bg-muted/60 border border-border/60 font-semibold transition-all cursor-pointer select-none"
                     style={{ color: heroTextColor, borderRadius: btnRadius }}
                   >
                     #{tag}
@@ -2447,13 +2519,13 @@ export function ComponentRenderer({
                 )}
 
                 {variant === "split-showcase-hero" && (
-                  <div className="space-y-2.5 pt-1 text-sm font-semibold" style={{ color: heroTextColor }}>
+                  <div className={`space-y-2.5 pt-1 text-sm font-semibold flex flex-col ${isMobileOrTablet ? "items-center text-center" : "items-start text-left"}`} style={{ color: heroTextColor }}>
                     {(props.benefits || [
                       "Drag & drop visual page builder with live preview",
                       "Clean, production-ready React & Tailwind export",
                       "Instant one-click cloud hosting & publishing"
                     ]).map((benefit: string, idx: number) => (
-                      <div key={idx} className="flex items-center gap-2.5">
+                      <div key={idx} className={`flex items-center gap-2.5 ${isMobileOrTablet ? "justify-center text-center" : "justify-start text-left"}`}>
                         <span className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-black shrink-0">✓</span>
                         <span
                           contentEditable={interactive}
@@ -2483,7 +2555,10 @@ export function ComponentRenderer({
               </div>
 
               {variant === "mobile-app-hero" ? (
-                <div className="relative mx-auto w-[280px] h-[500px] rounded-[44px] bg-slate-900 p-2.5 border-[3px] border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] ring-1 ring-white/10 select-none flex flex-col z-30">
+                <div
+                  className="relative mx-auto w-[280px] h-[500px] rounded-[44px] bg-slate-900 p-2.5 border-[3px] border-slate-700/80 ring-1 ring-white/10 select-none flex flex-col z-30 transition-all"
+                  style={{ boxShadow: shadow !== "none" ? shadow : "none" }}
+                >
                   {/* Physical Side Buttons */}
                   <div className="absolute -left-[5px] top-24 w-[4px] h-6 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
                   <div className="absolute -left-[5px] top-36 w-[4px] h-11 bg-slate-700 rounded-l-md border-l border-slate-500/80 shadow-md" />
@@ -4367,8 +4442,18 @@ export function ComponentRenderer({
   }
 
   // Fallback for default section types
+  const isFollowingNavbar = React.useMemo(() => {
+    if (!allComponents || allComponents.length < 2) return false;
+    const idx = allComponents.findIndex((c) => c.id === component.id);
+    const navOverlay =
+      allComponents[0].props?.variant === "floating-glass"
+        ? "overlay"
+        : (allComponents[0].props?.scrollBehavior ?? "overlay");
+    return idx === 1 && allComponents[0].type === "navbar" && navOverlay === "overlay";
+  }, [allComponents, component.id]);
+
   return (
-    <section id={currentSectionId} style={css} className="py-12">
+    <section id={currentSectionId} style={css} className={`py-12 ${isFollowingNavbar ? "!pt-[120px] md:!pt-[160px]" : ""}`}>
       <Center maxWidth={effectiveMaxWidth}>
         {props.heading && (
           <h2
@@ -4446,15 +4531,34 @@ export function PageRenderer({
     >
 
 
-      {components.map((component) => (
-        <ComponentRenderer
-          key={component.id}
-          component={component}
-          allComponents={components}
-          theme={effectiveTheme}
-          interactive={false}
-        />
-      ))}
+      {components.map((component) =>
+        component.type === "navbar" &&
+        (component.props?.variant === "floating-glass" || (component.props?.scrollBehavior ?? "overlay") === "overlay") ? (
+          <div
+            key={component.id}
+            className={`${
+              component.props?.variant === "floating-glass"
+                ? "absolute inset-0 pointer-events-none"
+                : "absolute top-0 left-0 right-0 w-full"
+            } z-[9999]`}
+          >
+            <ComponentRenderer
+              component={component}
+              allComponents={components}
+              theme={effectiveTheme}
+              interactive={false}
+            />
+          </div>
+        ) : (
+          <ComponentRenderer
+            key={component.id}
+            component={component}
+            allComponents={components}
+            theme={effectiveTheme}
+            interactive={false}
+          />
+        )
+      )}
     </main>
   );
 }
