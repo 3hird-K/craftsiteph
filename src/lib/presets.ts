@@ -456,7 +456,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       applyProps: {
         variant: "dark-tech-dock",
         logoText: "CraftSite Dev",
-        tagline: "🟢 All Systems Operational — Cloud Publishing Engine",
+        tagline: " All Systems Operational — Cloud Publishing Engine",
         copyright: "© 2026 CraftSite Infrastructure. Powered by DeepMind.",
         links: [
           { label: "System Status", href: "#" },
@@ -519,6 +519,117 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
         borderRadius: "0px",
       },
     },
+    {
+      id: "footer-graphy",
+      name: "Graphy Split Footer",
+      description: "Clean split footer with 3 columns of links on the right, and social icons under the tagline on the left.",
+      badge: "Clean",
+      previewType: "grid",
+      applyProps: {
+        variant: "footer-graphy",
+        logoText: "Graphy",
+        tagline: "Graphy empowers teams to transform raw data into clear, compelling visuals — making insights easier to share, understand, and act on.",
+        copyright: "© 2026 Graphy. All rights reserved.",
+        columns: [
+          { title: "Product", links: ["Features", "Pricing", "Integrations", "Changelog"] },
+          { title: "Resources", links: ["Documentation", "Tutorials", "Blog", "Support"] },
+          { title: "Company", links: ["About", "Careers", "Contact", "Partners"] },
+        ],
+        links: [
+          { label: "Privacy Policy", href: "#" },
+          { label: "Terms of Service", href: "#" },
+          { label: "Cookies Settings", href: "#" },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "64px",
+        paddingX: "32px",
+        borderRadius: "0px",
+      },
+    },
+    {
+      id: "footer-square-ui",
+      name: "SquareUi Newsletter Footer",
+      description: "Figma-style footer with 2 columns of links with arrows, and a newsletter signup form.",
+      badge: "Modern",
+      previewType: "split",
+      applyProps: {
+        variant: "footer-square-ui",
+        logoText: "SquareUi",
+        tagline: "The most Powerful Figma Ui Kit & Design System for designers.",
+        copyright: "© 2026 SquareUi · All rights reserved",
+        columns: [
+          { title: "Company", links: ["Pricing", "Contact Us", "Become an Affiliate", "Projects"] },
+          { title: "Socials", links: ["Behance", "Dribbble", "Twitter/X"] },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "72px",
+        paddingX: "32px",
+        borderRadius: "0px",
+      },
+    },
+    {
+      id: "footer-azimute",
+      name: "Azimute Contact Footer",
+      description: "Corporate footer with detailed contact information column featuring icons, and a language selector.",
+      badge: "Corporate",
+      previewType: "grid",
+      applyProps: {
+        variant: "footer-azimute",
+        logoText: "azimute",
+        tagline: "Transformação digital que realmente funciona.",
+        copyright: "© 2026 Azimute. Todos os direitos reservados.",
+        columns: [
+          { title: "Empresa", links: ["Sobre Nós", "Serviços", "Testemunhos", "Contacto"] },
+          { title: "Navegação", links: ["Benefícios principais", "Os nossos serviços", "Porquê salesforce", "Testemunhos"] },
+        ],
+        links: [
+          { label: "Termos e Condições", href: "#" },
+          { label: "Política de Privacidade", href: "#" },
+          { label: "Cookies", href: "#" },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "64px",
+        paddingX: "32px",
+        borderRadius: "0px",
+      },
+    },
+    {
+      id: "footer-blue-office",
+      name: "The Blue Office Wide Footer",
+      description: "Wide 4-tier layout with business location info, 4 link columns, language dropdown, and centered social icons.",
+      badge: "Business",
+      previewType: "grid",
+      applyProps: {
+        variant: "footer-blue-office",
+        logoText: "The Blue Office",
+        tagline: "Built for innovation and success",
+        copyright: "© 2026 - The Blue Office",
+        columns: [
+          { title: "Solutions", links: ["Virtual Office", "Flex Office", "Fixed Office"] },
+          { title: "Locations", links: ["Aarhus", "Copenhagen", "Odense", "All Locations"] },
+          { title: "Partnerships", links: ["Franchise", "Investor", "Affiliate"] },
+          { title: "About", links: ["Contact", "Careers", "Our People", "Press"] },
+        ],
+        links: [
+          { label: "Terms", href: "#" },
+          { label: "Privacy", href: "#" },
+          { label: "Cookies", href: "#" },
+          { label: "Sitemap", href: "#" },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "64px",
+        paddingX: "32px",
+        borderRadius: "0px",
+      },
+    }
   ],
   "card-grid": [
     {
