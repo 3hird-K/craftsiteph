@@ -45,6 +45,8 @@ import {
   Moon,
   ArrowRight,
   ArrowUpRight,
+  Share2,
+  Trash2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -137,45 +139,262 @@ export function RenderSocialIcon({ platform, className = "h-4 w-4 shrink-0" }: {
   return <Globe className={className} />;
 }
 
+function SocialEditItem({
+  social,
+  onSave,
+  onRemove,
+  onClose,
+}: {
+  social: { platform: string; url?: string; href?: string };
+  onSave: (platform: string, url: string) => void;
+  onRemove: () => void;
+  onClose: () => void;
+}) {
+  const [draftPlatform, setDraftPlatform] = useState(social.platform || "twitter");
+  const [draftUrl, setDraftUrl] = useState(social.url || social.href || "#");
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (popoverRef.current?.contains(target)) return;
+      onClose();
+    };
+
+    const timer = setTimeout(() => {
+      window.addEventListener("click", handleOutsideClick);
+    }, 10);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleOutsideClick);
+    };
+  }, [onClose]);
+
+  const PLATFORMS = [
+    { id: "facebook", label: "Facebook" },
+    { id: "twitter", label: "Twitter / X" },
+    { id: "github", label: "GitHub" },
+    { id: "instagram", label: "Instagram" },
+    { id: "linkedin", label: "LinkedIn" },
+    { id: "youtube", label: "YouTube" },
+    { id: "discord", label: "Discord" },
+    { id: "tiktok", label: "TikTok" },
+  ];
+
+  return (
+    <EditModalPortal onClose={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md my-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-4 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
+        <div className="flex items-center justify-between pb-3 border-b border-border">
+          <div className="flex items-center gap-2">
+            <Share2 className="h-4 w-4 text-primary" />
+            <span className="font-extrabold text-sm text-foreground">Edit Social Link</span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all cursor-pointer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+              Social Platform Icon
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {PLATFORMS.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setDraftPlatform(p.id)}
+                  className={`flex flex-col items-center justify-center p-2 rounded-xl border text-[10px] font-bold transition-all cursor-pointer ${
+                    draftPlatform === p.id
+                      ? "border-primary bg-primary/10 text-primary shadow-xs"
+                      : "border-border/60 hover:bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <RenderSocialIcon platform={p.id} className="h-4 w-4 mb-1 shrink-0" />
+                  <span className="truncate w-full text-center">{p.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+              Destination URL
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={draftUrl}
+                onChange={(e) => setDraftUrl(e.target.value)}
+                placeholder="https://twitter.com/yourhandle"
+                className="w-full px-3 py-2 pl-8 border border-border rounded-xl bg-muted/20 text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs font-mono"
+              />
+              <Link2 className="h-3.5 w-3.5 text-muted-foreground absolute left-2.5 top-2.5 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-3 border-t border-border">
+          <button
+            type="button"
+            onClick={onRemove}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-destructive hover:bg-destructive/10 rounded-xl transition-all cursor-pointer"
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Remove
+          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onSave(draftPlatform, draftUrl);
+                onClose();
+              }}
+              className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-white bg-primary rounded-xl shadow-md hover:brightness-110 transition-all cursor-pointer"
+            >
+              <Check className="h-3.5 w-3.5" /> Apply
+            </button>
+          </div>
+        </div>
+      </div>
+    </EditModalPortal>
+  );
+}
+
 export function RenderFooterSocialIcons({
   socials,
   textColor,
   borderColor,
   interactive,
   justify = "start",
+  onUpdateSocials,
 }: {
   socials?: { platform: string; url?: string; href?: string }[];
   textColor?: string;
   borderColor?: string;
   interactive?: boolean;
   justify?: "start" | "center" | "end";
+  onUpdateSocials?: (updated: { platform: string; url?: string; href?: string }[]) => void;
 }) {
-  if (!socials || socials.length === 0) return null;
+  const [activeEditIndex, setActiveEditIndex] = useState<number | null>(null);
+
+  const currentSocials = socials !== undefined ? socials : [
+    { platform: "facebook", url: "https://facebook.com" },
+    { platform: "github", url: "https://github.com" },
+    { platform: "twitter", url: "https://twitter.com" },
+    { platform: "instagram", url: "https://instagram.com" },
+    { platform: "linkedin", url: "https://linkedin.com" },
+  ];
+
+  if (!currentSocials) return null;
 
   const justifyClass =
     justify === "center" ? "justify-center" : justify === "end" ? "justify-end" : "justify-start";
 
   return (
     <div className={`flex items-center gap-2 flex-wrap ${justifyClass}`}>
-      {socials.map((soc, idx) => {
+      {currentSocials.map((soc, idx) => {
         const href = soc.url || soc.href || "#";
+        const isEditingThis = interactive && activeEditIndex === idx;
+
         return (
-          <a
-            key={idx}
-            href={href}
-            target={interactive ? undefined : "_blank"}
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              if (interactive) e.preventDefault();
-            }}
-            className="p-2 border rounded-full hover:bg-foreground/10 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs flex items-center justify-center"
-            style={{ color: textColor, borderColor: borderColor || "currentColor" }}
-            title={soc.platform ? soc.platform.toUpperCase() : "Social link"}
-          >
-            <RenderSocialIcon platform={soc.platform} className="h-4 w-4" />
-          </a>
+          <div key={idx} className="group/soc relative inline-flex items-center">
+            {!interactive ? (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 border rounded-full hover:bg-foreground/10 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs flex items-center justify-center"
+                style={{ color: textColor, borderColor: borderColor || "currentColor" }}
+                title={soc.platform ? soc.platform.toUpperCase() : "Social link"}
+              >
+                <RenderSocialIcon platform={soc.platform} className="h-4 w-4" />
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveEditIndex(isEditingThis ? null : idx);
+                }}
+                className="p-2 border rounded-full hover:bg-foreground/10 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs flex items-center justify-center relative"
+                style={{ color: textColor, borderColor: borderColor || "currentColor" }}
+                title={`Click to Edit ${soc.platform || "Social"} Link`}
+              >
+                <RenderSocialIcon platform={soc.platform} className="h-4 w-4" />
+              </button>
+            )}
+
+            {interactive && !isEditingThis && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveEditIndex(idx);
+                }}
+                className="absolute -top-2 -right-2 hidden group-hover/soc:flex h-4 w-4 items-center justify-center rounded-full bg-background border border-border shadow-md text-primary text-[9px] z-20 cursor-pointer"
+                title="Edit Social URL"
+              >
+                <Link2 className="h-2.5 w-2.5" />
+              </button>
+            )}
+
+            {isEditingThis && (
+              <SocialEditItem
+                social={soc}
+                onSave={(platform, newUrl) => {
+                  const next = [...currentSocials];
+                  next[idx] = { platform, url: newUrl };
+                  onUpdateSocials?.(next);
+                  setActiveEditIndex(null);
+                }}
+                onRemove={() => {
+                  const next = [...currentSocials];
+                  next.splice(idx, 1);
+                  onUpdateSocials?.(next);
+                  setActiveEditIndex(null);
+                }}
+                onClose={() => setActiveEditIndex(null)}
+              />
+            )}
+          </div>
         );
       })}
+
+      {interactive && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            const next = [...currentSocials, { platform: "twitter", url: "https://twitter.com" }];
+            onUpdateSocials?.(next);
+            setActiveEditIndex(next.length - 1);
+          }}
+          className="flex h-7 w-7 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-muted/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all cursor-pointer ml-1"
+          title="Add Social Link"
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -4054,7 +4273,7 @@ export function ComponentRenderer({
                 ))}
               </div>
               <div className="pt-6 border-t flex flex-col items-center gap-4" style={{ borderColor }}>
-                <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} justify="center" />
+                <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} justify="center" />
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
@@ -4225,7 +4444,8 @@ export function ComponentRenderer({
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text transition-all" : ""}
                  dangerouslySetInnerHTML={{ __html: copyright }} />
-                <div className="flex gap-4" style={{ color: subtextColor }}>
+                <div className="flex flex-wrap items-center justify-center gap-6" style={{ color: subtextColor }}>
+                  <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} />
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
                       <a
@@ -4298,7 +4518,8 @@ export function ComponentRenderer({
                   </div>
                 </div>
                 
-                <div className={`flex flex-wrap items-center gap-3 ${isMobileOrTablet ? "justify-center" : ""}`}>
+                <div className={`flex flex-wrap items-center gap-4 ${isMobileOrTablet ? "justify-center" : ""}`}>
+                  <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} />
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
                       <a
@@ -4413,6 +4634,7 @@ export function ComponentRenderer({
                   className={interactive ? "cursor-text transition-all" : ""}
                  dangerouslySetInnerHTML={{ __html: copyright }} />
                 <div className="flex flex-wrap justify-center items-center gap-6" style={{ color: subtextColor }}>
+                  <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} justify="center" />
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
                       <a
@@ -4460,6 +4682,7 @@ export function ComponentRenderer({
                 className={`text-xs opacity-75 ${interactive ? "cursor-text" : ""}`}
                dangerouslySetInnerHTML={{ __html: copyright }} />
               <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold" style={{ color: subtextColor }}>
+                <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} />
                 {navLinks.map((l: any, idx: number) => (
                   <div key={idx} className="group/link relative inline-flex items-center">
                     <a
@@ -4513,7 +4736,7 @@ export function ComponentRenderer({
                     className={`text-sm leading-relaxed max-w-sm ${interactive ? "cursor-text" : ""}`}
                    dangerouslySetInnerHTML={{ __html: tagline }} />
                   <div className="pt-2">
-                    <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} />
+                    <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} />
                   </div>
                 </div>
                 <div className={`grid gap-8 ${isMobile ? "grid-cols-2" : isMobileOrTablet ? "grid-cols-3" : "lg:col-span-7 grid-cols-2 md:grid-cols-3"}`}>
@@ -4571,6 +4794,7 @@ export function ComponentRenderer({
                   className={interactive ? "cursor-text" : ""}
                  dangerouslySetInnerHTML={{ __html: copyright }} />
                 <div className="flex flex-wrap items-center justify-center gap-6" style={{ color: subtextColor }}>
+                  <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} onUpdateSocials={(updated) => onUpdateProps?.({ socialLinks: updated })} />
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
                       <a
