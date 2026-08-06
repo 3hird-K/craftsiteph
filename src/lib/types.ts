@@ -49,7 +49,7 @@ export type ComponentProps = {
   imageLayout?: "single" | "split" | "bento" | "background";
   imagePosition?: "left" | "right";
   reverseLayout?: boolean;
-  items?: { title: string; description: string; icon?: string; imageUrl?: string }[];
+  items?: { title: string; description: string; icon?: string; imageUrl?: string; badgeText?: string }[];
   links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string; icon?: string }[];
   columns?: number | { title: string; links: string[] }[];
   tagline?: string;

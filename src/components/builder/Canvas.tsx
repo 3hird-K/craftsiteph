@@ -38,8 +38,8 @@ function DeviceFrame({ device, showDeviceFrame = true, canvasBg, children }: { d
         id="canvas-host"
         className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col relative z-10"
         style={{
-          width: device === "mobile" ? "440px" : device === "tablet" ? "768px" : "100%",
-          height: device === "mobile" ? "860px" : device === "tablet" ? "960px" : "100%",
+          width: device === "mobile" ? "390px" : device === "tablet" ? "768px" : "100%",
+          height: device === "mobile" ? "844px" : device === "tablet" ? "960px" : "100%",
           backgroundColor: canvasBg,
         }}
       >
@@ -53,7 +53,7 @@ function DeviceFrame({ device, showDeviceFrame = true, canvasBg, children }: { d
     return (
       <div
         className="relative mx-auto my-6 flex-shrink-0 transition-all duration-300 flex flex-col rounded-[52px] bg-slate-900 p-3.5 border-[3px] border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] ring-1 ring-white/10 select-none"
-        style={{ width: "420px", height: "860px" }}
+        style={{ width: "390px", height: "844px" }}
       >
         {/* Physical Side Buttons */}
         {/* Action Button */}
@@ -219,8 +219,8 @@ export function Canvas({
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
       
-      const frameWidth = device === "desktop" ? 1200 : device === "tablet" ? 768 : 440;
-      const frameHeight = device === "desktop" ? 720 : device === "tablet" ? 960 : 860;
+      const frameWidth = device === "desktop" ? 1200 : device === "tablet" ? 768 : 390;
+      const frameHeight = device === "desktop" ? 720 : device === "tablet" ? 960 : 844;
       
       const paddingX = 80;
       const paddingY = 80;

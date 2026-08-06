@@ -565,16 +565,20 @@ function Center({
   children,
   maxWidth,
   className = "",
-  style,
+  style = {},
+  isMobile = false,
 }: {
   children: React.ReactNode;
   maxWidth?: string;
   className?: string;
   style?: React.CSSProperties;
+  isMobile?: boolean;
 }) {
   return (
     <div
-      className={`mx-auto w-full px-4 sm:px-6 md:px-8 ${className}`}
+      className={`mx-auto w-full ${
+        isMobile ? "px-3.5 max-w-[95%]" : "px-3.5 sm:px-6 md:px-8"
+      } ${className}`}
       style={{ maxWidth: maxWidth || "1120px", ...style }}
     >
       {children}
@@ -1808,14 +1812,17 @@ export function ComponentRenderer({
 }) {
   const { type, props, style } = component;
   const css = styleToCss(style);
+  delete css.paddingLeft;
+  delete css.paddingRight;
+  const isMobile = device === "mobile";
+  const isTablet = device === "tablet";
+  const isMobileOrTablet = isMobile || isTablet;
+
   const radius = style.borderRadius || theme.borderRadius || "12px";
   const btnRadius = theme.borderRadius || "12px";
   const shadow = style.boxShadow || theme.boxShadow || "none";
   const effectiveMaxWidth = theme.containerWidth || style.maxWidth || "1120px";
   const primary = theme.primaryColor;
-  const isMobile = device === "mobile";
-  const isTablet = device === "tablet";
-  const isMobileOrTablet = isMobile || isTablet;
 
   const aosAttrs = !interactive && props.scrollAnimation
     ?     ({
@@ -1980,8 +1987,8 @@ export function ComponentRenderer({
 
     const defaultBg =
       variant === "floating-glass"
-        ? (!pageBgDark ? "rgba(255, 255, 255, 0.9)" : "rgba(15, 23, 42, 0.85)")
-        : (!pageBgDark ? "#ffffff" : "#0f172a");
+        ? (!pageBgDark ? "rgba(255, 255, 255, 0.9)" : (theme.backgroundColor ? `${theme.backgroundColor}d9` : "rgba(9, 9, 11, 0.85)"))
+        : (!pageBgDark ? "#ffffff" : (theme.backgroundColor || "#09090b"));
 
     const headerBg = isDefaultPresetBg ? defaultBg : style.backgroundColor;
 
@@ -2593,7 +2600,7 @@ export function ComponentRenderer({
             : ""
         }`}
       >
-        <Center maxWidth={effectiveMaxWidth}>
+        <Center maxWidth={effectiveMaxWidth} isMobile={isMobile}>
           <div className="flex items-center justify-between w-full gap-2 py-2.5">
             <LogoElement />
 
@@ -2910,7 +2917,7 @@ export function ComponentRenderer({
           </div>
         )}
 
-        <Center maxWidth={effectiveMaxWidth} className="relative z-10">
+        <Center maxWidth={effectiveMaxWidth} isMobile={isMobile} className="relative z-10">
           {variant === "interactive-search-hero" ? (
             <div className="max-w-3xl mx-auto text-center space-y-6">
               {props.heading && (
@@ -2924,9 +2931,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: style.textColor || heroTextColor }}
-                  className={`${
-                    isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
-                  } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
+                  className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight"
                  dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
@@ -2940,7 +2945,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: heroSubtextColor }}
-                  className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
+                  className={`text-sm sm:text-base md:text-lg ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                  dangerouslySetInnerHTML={{ __html: props.subheading }} />
@@ -3011,9 +3016,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none", color: style.textColor || heroTextColor }}
-                    className={`${
-                      isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
-                    } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
+                    className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight"
                    dangerouslySetInnerHTML={{ __html: props.heading }} />
                 )}
                 {props.subheading && (
@@ -3027,7 +3030,7 @@ export function ComponentRenderer({
                       }
                     }}
                     style={{ outline: "none", color: heroSubtextColor }}
-                    className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
+                    className={`text-sm sm:text-base md:text-lg ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
                    dangerouslySetInnerHTML={{ __html: props.subheading }} />
@@ -3413,9 +3416,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: style.textColor || heroTextColor }}
-                  className={`${
-                    isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
-                  } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
+                  className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight"
                  dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
@@ -3429,7 +3430,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: heroSubtextColor }}
-                  className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
+                  className={`text-sm sm:text-base md:text-lg ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                  dangerouslySetInnerHTML={{ __html: props.subheading }} />
@@ -3513,14 +3514,26 @@ export function ComponentRenderer({
     );
   }
 
-  if (type === "features") {
-    const variant = props.variant || "bento-grid";
+  if (type === "features" || type === "card-grid") {
+    const variant = props.variant || (type === "card-grid" ? "bento-card-stack" : "bento-grid-features");
+    const [editingItemImageIdx, setEditingItemImageIdx] = useState<number | null>(null);
+    const [isEditingShowcaseImage, setIsEditingShowcaseImage] = useState(false);
     const items = props.items || [
-      { title: "Digital Banking", description: "Experience seamless financial operations anywhere.", icon: "briefcase", imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80&w=1200" },
-      { title: "AI-Assistant", description: "Smart automation for your daily tasks.", icon: "zap" },
-      { title: "Ethereum", description: "Track your crypto portfolio in real-time.", icon: "shield" },
+      {
+        title: "Visual Drag & Drop Engine",
+        description: "Build pixel-perfect responsive layouts with real-time DOM updates, interactive component state management, and custom CSS design tokens.",
+        icon: "sparkles",
+        badgeText: "✦ SPOTLIGHT FEATURE",
+        imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80",
+      },
+      {
+        title: "AI Component Generator",
+        description: "Generate production-ready React components and responsive section layouts from natural language text prompts instantly.",
+        icon: "zap",
+        badgeText: "REAL-TIME AI",
+      },
     ];
-    
+
     return (
       <section
         {...aosAttrs}
@@ -3529,80 +3542,367 @@ export function ComponentRenderer({
           ...css,
           backgroundColor: style.backgroundColor || "transparent",
         }}
-        className={`w-full py-16 sm:py-24 transition-all ${style.padding || "px-4 md:px-8"} ${
-          isFollowingNavbar
-            ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
-            : isDirectlyBelowNavbar
-              ? "min-h-[85vh] lg:min-h-[calc(100vh-80px)] flex flex-col justify-center"
-              : ""
-        }`}
+        className="w-full py-10 sm:py-24 transition-all"
       >
-        <Center maxWidth={style.maxWidth}>
+        <Center maxWidth={effectiveMaxWidth} isMobile={isMobile}>
           {(props.heading || props.subheading) && (
-            <div className="text-center mb-16 space-y-4">
+            <div className="text-center mb-14 space-y-3.5 max-w-3xl mx-auto">
               {props.heading && (
-                <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
-                  {props.heading}
-                </h2>
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.heading) onUpdateProps?.({ heading: next });
+                  }}
+                  style={{ outline: "none", color: headingTextColor }}
+                  className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: props.heading }}
+                />
               )}
               {props.subheading && (
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  {props.subheading}
-                </p>
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.subheading) onUpdateProps?.({ subheading: next });
+                  }}
+                  style={{ outline: "none", color: bodyTextColor }}
+                  className={`text-base md:text-lg leading-relaxed ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: props.subheading }}
+                />
               )}
             </div>
           )}
-          
-          {variant === "bento-grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {items.map((item, i) => {
-                const isFeatured = i === 0 && items.length >= 3;
-                const hasBgImage = !!item.imageUrl;
+
+          {variant === "bento-grid-features" || variant === "bento-card-stack" || variant === "bento-grid" ? (
+            <div className={`grid gap-3.5 sm:gap-4 ${
+              isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => {
+                const isSpotlight = i === 0;
+                const colSpanClass = (isMobile || isTablet)
+                  ? "col-span-1"
+                  : isSpotlight
+                  ? "lg:col-span-2 col-span-1"
+                  : "col-span-1";
+
                 return (
-                  <div 
-                    key={i} 
-                    className={`relative overflow-hidden rounded-3xl border border-border/50 flex flex-col justify-end ${
-                      isFeatured ? "md:col-span-2 min-h-[400px] md:min-h-[500px]" : "min-h-[300px] md:min-h-[400px]"
-                    } ${!hasBgImage ? "bg-muted/20 p-8 hover:bg-muted/40 transition-colors" : "p-8"}`}
+                  <div
+                    key={i}
+                    className={`group relative overflow-hidden rounded-3xl border transition-all duration-300 hover:shadow-xl flex flex-col justify-between p-4 sm:p-6 md:p-7 ${colSpanClass} ${
+                      isSpotlight ? "min-h-0 sm:min-h-[300px]" : "min-h-0 sm:min-h-[260px]"
+                    } ${
+                      isDarkSection ? "border-border/80 bg-card/95 backdrop-blur-md shadow-xl" : "border-border/70 bg-card/80 backdrop-blur-md shadow-xs"
+                    }`}
+                    style={{
+                      borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px"),
+                    }}
                   >
-                    {hasBgImage && (
-                      <div className="absolute inset-0 z-0">
-                        <img 
-                          src={item.imageUrl} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover"
+                    <div
+                      className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"
+                      style={{
+                        background: `linear-gradient(135deg, ${primary}18 0%, ${primary}05 50%, transparent 100%)`,
+                      }}
+                    />
+
+                    <div className="relative z-10 space-y-2.5 sm:space-y-4">
+                      {item.badgeText && (
+                        <div className="flex items-center justify-start">
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], badgeText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: isDarkSection ? `${primary}25` : `${primary}12`,
+                              color: isDarkSection ? "#ffffff" : primary,
+                              borderColor: isDarkSection ? `${primary}45` : `${primary}25`,
+                            }}
+                            className={`px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full border shadow-2xs ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-1 sm:space-y-2">
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: headingTextColor }}
+                          className={`text-base sm:text-xl md:text-2xl font-bold tracking-tight ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: bodyTextColor }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      </div>
+                    </div>
+
+                    {isSpotlight && item.imageUrl && (
+                      <div className="mt-3 sm:mt-6 relative overflow-hidden rounded-xl max-h-40 sm:max-h-48 z-20">
+                        <img src={item.imageUrl} alt={item.title} className="w-full h-40 sm:h-48 object-cover object-top rounded-xl" />
+                        {interactive && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingItemImageIdx(editingItemImageIdx === i ? null : i);
+                            }}
+                            className="absolute top-2.5 right-2.5 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-30"
+                          >
+                            <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                          </button>
+                        )}
+                        {editingItemImageIdx === i && (
+                          <ImageEditItem
+                            currentUrl={item.imageUrl}
+                            hideLayoutOptions={true}
+                            onSave={(editProps) => {
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], imageUrl: editProps.url };
+                              onUpdateProps?.({ items: nextItems });
+                              setEditingItemImageIdx(null);
+                            }}
+                            onClose={() => setEditingItemImageIdx(null)}
+                          />
+                        )}
                       </div>
                     )}
-                    <div className={`relative z-10 ${hasBgImage ? "text-white" : "text-foreground"}`}>
-                       {item.icon && !hasBgImage && (
-                         <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
-                           <RenderIcon icon={item.icon} className="h-6 w-6" />
-                         </div>
-                       )}
-                       <h3 className={`text-2xl font-bold mb-2 ${hasBgImage ? "text-white" : ""}`}>{item.title}</h3>
-                       <p className={`max-w-md ${hasBgImage ? "text-white/80" : "text-muted-foreground"}`}>{item.description}</p>
-                    </div>
                   </div>
                 );
               })}
             </div>
+          ) : variant === "split-feature-showcase" ? (
+            <div className={`grid gap-3.5 sm:gap-6 items-center ${isMobileOrTablet ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-12"}`}>
+              <div className={`space-y-2.5 sm:space-y-4 text-left ${isMobileOrTablet ? "w-full" : "lg:col-span-6"}`}>
+                {items.map((item: any, i: number) => (
+                  <div
+                    key={i}
+                    className={`p-3.5 sm:p-5 rounded-2xl border backdrop-blur-md transition-all duration-300 space-y-1 group ${
+                      isDarkSection ? "border-border/80 bg-card/90 hover:bg-card shadow-lg" : "border-border/60 bg-card/60 hover:bg-card shadow-2xs hover:shadow-lg"
+                    }`}
+                  >
+                    <h4
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerHTML;
+                        const nextItems = [...items];
+                        nextItems[i] = { ...nextItems[i], title: next };
+                        onUpdateProps?.({ items: nextItems });
+                      }}
+                      style={{ outline: "none", color: headingTextColor }}
+                      className={`text-sm sm:text-lg font-bold ${interactive ? "cursor-text" : ""}`}
+                      dangerouslySetInnerHTML={{ __html: item.title }}
+                    />
+                    <p
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerHTML;
+                        const nextItems = [...items];
+                        nextItems[i] = { ...nextItems[i], description: next };
+                        onUpdateProps?.({ items: nextItems });
+                      }}
+                      style={{ outline: "none", color: bodyTextColor }}
+                      className={`text-xs leading-relaxed ${
+                        interactive ? "cursor-text" : ""
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: item.description }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className={`${isMobileOrTablet ? "w-full mt-2" : "lg:col-span-6"} relative group`}>
+                <div
+                  className="absolute -inset-1 rounded-3xl opacity-30 blur-xl group-hover:opacity-60 transition-all duration-500 pointer-events-none"
+                  style={{
+                    background: `linear-gradient(135deg, ${primary}40 0%, ${primary}10 100%)`,
+                  }}
+                />
+                <div className="relative overflow-hidden rounded-2xl shadow-xl">
+                  <img
+                    src={props.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"}
+                    alt="Feature Showcase"
+                    className="w-full h-auto object-cover rounded-2xl max-h-[380px] sm:max-h-[440px]"
+                  />
+                  {interactive && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditingShowcaseImage(!isEditingShowcaseImage);
+                      }}
+                      className="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-30"
+                    >
+                      <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                    </button>
+                  )}
+                  {isEditingShowcaseImage && (
+                    <ImageEditItem
+                      currentUrl={props.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80"}
+                      hideLayoutOptions={true}
+                      onSave={(editProps) => {
+                        onUpdateProps?.({ imageUrl: editProps.url });
+                        setIsEditingShowcaseImage(false);
+                      }}
+                      onClose={() => setIsEditingShowcaseImage(false)}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : variant === "minimal-matrix-features" ? (
+            <div className={`grid gap-3.5 sm:gap-4 ${
+              isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            }`}>
+              {items.map((item: any, i: number) => (
+                <div
+                  key={i}
+                  className={`p-3.5 sm:p-5 rounded-2xl border transition-all space-y-2 text-left group ${
+                    isDarkSection ? "border-border/80 bg-card/90 hover:bg-card shadow-xs hover:shadow-lg" : "border-border/60 bg-card/50 hover:bg-card shadow-xs hover:shadow-lg"
+                  }`}
+                >
+                  <h4
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerHTML;
+                      const nextItems = [...items];
+                      nextItems[i] = { ...nextItems[i], title: next };
+                      onUpdateProps?.({ items: nextItems });
+                    }}
+                    style={{ outline: "none", color: headingTextColor }}
+                    className={`text-sm sm:text-base font-bold ${interactive ? "cursor-text" : ""}`}
+                    dangerouslySetInnerHTML={{ __html: item.title }}
+                  />
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerHTML;
+                      const nextItems = [...items];
+                      nextItems[i] = { ...nextItems[i], description: next };
+                      onUpdateProps?.({ items: nextItems });
+                    }}
+                    style={{ outline: "none", color: bodyTextColor }}
+                    className={`text-xs leading-relaxed ${
+                      interactive ? "cursor-text" : ""
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: item.description }}
+                  />
+                </div>
+              ))}
+            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-               {items.map((item, i) => (
-                 <div key={i} className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl border border-transparent hover:border-border hover:bg-muted/10 transition-all">
-                    {item.imageUrl ? (
-                       <img src={item.imageUrl} alt={item.title} className="w-16 h-16 rounded-xl object-cover mb-2 shadow-sm" />
-                    ) : item.icon ? (
-                       <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-2">
-                         <RenderIcon icon={item.icon} className="h-6 w-6" />
-                       </div>
-                    ) : null}
-                    <h3 className="text-xl font-bold">{item.title}</h3>
-                    <p className="text-muted-foreground">{item.description}</p>
-                 </div>
-               ))}
+            /* Glass Cards / Modern Service Cards default fallback */
+            <div className={`grid gap-3.5 sm:gap-4 ${
+              isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => (
+                <div
+                  key={i}
+                  className={`group relative flex flex-col justify-between p-4 sm:p-6 rounded-3xl border backdrop-blur-md transition-all duration-300 text-left space-y-3.5 ${
+                    isDarkSection ? "border-border/80 bg-card/95 hover:shadow-xl" : "border-border/70 bg-card/80 shadow-xs hover:shadow-xl"
+                  }`}
+                  style={{
+                    borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px"),
+                  }}
+                >
+                  <div className="space-y-2.5 sm:space-y-4">
+                    {item.badgeText && (
+                      <div className="flex items-center justify-start">
+                        <span
+                          className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border shadow-2xs"
+                          style={{
+                            backgroundColor: isDarkSection ? `${primary}25` : `${primary}12`,
+                            color: isDarkSection ? "#ffffff" : primary,
+                            borderColor: isDarkSection ? `${primary}45` : `${primary}25`,
+                          }}
+                        >
+                          {item.badgeText}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-1.5">
+                      <h3
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerHTML;
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], title: next };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none", color: headingTextColor }}
+                        className={`text-lg sm:text-xl font-bold tracking-tight ${
+                          interactive ? "cursor-text" : ""
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: item.title }}
+                      />
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerHTML;
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], description: next };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none", color: bodyTextColor }}
+                        className={`text-xs sm:text-sm leading-relaxed ${
+                          interactive ? "cursor-text" : ""
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: item.description }}
+                      />
+                    </div>
+                  </div>
+
+                  {item.buttonText && (
+                    <div className={`pt-3 border-t flex items-center gap-1.5 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform ${
+                      isDarkSection ? "border-slate-800" : "border-border/40"
+                    }`}>
+                      <span>{item.buttonText}</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </Center>
@@ -3832,7 +4132,7 @@ export function ComponentRenderer({
               : ""
         }`}
       >
-        <Center maxWidth={effectiveMaxWidth}>
+        <Center maxWidth={effectiveMaxWidth} isMobile={isMobile}>
           {variant === "app-preview-cta" ? (
             <div className={`grid gap-8 items-center text-left ${isMobileOrTablet ? `grid-cols-1 ${isFlipped ? "flex flex-col-reverse" : ""}` : `grid-cols-1 md:grid-cols-12 ${isFlipped ? "md:flex-row-reverse" : ""}`}`}>
               <div className={`space-y-4 ${isMobileOrTablet ? "w-full text-center" : "md:col-span-6 text-left"} ${isFlipped ? "md:order-2" : "md:order-1"}`}>
@@ -3846,7 +4146,7 @@ export function ComponentRenderer({
                       if (newText && newText !== props.heading) onUpdateProps?.({ heading: newText });
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`${isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl"} font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                    className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
                    dangerouslySetInnerHTML={{ __html: props.heading }} />
                 )}
                 {props.subheading && (
@@ -4064,9 +4364,7 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: textColor }}
-                  className={`${
-                    isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
-                  } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
+                  className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight cursor-text transition-all"
                  dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
@@ -5390,7 +5688,7 @@ export function ComponentRenderer({
         {...aosAttrs}
         id={currentSectionId}
         style={{ ...css, backgroundColor: sectionBg }}
-        className={`${isMobileOrTablet ? "py-8 md:py-16 px-3" : "py-16 md:py-24"} transition-all relative w-full ${
+        className={`py-8 sm:py-24 transition-all relative w-full ${
           isFollowingNavbar
             ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
             : isDirectlyBelowNavbar
@@ -5398,7 +5696,7 @@ export function ComponentRenderer({
               : ""
         }`}
       >
-        <Center maxWidth={sectionMaxWidth}>
+        <Center maxWidth={sectionMaxWidth} isMobile={isMobile}>
           {/* Variant 1: classic-centered-form */}
           {(variant === "classic-centered-form" || !variant) && (
             <div
@@ -5978,7 +6276,7 @@ export function ComponentRenderer({
             : ""
       }`}
     >
-      <Center maxWidth={effectiveMaxWidth}>
+      <Center maxWidth={effectiveMaxWidth} isMobile={isMobile}>
         {props.heading && (
           <h2
             contentEditable={interactive}

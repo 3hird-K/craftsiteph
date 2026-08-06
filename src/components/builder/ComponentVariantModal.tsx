@@ -404,41 +404,84 @@ function RealisticLayoutPreview({
         </div>
       );
 
-    // FEATURES VARIANTS
-    case "3-col-grid":
+    // FEATURES & CARDS VARIANTS
+    case "bento-grid-features":
+    case "bento-card-stack":
       return (
         <div
-          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all`}
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
           style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
         >
-          <div className="p-1.5 bg-muted/60 text-[9px] space-y-0.5" style={{ borderRadius: navRadius }}>
-            <span>🎯</span>
-            <p className="font-bold truncate">Drag & drop</p>
+          <div className="col-span-2 p-2 bg-primary/10 border border-primary/30 text-[9px] flex flex-col justify-between space-y-1" style={{ borderRadius: navRadius }}>
+            <div className="flex items-center justify-between">
+              <span className="font-extrabold text-[9px] text-primary">✦ Spotlight</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            </div>
+            <span className="font-extrabold text-[10px]" style={{ color: cardTextColor }}>Visual Drag & Drop</span>
+            <span className="text-[8px] opacity-75 line-clamp-1">Real-time DOM updates & custom CSS.</span>
           </div>
-          <div className="p-1.5 bg-muted/60 text-[9px] space-y-0.5" style={{ borderRadius: navRadius }}>
-            <span>🎨</span>
-            <p className="font-bold truncate">Live styling</p>
-          </div>
-          <div className="p-1.5 bg-muted/60 text-[9px] space-y-0.5" style={{ borderRadius: navRadius }}>
-            <span>🚀</span>
-            <p className="font-bold truncate">Publishing</p>
+          <div className="p-1.5 bg-muted/60 text-[8px] flex flex-col justify-center space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="font-bold block" style={{ color: cardTextColor }}>AI Generator</span>
+            <span className="opacity-70 text-[7px]">React code</span>
           </div>
         </div>
       );
-    case "2-col-cards":
+
+    case "glass-cards-features":
+    case "modern-service-cards":
       return (
         <div
-          className={`grid grid-cols-2 gap-2 p-2 border ${borderStyle} transition-all`}
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
           style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
         >
-          <div className="p-2 bg-muted/50 border border-border/50 text-[9px]" style={{ borderRadius: navRadius }}>
-            <span className="font-bold block" style={{ color: cardTextColor }}>Pro Builder</span>
-            <span className="opacity-75 text-[8px]">Full customization controls</span>
-          </div>
-          <div className="p-2 bg-muted/50 border border-border/50 text-[9px]" style={{ borderRadius: navRadius }}>
+          <div className="p-2 bg-muted/40 border border-border/50 text-[8px] space-y-1" style={{ borderRadius: navRadius }}>
+            <span className="h-2 w-2 rounded-full block" style={{ backgroundColor: primaryColor }} />
             <span className="font-bold block" style={{ color: cardTextColor }}>Live Themes</span>
-            <span className="opacity-75 text-[8px]">Instant color presets</span>
+            <span className="opacity-75 text-[7px] block line-clamp-1">Instant color presets</span>
           </div>
+          <div className="p-2 bg-muted/40 border border-border/50 text-[8px] space-y-1" style={{ borderRadius: navRadius }}>
+            <span className="h-2 w-2 rounded-full block" style={{ backgroundColor: primaryColor }} />
+            <span className="font-bold block" style={{ color: cardTextColor }}>Unified Mobile</span>
+            <span className="opacity-75 text-[7px] block line-clamp-1">Responsive editing</span>
+          </div>
+          <div className="p-2 bg-muted/40 border border-border/50 text-[8px] space-y-1" style={{ borderRadius: navRadius }}>
+            <span className="h-2 w-2 rounded-full block" style={{ backgroundColor: primaryColor }} />
+            <span className="font-bold block" style={{ color: cardTextColor }}>Edge Publishing</span>
+            <span className="opacity-75 text-[7px] block line-clamp-1">1-Click deploy</span>
+          </div>
+        </div>
+      );
+
+    case "split-feature-showcase":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="flex-1 space-y-1 text-left">
+            <span className="font-extrabold text-[10px] leading-tight block" style={{ color: cardTextColor }}>Designed for product teams</span>
+            <span className="text-[8px] opacity-75 block line-clamp-1">Collaborate in real-time & launch 10x faster.</span>
+            <div className="flex items-center gap-1 text-[7px] font-bold text-primary">
+              <span>✓ Visual Canvas</span>
+              <span>✓ Code Sync</span>
+            </div>
+          </div>
+          <div className="w-16 h-12 bg-muted/80 border border-border flex items-center justify-center text-[7px] font-bold shrink-0 opacity-80" style={{ borderRadius: "8px" }}>
+            Dashboard
+          </div>
+        </div>
+      );
+
+    case "minimal-matrix-features":
+      return (
+        <div
+          className={`grid grid-cols-4 gap-1 p-2 border ${borderStyle} transition-all w-full text-center`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-1 bg-muted/30 text-[8px]"><span className="font-bold block text-[7px]" style={{ color: cardTextColor }}>SEO</span></div>
+          <div className="p-1 bg-muted/30 text-[8px]"><span className="font-bold block text-[7px]" style={{ color: cardTextColor }}>Fast</span></div>
+          <div className="p-1 bg-muted/30 text-[8px]"><span className="font-bold block text-[7px]" style={{ color: cardTextColor }}>Fonts</span></div>
+          <div className="p-1 bg-muted/30 text-[8px]"><span className="font-bold block text-[7px]" style={{ color: cardTextColor }}>SSL</span></div>
         </div>
       );
 

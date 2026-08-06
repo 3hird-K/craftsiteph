@@ -304,8 +304,6 @@ export function PropertiesPanel({
                     { label: "Fade", value: "fade" },
                     { label: "Fade Up", value: "fade-up" },
                     { label: "Fade Down", value: "fade-down" },
-                    { label: "Fade Left", value: "fade-left" },
-                    { label: "Fade Right", value: "fade-right" },
                     { label: "Zoom In", value: "zoom-in" },
                   ]}
                 />

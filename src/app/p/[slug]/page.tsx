@@ -35,16 +35,6 @@ export default async function PublicPage({ params }: Props) {
   if (!project) notFound();
 
   return (
-    <>
-      <PageRenderer components={project.components || []} theme={project.theme} />
-      <div className="fixed bottom-4 right-4 z-50">
-        <Link
-          href="/"
-          className="rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-lg backdrop-blur hover:bg-white"
-        >
-          Built with CraftSite
-        </Link>
-      </div>
-    </>
+    <PageRenderer components={project.components || []} theme={project.theme} />
   );
 }
