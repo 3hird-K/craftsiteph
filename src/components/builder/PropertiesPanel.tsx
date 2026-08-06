@@ -1,7 +1,7 @@
 "use client";
 
 import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "@/lib/types";
-import { FONT_OPTIONS } from "@/lib/types";
+import { FONT_OPTIONS, isTwoColumnLayout } from "@/lib/types";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
 import { Badge } from "@/components/ui/badge";
 import { Layers, Trash2, LayoutGrid, Sun, Moon } from "lucide-react";
@@ -584,6 +584,131 @@ export function PropertiesPanel({
                       onChange={(v) => onChangeProps(component.id, { copyright: v })}
                     />
                   </Field>
+
+                  {/* SOCIAL LINKS REPEATER */}
+                  <div className="space-y-3 pt-3 border-t border-border/60">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-foreground">Social Icons (Optional)</span>
+                      <button
+                        type="button"
+                        className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
+                        onClick={() => {
+                          const currentSocials = component.props.socialLinks || [
+                            { platform: "facebook", url: "https://facebook.com" },
+                            { platform: "github", url: "https://github.com" },
+                            { platform: "twitter", url: "https://twitter.com" },
+                            { platform: "instagram", url: "https://instagram.com" },
+                          ];
+                          onChangeProps(component.id, {
+                            socialLinks: [
+                              ...currentSocials,
+                              { platform: "facebook", url: "https://facebook.com" },
+                            ],
+                          });
+                        }}
+                      >
+                        + Add Icon
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between pb-1">
+                      <span className="text-[11px] text-muted-foreground">Show Social Icons</span>
+                      <button
+                        type="button"
+                        className={`text-[11px] font-bold px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
+                          component.props.socialLinks && component.props.socialLinks.length === 0
+                            ? "bg-muted text-muted-foreground border-border"
+                            : "bg-primary/10 text-primary border-primary/20"
+                        }`}
+                        onClick={() => {
+                          if (component.props.socialLinks && component.props.socialLinks.length === 0) {
+                            onChangeProps(component.id, {
+                              socialLinks: [
+                                { platform: "facebook", url: "https://facebook.com" },
+                                { platform: "github", url: "https://github.com" },
+                                { platform: "twitter", url: "https://twitter.com" },
+                                { platform: "instagram", url: "https://instagram.com" },
+                              ],
+                            });
+                          } else {
+                            onChangeProps(component.id, { socialLinks: [] });
+                          }
+                        }}
+                      >
+                        {component.props.socialLinks && component.props.socialLinks.length === 0 ? "Hidden (Click to Enable)" : "Enabled (Click to Hide)"}
+                      </button>
+                    </div>
+
+                    {(() => {
+                      const currentSocials = component.props.socialLinks !== undefined
+                        ? component.props.socialLinks
+                        : [
+                            { platform: "facebook", url: "https://facebook.com" },
+                            { platform: "github", url: "https://github.com" },
+                            { platform: "twitter", url: "https://twitter.com" },
+                            { platform: "instagram", url: "https://instagram.com" },
+                          ];
+
+                      if (currentSocials.length === 0) {
+                        return (
+                          <p className="text-[11px] text-muted-foreground italic py-1">
+                            Social icons are currently hidden. Click "+ Add Icon" or "Hidden (Click to Enable)" above to show them.
+                          </p>
+                        );
+                      }
+
+                      return currentSocials.map((soc, idx) => (
+                        <div key={idx} className="rounded-xl border border-border/80 bg-muted/20 p-2.5 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-extrabold uppercase text-muted-foreground">
+                              Icon #{idx + 1} ({soc.platform || "Facebook"})
+                            </span>
+                            <button
+                              type="button"
+                              className="text-[10px] text-destructive hover:underline font-semibold cursor-pointer"
+                              onClick={() => {
+                                const next = currentSocials.filter((_, i) => i !== idx);
+                                onChangeProps(component.id, { socialLinks: next });
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <SelectInput
+                              value={soc.platform || "facebook"}
+                              onChange={(v) => {
+                                const next = [...currentSocials];
+                                next[idx] = { ...next[idx], platform: v };
+                                onChangeProps(component.id, { socialLinks: next });
+                              }}
+                              options={[
+                                { label: "Facebook", value: "facebook" },
+                                { label: "GitHub", value: "github" },
+                                { label: "Twitter / X", value: "twitter" },
+                                { label: "Instagram", value: "instagram" },
+                                { label: "LinkedIn", value: "linkedin" },
+                                { label: "YouTube", value: "youtube" },
+                                { label: "Discord", value: "discord" },
+                                { label: "Dribbble", value: "dribbble" },
+                                { label: "TikTok", value: "tiktok" },
+                                { label: "Website / Globe", value: "globe" },
+                              ]}
+                            />
+                            <TextInput
+                              value={soc.url || soc.href || "#"}
+                              placeholder="https://..."
+                              onChange={(v) => {
+                                const next = [...currentSocials];
+                                next[idx] = { ...next[idx], url: v, href: v };
+                                onChangeProps(component.id, { socialLinks: next });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
                 </>
               )}
               {component.props.text !== undefined ||
@@ -688,23 +813,23 @@ export function PropertiesPanel({
                       placeholder="https://..."
                     />
                   </Field>
-                  {["hero", "image"].includes(component.type) || component.props.imageUrl ? (
-                    <Field label="Side Layout">
-                      <SelectInput
-                        value={component.props.imagePosition || (component.props.reverseLayout ? "left" : "right")}
-                        onChange={(v) =>
-                          onChangeProps(component.id, {
-                            imagePosition: v as "left" | "right",
-                            reverseLayout: v === "left",
-                          })
-                        }
-                        options={[
-                          { label: "Right Side First (Default)", value: "right" },
-                          { label: "Left Side First (Flipped)", value: "left" },
-                        ]}
-                      />
-                    </Field>
-                  ) : null}
+               {isTwoColumnLayout(component) ? (
+                <Field label="Switch Sides / Grid Layout">
+                  <SelectInput
+                    value={component.props.imagePosition || (component.props.reverseLayout ? "left" : "right")}
+                    onChange={(v) =>
+                      onChangeProps(component.id, {
+                        imagePosition: v as "left" | "right",
+                        reverseLayout: v === "left",
+                      })
+                    }
+                    options={[
+                      { label: "Standard Layout (Default)", value: "right" },
+                      { label: "Swapped / Flipped Sides", value: "left" },
+                    ]}
+                  />
+                </Field>
+              ) : null}
                 </div>
               ) : null}
 

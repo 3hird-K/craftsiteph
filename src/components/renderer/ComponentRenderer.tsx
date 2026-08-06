@@ -110,6 +110,75 @@ const Facebook = (props: any) => (
 const Youtube = (props: any) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
 );
+const Discord = (props: any) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6h0a14.5 14.5 0 0 0-4-1.25 10.7 10.7 0 0 0-.5 1A13.5 13.5 0 0 0 10.5 5.75a10.7 10.7 0 0 0-.5-1A14.5 14.5 0 0 0 6 6a15.8 15.8 0 0 0-3 11 14.4 14.4 0 0 0 4.5 2.25 10.9 10.9 0 0 0 1-1.6 9.4 9.4 0 0 1-1.5-.7 1 1 0 0 1 1-.7 10.2 10.2 0 0 0 8 0 1 1 0 0 1 1 .7 9.4 9.4 0 0 1-1.5.7 10.9 10.9 0 0 0 1 1.6A14.4 14.4 0 0 0 21 17a15.8 15.8 0 0 0-3-11z"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/></svg>
+);
+const Dribbble = (props: any) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M19.13 5.09C15.22 9.14 10 10.44 2.25 10.94"/><path d="M21.75 12.84c-6.62-1.41-12.14 1-16.38 6.32"/><path d="M8.56 2.75c4.37 6 6 9.42 8 18.5"/></svg>
+);
+const TikTok = (props: any) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+);
+
+export function RenderSocialIcon({ platform, className = "h-4 w-4 shrink-0" }: { platform?: string; className?: string }) {
+  if (!platform) return <Globe className={className} />;
+  const p = platform.toLowerCase().trim();
+  if (p === "facebook") return <Facebook className={className} />;
+  if (p === "github") return <Github className={className} />;
+  if (p === "twitter" || p === "x") return <Twitter className={className} />;
+  if (p === "instagram") return <Instagram className={className} />;
+  if (p === "linkedin") return <Linkedin className={className} />;
+  if (p === "youtube") return <Youtube className={className} />;
+  if (p === "discord") return <Discord className={className} />;
+  if (p === "dribbble") return <Dribbble className={className} />;
+  if (p === "tiktok") return <TikTok className={className} />;
+  if (p === "globe" || p === "website") return <Globe className={className} />;
+  if (p === "mail" || p === "email") return <Mail className={className} />;
+  return <Globe className={className} />;
+}
+
+export function RenderFooterSocialIcons({
+  socials,
+  textColor,
+  borderColor,
+  interactive,
+  justify = "start",
+}: {
+  socials?: { platform: string; url?: string; href?: string }[];
+  textColor?: string;
+  borderColor?: string;
+  interactive?: boolean;
+  justify?: "start" | "center" | "end";
+}) {
+  if (!socials || socials.length === 0) return null;
+
+  const justifyClass =
+    justify === "center" ? "justify-center" : justify === "end" ? "justify-end" : "justify-start";
+
+  return (
+    <div className={`flex items-center gap-2 flex-wrap ${justifyClass}`}>
+      {socials.map((soc, idx) => {
+        const href = soc.url || soc.href || "#";
+        return (
+          <a
+            key={idx}
+            href={href}
+            target={interactive ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              if (interactive) e.preventDefault();
+            }}
+            className="p-2 border rounded-full hover:bg-foreground/10 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs flex items-center justify-center"
+            style={{ color: textColor, borderColor: borderColor || "currentColor" }}
+            title={soc.platform ? soc.platform.toUpperCase() : "Social link"}
+          >
+            <RenderSocialIcon platform={soc.platform} className="h-4 w-4" />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
 
 export function RenderIcon({ icon, className = "h-4 w-4 shrink-0" }: { icon?: string; className?: string }) {
   if (!icon) return null;
@@ -2456,7 +2525,7 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const newText = e.currentTarget.innerText.trim();
+                    const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.heading) {
                       onUpdateProps?.({ heading: newText });
                     }
@@ -2465,16 +2534,14 @@ export function ComponentRenderer({
                   className={`${
                     isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                   } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
-                >
-                  {props.heading}
-                </h1>
+                 dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const newText = e.currentTarget.innerText.trim();
+                    const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.subheading) {
                       onUpdateProps?.({ subheading: newText });
                     }
@@ -2483,9 +2550,7 @@ export function ComponentRenderer({
                   className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
-                >
-                  {props.subheading}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: props.subheading }} />
               )}
 
               {/* Interactive Search Bar Input */}
@@ -2522,7 +2587,7 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const newText = e.currentTarget.innerText.trim().replace(/^#/, "");
+                      const newText = e.currentTarget.innerHTML.replace(/^#/, "");
                       if (newText) {
                         const currentTags = [...(props.tags || ["Landing Pages", "E-commerce", "SaaS Dashboard", "Portfolio", "AI Apps"])];
                         currentTags[idx] = newText;
@@ -2547,7 +2612,7 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const newText = e.currentTarget.innerText.trim();
+                      const newText = e.currentTarget.innerHTML;
                       if (newText && newText !== props.heading) {
                         onUpdateProps?.({ heading: newText });
                       }
@@ -2556,16 +2621,14 @@ export function ComponentRenderer({
                     className={`${
                       isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                     } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {props.heading}
-                  </h1>
+                   dangerouslySetInnerHTML={{ __html: props.heading }} />
                 )}
                 {props.subheading && (
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const newText = e.currentTarget.innerText.trim();
+                      const newText = e.currentTarget.innerHTML;
                       if (newText && newText !== props.subheading) {
                         onUpdateProps?.({ subheading: newText });
                       }
@@ -2574,9 +2637,7 @@ export function ComponentRenderer({
                     className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
-                  >
-                    {props.subheading}
-                  </p>
+                   dangerouslySetInnerHTML={{ __html: props.subheading }} />
                 )}
 
                 {(variant === "split-showcase-hero" || variant === "split-bg-showcase-hero") && (
@@ -2592,7 +2653,7 @@ export function ComponentRenderer({
                           contentEditable={interactive}
                           suppressContentEditableWarning
                           onBlur={(e) => {
-                            const newText = e.currentTarget.innerText.trim();
+                            const newText = e.currentTarget.innerHTML;
                             if (newText) {
                               const next = [...(props.benefits || [
                                 "Drag & drop visual page builder with live preview",
@@ -2604,9 +2665,7 @@ export function ComponentRenderer({
                             }
                           }}
                           className={interactive ? "cursor-text outline-none" : ""}
-                        >
-                          {benefit}
-                        </span>
+                         dangerouslySetInnerHTML={{ __html: benefit }} />
                       </div>
                     ))}
                   </div>
@@ -2733,15 +2792,13 @@ export function ComponentRenderer({
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard1Title: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard1Title: e.currentTarget.innerHTML })}
                         className={`text-xs font-bold text-muted-foreground uppercase tracking-widest ${interactive ? "cursor-text outline-none" : ""}`}
-                      >
-                        {props.bentoCard1Title || "Live Performance"}
-                      </div>
+                       dangerouslySetInnerHTML={{ __html: props.bentoCard1Title || "Live Performance" }} />
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard1Value: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard1Value: e.currentTarget.innerHTML })}
                         className={`text-3xl font-extrabold text-foreground mt-1 tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
                       >
                         {props.bentoCard1Value || "+142% Growth"}
@@ -2752,7 +2809,7 @@ export function ComponentRenderer({
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard1Badge: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard1Badge: e.currentTarget.innerHTML })}
                         className={`px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs shadow-xs ${interactive ? "cursor-text outline-none" : ""}`}
                       >
                         {props.bentoCard1Badge || "↑ Trending"}
@@ -2782,7 +2839,7 @@ export function ComponentRenderer({
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard2Value: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard2Value: e.currentTarget.innerHTML })}
                         className={`text-3xl font-extrabold text-primary tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
                       >
                         {props.bentoCard2Value || "99.99%"}
@@ -2790,11 +2847,9 @@ export function ComponentRenderer({
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard2Label: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard2Label: e.currentTarget.innerHTML })}
                         className={`text-sm text-muted-foreground font-semibold mt-1 ${interactive ? "cursor-text outline-none" : ""}`}
-                      >
-                        {props.bentoCard2Label || "Uptime SLA"}
-                      </div>
+                       dangerouslySetInnerHTML={{ __html: props.bentoCard2Label || "Uptime SLA" }} />
                     </div>
                   </div>
                   
@@ -2810,7 +2865,7 @@ export function ComponentRenderer({
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard3Value: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard3Value: e.currentTarget.innerHTML })}
                         className={`text-3xl font-extrabold text-foreground tracking-tight ${interactive ? "cursor-text outline-none" : ""}`}
                       >
                         {props.bentoCard3Value || "50k+"}
@@ -2818,11 +2873,9 @@ export function ComponentRenderer({
                       <div
                         contentEditable={interactive}
                         suppressContentEditableWarning
-                        onBlur={(e) => onUpdateProps?.({ bentoCard3Label: e.currentTarget.innerText.trim() })}
+                        onBlur={(e) => onUpdateProps?.({ bentoCard3Label: e.currentTarget.innerHTML })}
                         className={`text-sm text-muted-foreground font-semibold mt-1 ${interactive ? "cursor-text outline-none" : ""}`}
-                      >
-                        {props.bentoCard3Label || "Creators"}
-                      </div>
+                       dangerouslySetInnerHTML={{ __html: props.bentoCard3Label || "Creators" }} />
                     </div>
                   </div>
                 </div>
@@ -2949,7 +3002,7 @@ export function ComponentRenderer({
                   <span
                     contentEditable={interactive}
                     suppressContentEditableWarning
-                    onBlur={(e) => onUpdateProps?.({ badgeText: e.currentTarget.innerText.trim() })}
+                    onBlur={(e) => onUpdateProps?.({ badgeText: e.currentTarget.innerHTML })}
                     className={interactive ? "cursor-text outline-none" : ""}
                   >
                     {props.badgeText || "NEW: AI Web Builder v2.0 →"}
@@ -2961,7 +3014,7 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const newText = e.currentTarget.innerText.trim();
+                    const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.heading) {
                       onUpdateProps?.({ heading: newText });
                     }
@@ -2970,16 +3023,14 @@ export function ComponentRenderer({
                   className={`${
                     isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                   } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
-                >
-                  {props.heading}
-                </h1>
+                 dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const newText = e.currentTarget.innerText.trim();
+                    const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.subheading) {
                       onUpdateProps?.({ subheading: newText });
                     }
@@ -2988,9 +3039,7 @@ export function ComponentRenderer({
                   className={`${isMobile ? "text-sm" : isTablet ? "text-base" : "text-base md:text-lg"} ${isBgLayout ? "text-white/80" : "text-muted-foreground"} ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
-                >
-                  {props.subheading}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: props.subheading }} />
               )}
               <ButtonsBlock />
 
@@ -3018,7 +3067,7 @@ export function ComponentRenderer({
                     <div
                       contentEditable={interactive}
                       suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ stat1Value: e.currentTarget.innerText.trim() })}
+                      onBlur={(e) => onUpdateProps?.({ stat1Value: e.currentTarget.innerHTML })}
                       className={`text-2xl md:text-3xl font-extrabold text-white ${interactive ? "cursor-text outline-none" : ""}`}
                     >
                       {props.stat1Value || "50,000+"}
@@ -3026,17 +3075,15 @@ export function ComponentRenderer({
                     <div
                       contentEditable={interactive}
                       suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ stat1Label: e.currentTarget.innerText.trim() })}
+                      onBlur={(e) => onUpdateProps?.({ stat1Label: e.currentTarget.innerHTML })}
                       className={`text-xs text-white/80 font-medium ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.stat1Label || "Active Creators"}
-                    </div>
+                     dangerouslySetInnerHTML={{ __html: props.stat1Label || "Active Creators" }} />
                   </div>
                   <div>
                     <div
                       contentEditable={interactive}
                       suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ stat2Value: e.currentTarget.innerText.trim() })}
+                      onBlur={(e) => onUpdateProps?.({ stat2Value: e.currentTarget.innerHTML })}
                       className={`text-2xl md:text-3xl font-extrabold text-white ${interactive ? "cursor-text outline-none" : ""}`}
                     >
                       {props.stat2Value || "4.9 / 5.0"}
@@ -3044,17 +3091,15 @@ export function ComponentRenderer({
                     <div
                       contentEditable={interactive}
                       suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ stat2Label: e.currentTarget.innerText.trim() })}
+                      onBlur={(e) => onUpdateProps?.({ stat2Label: e.currentTarget.innerHTML })}
                       className={`text-xs text-white/80 font-medium ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.stat2Label || "Customer Rating"}
-                    </div>
+                     dangerouslySetInnerHTML={{ __html: props.stat2Label || "Customer Rating" }} />
                   </div>
                   <div>
                     <div
                       contentEditable={interactive}
                       suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ stat3Value: e.currentTarget.innerText.trim() })}
+                      onBlur={(e) => onUpdateProps?.({ stat3Value: e.currentTarget.innerHTML })}
                       className={`text-2xl md:text-3xl font-extrabold text-white ${interactive ? "cursor-text outline-none" : ""}`}
                     >
                       {props.stat3Value || "99.99%"}
@@ -3062,11 +3107,9 @@ export function ComponentRenderer({
                     <div
                       contentEditable={interactive}
                       suppressContentEditableWarning
-                      onBlur={(e) => onUpdateProps?.({ stat3Label: e.currentTarget.innerText.trim() })}
+                      onBlur={(e) => onUpdateProps?.({ stat3Label: e.currentTarget.innerHTML })}
                       className={`text-xs text-white/80 font-medium ${interactive ? "cursor-text outline-none" : ""}`}
-                    >
-                      {props.stat3Label || "Platform Uptime"}
-                    </div>
+                     dangerouslySetInnerHTML={{ __html: props.stat3Label || "Platform Uptime" }} />
                   </div>
                 </div>
               )}
@@ -3387,14 +3430,14 @@ export function ComponentRenderer({
       >
         <Center maxWidth={effectiveMaxWidth}>
           {isSplitLayout ? (
-            <div className={`flex justify-between gap-8 text-left ${isMobileOrTablet ? "flex-col items-start text-left" : "flex-col md:flex-row items-center"}`}>
+            <div className={`flex justify-between gap-8 text-left ${isMobileOrTablet ? `flex-col items-start text-left ${(props.imagePosition === "left" || props.reverseLayout) ? "flex-col-reverse" : ""}` : `flex-col md:flex-row items-center ${(props.imagePosition === "left" || props.reverseLayout) ? "md:flex-row-reverse" : ""}`}`}>
               <div className="space-y-3 max-w-2xl">
                 {props.heading && (
                   <h2
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const newText = e.currentTarget.innerText.trim();
+                      const newText = e.currentTarget.innerHTML;
                       if (newText && newText !== props.heading) {
                         onUpdateProps?.({ heading: newText });
                       }
@@ -3403,16 +3446,14 @@ export function ComponentRenderer({
                     className={`${
                       isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                     } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {props.heading}
-                  </h2>
+                   dangerouslySetInnerHTML={{ __html: props.heading }} />
                 )}
                 {props.subheading && (
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const newText = e.currentTarget.innerText.trim();
+                      const newText = e.currentTarget.innerHTML;
                       if (newText && newText !== props.subheading) {
                         onUpdateProps?.({ subheading: newText });
                       }
@@ -3421,9 +3462,7 @@ export function ComponentRenderer({
                     className={`${isMobile ? "text-sm" : "text-base font-medium"} opacity-90 ${
                       interactive ? "cursor-text transition-all" : ""
                     }`}
-                  >
-                    {props.subheading}
-                  </p>
+                   dangerouslySetInnerHTML={{ __html: props.subheading }} />
                 )}
                 {interactive && !props.subheading && (
                   <button
@@ -3454,7 +3493,7 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const newText = e.currentTarget.innerText.trim();
+                    const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.heading) {
                       onUpdateProps?.({ heading: newText });
                     }
@@ -3463,16 +3502,14 @@ export function ComponentRenderer({
                   className={`${
                     isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
                   } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
-                >
-                  {props.heading}
-                </h2>
+                 dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const newText = e.currentTarget.innerText.trim();
+                    const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.subheading) {
                       onUpdateProps?.({ subheading: newText });
                     }
@@ -3481,9 +3518,7 @@ export function ComponentRenderer({
                   className={`text-lg md:text-xl opacity-90 max-w-2xl mx-auto ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
-                >
-                  {props.subheading}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: props.subheading }} />
               )}
               {interactive && !props.subheading && (
                 <button
@@ -3544,6 +3579,14 @@ export function ComponentRenderer({
           { title: "Company", links: ["About Us", "Careers", "Press", "Contact"] },
           { title: "Resources", links: ["Documentation", "Community", "Guides", "API Status"] },
         ];
+    const defaultSocials = [
+      { platform: "facebook", url: "https://facebook.com" },
+      { platform: "github", url: "https://github.com" },
+      { platform: "twitter", url: "https://twitter.com" },
+      { platform: "instagram", url: "https://instagram.com" },
+      { platform: "linkedin", url: "https://linkedin.com" },
+    ];
+    const socials = props.socialLinks !== undefined ? props.socialLinks : defaultSocials;
 
     const [activeFooterPopover, setActiveFooterPopover] = useState<string | null>(null);
 
@@ -3566,26 +3609,22 @@ export function ComponentRenderer({
                 contentEditable={interactive}
                 suppressContentEditableWarning
                 onBlur={(e) => {
-                  const next = e.currentTarget.innerText.trim();
+                  const next = e.currentTarget.innerHTML;
                   if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                 }}
                 style={{ outline: "none", color: textColor }}
                 className={`text-2xl font-black tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
-              >
-                {logoText}
-              </h3>
+               dangerouslySetInnerHTML={{ __html: logoText }} />
               <p
                 contentEditable={interactive}
                 suppressContentEditableWarning
                 onBlur={(e) => {
-                  const next = e.currentTarget.innerText.trim();
+                  const next = e.currentTarget.innerHTML;
                   if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                 }}
                 style={{ outline: "none", color: subtextColor }}
                 className={`text-sm ${interactive ? "cursor-text transition-all" : ""}`}
-              >
-                {tagline}
-              </p>
+               dangerouslySetInnerHTML={{ __html: tagline }} />
               <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium">
                 {navLinks.map((l: any, idx: number) => (
                   <div key={idx} className="group/link relative inline-flex items-center">
@@ -3626,19 +3665,18 @@ export function ComponentRenderer({
                   </div>
                 ))}
               </div>
-              <div className="pt-6 border-t" style={{ borderColor }}>
+              <div className="pt-6 border-t flex flex-col items-center gap-4" style={{ borderColor }}>
+                <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} justify="center" />
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={`text-xs opacity-60 ${interactive ? "cursor-text transition-all" : ""}`}
-                >
-                  {copyright}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
               </div>
             </div>
           ) : variant === "newsletter-split-footer" ? (
@@ -3658,28 +3696,24 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== (props.heading || "Stay updated with our latest news")) {
                         onUpdateProps?.({ heading: next });
                       }
                     }}
                     style={{ outline: "none", color: textColor }}
                     className={`text-lg md:text-xl font-bold ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {props.heading || "Stay updated with our latest news"}
-                  </h4>
+                   dangerouslySetInnerHTML={{ __html: props.heading || "Stay updated with our latest news" }} />
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={`text-xs ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {tagline}
-                  </p>
+                   dangerouslySetInnerHTML={{ __html: tagline }} />
                 </div>
                 <div
                   className={`flex gap-2.5 shrink-0 ${
@@ -3732,26 +3766,22 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
                     className={`text-xl font-black whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {logoText}
-                  </h3>
+                   dangerouslySetInnerHTML={{ __html: logoText }} />
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={`text-xs max-w-sm ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {tagline}
-                  </p>
+                   dangerouslySetInnerHTML={{ __html: tagline }} />
                 </div>
                 <div className={`${isMobileOrTablet ? "w-full" : "lg:col-span-2"} grid grid-cols-2 gap-6`}>
                   {columnsList.map((col: any, cIdx: number) => (
@@ -3760,7 +3790,7 @@ export function ComponentRenderer({
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== col.title) {
                             const updatedCols = [...columnsList];
                             updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -3769,9 +3799,7 @@ export function ComponentRenderer({
                         }}
                         style={{ outline: "none", color: textColor }}
                         className={`font-bold uppercase tracking-wider text-[11px] ${interactive ? "cursor-text transition-all" : ""}`}
-                      >
-                        {col.title}
-                      </h5>
+                       dangerouslySetInnerHTML={{ __html: col.title }} />
                       <ul className="space-y-2">
                         {col.links.map((lnk: string, lIdx: number) => (
                           <li key={lIdx} className="block">
@@ -3779,7 +3807,7 @@ export function ComponentRenderer({
                               contentEditable={interactive}
                               suppressContentEditableWarning
                               onBlur={(e) => {
-                                const next = e.currentTarget.innerText.trim();
+                                const next = e.currentTarget.innerHTML;
                                 if (next && next !== lnk) {
                                   const updatedCols = [...columnsList];
                                   const nextLinks = [...updatedCols[cIdx].links];
@@ -3790,9 +3818,7 @@ export function ComponentRenderer({
                               }}
                               style={{ outline: "none", color: subtextColor }}
                               className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                            >
-                              {lnk}
-                            </span>
+                             dangerouslySetInnerHTML={{ __html: lnk }} />
                           </li>
                         ))}
                       </ul>
@@ -3805,14 +3831,12 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text transition-all" : ""}
-                >
-                  {copyright}
-                </span>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
                 <div className="flex gap-4" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
@@ -3867,26 +3891,22 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                       }}
                       style={{ outline: "none", color: textColor }}
                       className={`font-black tracking-tight text-xl ${interactive ? "cursor-text" : ""}`}
-                    >
-                      {logoText}
-                    </h3>
+                     dangerouslySetInnerHTML={{ __html: logoText }} />
                     <p
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                       }}
                       style={{ outline: "none", color: subtextColor }}
                       className={`text-xs opacity-80 max-w-sm ${interactive ? "cursor-text" : ""}`}
-                    >
-                      {tagline}
-                    </p>
+                     dangerouslySetInnerHTML={{ __html: tagline }} />
                   </div>
                 </div>
                 
@@ -3919,14 +3939,12 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={`text-xs opacity-60 ${interactive ? "cursor-text" : ""}`}
-                >
-                  {copyright}
-                </span>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
               </div>
             </div>
           ) : variant === "stacked-brand-statement" ? (
@@ -3936,26 +3954,22 @@ export function ComponentRenderer({
                    contentEditable={interactive}
                    suppressContentEditableWarning
                    onBlur={(e) => {
-                     const next = e.currentTarget.innerText.trim();
+                     const next = e.currentTarget.innerHTML;
                      if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                    }}
                    style={{ outline: "none", color: textColor }}
                    className={`text-5xl md:text-7xl lg:text-9xl font-black uppercase tracking-tighter ${interactive ? "cursor-text" : ""}`}
-                 >
-                   {logoText}
-                 </h2>
+                  dangerouslySetInnerHTML={{ __html: logoText }} />
                  <p
                    contentEditable={interactive}
                    suppressContentEditableWarning
                    onBlur={(e) => {
-                     const next = e.currentTarget.innerText.trim();
+                     const next = e.currentTarget.innerHTML;
                      if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                    }}
                    style={{ outline: "none", color: subtextColor }}
                    className={`mt-6 text-xs md:text-sm font-bold tracking-[0.3em] uppercase ${interactive ? "cursor-text" : ""}`}
-                 >
-                   {tagline}
-                 </p>
+                  dangerouslySetInnerHTML={{ __html: tagline }} />
               </div>
               <div className={`grid gap-12 text-center ${isMobileOrTablet ? "grid-cols-1" : "grid-cols-2 max-w-3xl mx-auto"}`}>
                  {columnsList.slice(0, 2).map((col: any, cIdx: number) => (
@@ -3964,7 +3978,7 @@ export function ComponentRenderer({
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== col.title) {
                             const updatedCols = [...columnsList];
                             updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -3973,9 +3987,7 @@ export function ComponentRenderer({
                         }}
                         style={{ outline: "none", color: textColor }}
                         className={`font-bold uppercase tracking-wider text-xs ${interactive ? "cursor-text transition-all" : ""}`}
-                      >
-                        {col.title}
-                      </h5>
+                       dangerouslySetInnerHTML={{ __html: col.title }} />
                       <ul className="space-y-3">
                         {col.links.map((lnk: string, lIdx: number) => (
                           <li key={lIdx} className="block">
@@ -3983,7 +3995,7 @@ export function ComponentRenderer({
                               contentEditable={interactive}
                               suppressContentEditableWarning
                               onBlur={(e) => {
-                                const next = e.currentTarget.innerText.trim();
+                                const next = e.currentTarget.innerHTML;
                                 if (next && next !== lnk) {
                                   const updatedCols = [...columnsList];
                                   const nextLinks = [...updatedCols[cIdx].links];
@@ -3994,9 +4006,7 @@ export function ComponentRenderer({
                               }}
                               style={{ outline: "none", color: subtextColor }}
                               className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                            >
-                              {lnk}
-                            </span>
+                             dangerouslySetInnerHTML={{ __html: lnk }} />
                           </li>
                         ))}
                       </ul>
@@ -4008,14 +4018,12 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text transition-all" : ""}
-                >
-                  {copyright}
-                </span>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
                 <div className="flex flex-wrap justify-center items-center gap-6" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
@@ -4047,26 +4055,22 @@ export function ComponentRenderer({
                 contentEditable={interactive}
                 suppressContentEditableWarning
                 onBlur={(e) => {
-                  const next = e.currentTarget.innerText.trim();
+                  const next = e.currentTarget.innerHTML;
                   if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                 }}
                 style={{ outline: "none", color: textColor }}
                 className={`text-lg font-bold tracking-tight ${interactive ? "cursor-text" : ""}`}
-              >
-                {logoText}
-              </h3>
+               dangerouslySetInnerHTML={{ __html: logoText }} />
               <span
                 contentEditable={interactive}
                 suppressContentEditableWarning
                 onBlur={(e) => {
-                  const next = e.currentTarget.innerText.trim();
+                  const next = e.currentTarget.innerHTML;
                   if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                 }}
                 style={{ outline: "none", color: subtextColor }}
                 className={`text-xs opacity-75 ${interactive ? "cursor-text" : ""}`}
-              >
-                {copyright}
-              </span>
+               dangerouslySetInnerHTML={{ __html: copyright }} />
               <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold" style={{ color: subtextColor }}>
                 {navLinks.map((l: any, idx: number) => (
                   <div key={idx} className="group/link relative inline-flex items-center">
@@ -4103,32 +4107,25 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                       }}
                       style={{ outline: "none", color: textColor }}
                       className={`text-xl font-bold ${interactive ? "cursor-text" : ""}`}
-                    >
-                      {logoText}
-                    </h3>
+                     dangerouslySetInnerHTML={{ __html: logoText }} />
                   </div>
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={`text-sm leading-relaxed max-w-sm ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {tagline}
-                  </p>
-                  <div className="flex items-center gap-4 pt-4" style={{ color: textColor }}>
-                    <Twitter className="w-5 h-5 hover:opacity-80 transition-opacity cursor-pointer" />
-                    <Instagram className="w-5 h-5 hover:opacity-80 transition-opacity cursor-pointer" />
-                    <Linkedin className="w-5 h-5 hover:opacity-80 transition-opacity cursor-pointer" />
-                    <Github className="w-5 h-5 hover:opacity-80 transition-opacity cursor-pointer" />
+                   dangerouslySetInnerHTML={{ __html: tagline }} />
+                  <div className="pt-2">
+                    <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} />
                   </div>
                 </div>
                 <div className={`grid gap-8 ${isMobile ? "grid-cols-2" : isMobileOrTablet ? "grid-cols-3" : "lg:col-span-7 grid-cols-2 md:grid-cols-3"}`}>
@@ -4138,7 +4135,7 @@ export function ComponentRenderer({
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== col.title) {
                             const updatedCols = [...columnsList];
                             updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -4147,9 +4144,7 @@ export function ComponentRenderer({
                         }}
                         style={{ outline: "none", color: textColor }}
                         className={`font-semibold ${interactive ? "cursor-text" : ""}`}
-                      >
-                        {col.title}
-                      </h5>
+                       dangerouslySetInnerHTML={{ __html: col.title }} />
                       <ul className="space-y-3">
                         {col.links.map((lnk: string, lIdx: number) => (
                           <li key={lIdx} className="block">
@@ -4157,7 +4152,7 @@ export function ComponentRenderer({
                               contentEditable={interactive}
                               suppressContentEditableWarning
                               onBlur={(e) => {
-                                const next = e.currentTarget.innerText.trim();
+                                const next = e.currentTarget.innerHTML;
                                 if (next && next !== lnk) {
                                   const updatedCols = [...columnsList];
                                   const nextLinks = [...updatedCols[cIdx].links];
@@ -4168,9 +4163,7 @@ export function ComponentRenderer({
                               }}
                               style={{ outline: "none", color: subtextColor }}
                               className={`text-sm hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                            >
-                              {lnk}
-                            </span>
+                             dangerouslySetInnerHTML={{ __html: lnk }} />
                           </li>
                         ))}
                       </ul>
@@ -4183,14 +4176,12 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text" : ""}
-                >
-                  {copyright}
-                </span>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
                 <div className="flex flex-wrap items-center justify-center gap-6" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
@@ -4228,27 +4219,23 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                       }}
                       style={{ outline: "none", color: textColor }}
                       className={`text-xl font-bold ${interactive ? "cursor-text" : ""}`}
-                    >
-                      {logoText}
-                    </h3>
+                     dangerouslySetInnerHTML={{ __html: logoText }} />
                   </div>
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={`text-sm leading-relaxed max-w-xs pt-2 ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {tagline}
-                  </p>
+                   dangerouslySetInnerHTML={{ __html: tagline }} />
                 </div>
                 
                 <div className={`grid gap-8 ${isMobileOrTablet ? "grid-cols-2" : "lg:col-span-4 grid-cols-2"}`}>
@@ -4258,7 +4245,7 @@ export function ComponentRenderer({
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== col.title) {
                             const updatedCols = [...columnsList];
                             updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -4267,9 +4254,7 @@ export function ComponentRenderer({
                         }}
                         style={{ outline: "none", color: textColor }}
                         className={`font-semibold ${interactive ? "cursor-text" : ""}`}
-                      >
-                        {col.title}
-                      </h5>
+                       dangerouslySetInnerHTML={{ __html: col.title }} />
                       <ul className="space-y-4">
                         {col.links.map((lnk: string, lIdx: number) => (
                           <li key={lIdx} className="block">
@@ -4277,7 +4262,7 @@ export function ComponentRenderer({
                               contentEditable={interactive}
                               suppressContentEditableWarning
                               onBlur={(e) => {
-                                const next = e.currentTarget.innerText.trim();
+                                const next = e.currentTarget.innerHTML;
                                 if (next && next !== lnk) {
                                   const updatedCols = [...columnsList];
                                   const nextLinks = [...updatedCols[cIdx].links];
@@ -4317,20 +4302,13 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text" : ""}
-                >
-                  {copyright}
-                </span>
-                <div className="flex items-center gap-4" style={{ color: subtextColor }}>
-                  <span className="opacity-70 mr-2">Built in CraftSite</span>
-                  <Globe className="w-4 h-4 cursor-pointer hover:opacity-80" />
-                  <span className="font-bold cursor-pointer hover:opacity-80">Bē</span>
-                  <Twitter className="w-4 h-4 cursor-pointer hover:opacity-80" />
-                </div>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
+                <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} />
               </div>
             </div>
           ) : variant === "footer-azimute" ? (
@@ -4344,27 +4322,23 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
                     className={`text-2xl font-bold tracking-tight ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {logoText}
-                  </h3>
+                   dangerouslySetInnerHTML={{ __html: logoText }} />
                 </div>
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={`text-sm font-medium ${interactive ? "cursor-text" : ""}`}
-                >
-                  {tagline}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: tagline }} />
               </div>
 
               <div className="w-full border-t" style={{ borderColor }}></div>
@@ -4376,7 +4350,7 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== col.title) {
                           const updatedCols = [...columnsList];
                           updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -4385,9 +4359,7 @@ export function ComponentRenderer({
                       }}
                       style={{ outline: "none", color: textColor }}
                       className={`font-bold ${interactive ? "cursor-text" : ""}`}
-                    >
-                      {col.title}
-                    </h5>
+                     dangerouslySetInnerHTML={{ __html: col.title }} />
                     <ul className="space-y-4">
                       {col.links.map((lnk: string, lIdx: number) => (
                         <li key={lIdx} className="block">
@@ -4395,7 +4367,7 @@ export function ComponentRenderer({
                             contentEditable={interactive}
                             suppressContentEditableWarning
                             onBlur={(e) => {
-                              const next = e.currentTarget.innerText.trim();
+                              const next = e.currentTarget.innerHTML;
                               if (next && next !== lnk) {
                                 const updatedCols = [...columnsList];
                                 const nextLinks = [...updatedCols[cIdx].links];
@@ -4406,9 +4378,7 @@ export function ComponentRenderer({
                             }}
                             style={{ outline: "none", color: subtextColor }}
                             className={`text-sm hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                          >
-                            {lnk}
-                          </span>
+                           dangerouslySetInnerHTML={{ __html: lnk }} />
                         </li>
                       ))}
                     </ul>
@@ -4445,11 +4415,8 @@ export function ComponentRenderer({
                     <span>Português</span>
                     <ChevronDown className="w-4 h-4 opacity-50" />
                   </button>
-                  <div className="flex items-center gap-3 pt-2">
-                    <div className="p-2 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer" style={{ borderColor, color: textColor }}><Linkedin className="w-4 h-4" /></div>
-                    <div className="p-2 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer" style={{ borderColor, color: textColor }}><Instagram className="w-4 h-4" /></div>
-                    <div className="p-2 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer" style={{ borderColor, color: textColor }}><Facebook className="w-4 h-4" /></div>
-                    <div className="p-2 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer" style={{ borderColor, color: textColor }}><Youtube className="w-4 h-4" /></div>
+                  <div className="pt-2">
+                    <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} />
                   </div>
                 </div>
               </div>
@@ -4459,14 +4426,12 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text" : ""}
-                >
-                  {copyright}
-                </span>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
                 <div className="flex flex-wrap items-center justify-center gap-6" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
@@ -4503,27 +4468,23 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
                     className={`text-xl font-semibold ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {logoText}
-                  </h3>
+                   dangerouslySetInnerHTML={{ __html: logoText }} />
                 </div>
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                   }}
                   style={{ outline: "none", color: textColor }}
                   className={`font-medium ${interactive ? "cursor-text" : ""}`}
-                >
-                  {tagline}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: tagline }} />
               </div>
 
               <div className="w-full border-t" style={{ borderColor }}></div>
@@ -4557,7 +4518,7 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== col.title) {
                           const updatedCols = [...columnsList];
                           updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -4566,9 +4527,7 @@ export function ComponentRenderer({
                       }}
                       style={{ outline: "none", color: textColor }}
                       className={`font-semibold ${interactive ? "cursor-text" : ""}`}
-                    >
-                      {col.title}
-                    </h5>
+                     dangerouslySetInnerHTML={{ __html: col.title }} />
                     <ul className="space-y-4">
                       {col.links.map((lnk: string, lIdx: number) => (
                         <li key={lIdx} className="block">
@@ -4576,7 +4535,7 @@ export function ComponentRenderer({
                             contentEditable={interactive}
                             suppressContentEditableWarning
                             onBlur={(e) => {
-                              const next = e.currentTarget.innerText.trim();
+                              const next = e.currentTarget.innerHTML;
                               if (next && next !== lnk) {
                                 const updatedCols = [...columnsList];
                                 const nextLinks = [...updatedCols[cIdx].links];
@@ -4587,9 +4546,7 @@ export function ComponentRenderer({
                             }}
                             style={{ outline: "none", color: subtextColor }}
                             className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                          >
-                            {lnk}
-                          </span>
+                           dangerouslySetInnerHTML={{ __html: lnk }} />
                         </li>
                       ))}
                     </ul>
@@ -4605,23 +4562,16 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={interactive ? "cursor-text" : ""}
-                  >
-                    {copyright}
-                  </span>
+                   dangerouslySetInnerHTML={{ __html: copyright }} />
                 </div>
                 
-                <div className={`flex items-center gap-3 justify-center ${isMobileOrTablet ? "order-1" : "order-2"}`}>
-                  <div className="p-2 bg-muted/50 rounded-md hover:bg-muted transition-colors cursor-pointer" style={{ color: textColor }}><Linkedin className="w-4 h-4" /></div>
-                  <div className="p-2 bg-muted/50 rounded-md hover:bg-muted transition-colors cursor-pointer" style={{ color: textColor }}><Facebook className="w-4 h-4" /></div>
-                  <div className="p-2 bg-muted/50 rounded-md hover:bg-muted transition-colors cursor-pointer" style={{ color: textColor }}><Instagram className="w-4 h-4" /></div>
-                  <div className="p-2 bg-muted/50 rounded-md hover:bg-muted transition-colors cursor-pointer flex items-center justify-center font-bold" style={{ color: textColor, width: "32px", height: "32px" }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
-                  </div>
+                <div className={`flex items-center justify-center ${isMobileOrTablet ? "order-1" : "order-2"}`}>
+                  <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} justify="center" />
                 </div>
 
                 <div className={`flex flex-wrap items-center gap-6 ${isMobileOrTablet ? "justify-center order-2" : "justify-end order-3"}`} style={{ color: subtextColor }}>
@@ -4658,26 +4608,22 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== logoText) onUpdateProps?.({ logoText: next });
                     }}
                     style={{ outline: "none", color: textColor }}
                     className={`text-2xl font-black whitespace-nowrap ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {logoText}
-                  </h3>
+                   dangerouslySetInnerHTML={{ __html: logoText }} />
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== tagline) onUpdateProps?.({ tagline: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={`text-sm max-w-sm ${interactive ? "cursor-text transition-all" : ""}`}
-                  >
-                    {tagline}
-                  </p>
+                   dangerouslySetInnerHTML={{ __html: tagline }} />
                 </div>
                 <div className={`grid gap-6 ${isMobile ? "grid-cols-2" : isMobileOrTablet ? "grid-cols-3" : "lg:col-span-3 grid-cols-2 md:grid-cols-3"}`}>
                   {columnsList.map((col: any, cIdx: number) => (
@@ -4686,7 +4632,7 @@ export function ComponentRenderer({
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== col.title) {
                             const updatedCols = [...columnsList];
                             updatedCols[cIdx] = { ...updatedCols[cIdx], title: next };
@@ -4695,9 +4641,7 @@ export function ComponentRenderer({
                         }}
                         style={{ outline: "none", color: textColor }}
                         className={`font-bold uppercase tracking-wider text-xs ${interactive ? "cursor-text transition-all" : ""}`}
-                      >
-                        {col.title}
-                      </h5>
+                       dangerouslySetInnerHTML={{ __html: col.title }} />
                       <ul className="space-y-2.5">
                         {col.links.map((lnk: string, lIdx: number) => (
                           <li key={lIdx} className="block">
@@ -4705,7 +4649,7 @@ export function ComponentRenderer({
                               contentEditable={interactive}
                               suppressContentEditableWarning
                               onBlur={(e) => {
-                                const next = e.currentTarget.innerText.trim();
+                                const next = e.currentTarget.innerHTML;
                                 if (next && next !== lnk) {
                                   const updatedCols = [...columnsList];
                                   const nextLinks = [...updatedCols[cIdx].links];
@@ -4716,9 +4660,7 @@ export function ComponentRenderer({
                               }}
                               style={{ outline: "none", color: subtextColor }}
                               className={`hover:opacity-100 transition-opacity block ${interactive ? "cursor-text" : ""}`}
-                            >
-                              {lnk}
-                            </span>
+                             dangerouslySetInnerHTML={{ __html: lnk }} />
                           </li>
                         ))}
                       </ul>
@@ -4731,14 +4673,13 @@ export function ComponentRenderer({
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== copyright) onUpdateProps?.({ copyright: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={interactive ? "cursor-text transition-all" : ""}
-                >
-                  {copyright}
-                </span>
+                 dangerouslySetInnerHTML={{ __html: copyright }} />
+                <RenderFooterSocialIcons socials={socials} textColor={textColor} borderColor={borderColor} interactive={interactive} />
                 <div className="flex items-center gap-6" style={{ color: subtextColor }}>
                   {navLinks.map((l: any, idx: number) => (
                     <div key={idx} className="group/link relative inline-flex items-center">
@@ -4830,13 +4771,14 @@ export function ComponentRenderer({
 
     const isTransparentBg = !style.backgroundColor || style.backgroundColor === "transparent" || style.backgroundColor === "#ffffff" || style.backgroundColor === "#f8fafc";
     const sectionBg = isTransparentBg ? "transparent" : style.backgroundColor;
+    const isFlipped = props.imagePosition === "left" || props.reverseLayout;
 
     return (
       <section
         {...aosAttrs}
         id={currentSectionId}
         style={{ ...css, backgroundColor: sectionBg }}
-        className={`py-16 md:py-24 transition-all relative w-full ${
+        className={`${isMobileOrTablet ? "py-8 md:py-16 px-3" : "py-16 md:py-24"} transition-all relative w-full ${
           isFollowingNavbar
             ? "min-h-[90vh] lg:min-h-[100vh] !pt-[130px] md:!pt-[170px] flex flex-col justify-center"
             : isDirectlyBelowNavbar
@@ -4848,42 +4790,40 @@ export function ComponentRenderer({
           {/* Variant 1: classic-centered-form */}
           {(variant === "classic-centered-form" || !variant) && (
             <div
-              className={`w-full max-w-2xl sm:max-w-3xl mx-auto p-8 sm:p-12 border ${borderColor} shadow-xl backdrop-blur-md space-y-8`}
+              className={`w-full max-w-2xl sm:max-w-3xl mx-auto border ${borderColor} shadow-xl backdrop-blur-md ${
+                isMobile ? "p-4 sm:p-6 space-y-5" : isTablet ? "p-6 sm:p-8 space-y-6" : "p-8 sm:p-12 space-y-8"
+              }`}
               style={{
                 backgroundColor: cardBg,
                 borderRadius: theme.borderRadius || "20px",
               }}
             >
-              <div className="text-center space-y-3">
+              <div className="text-center space-y-2.5">
                 <h2
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== heading) onUpdateProps?.({ heading: next });
                   }}
                   style={{ outline: "none", color: textColor }}
-                  className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
-                >
-                  {heading}
-                </h2>
+                  className={`text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                 dangerouslySetInnerHTML={{ __html: heading }} />
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== subheading) onUpdateProps?.({ subheading: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
-                  className={`text-sm sm:text-base max-w-lg mx-auto ${interactive ? "cursor-text" : ""}`}
-                >
-                  {subheading}
-                </p>
+                  className={`text-xs sm:text-sm md:text-base max-w-lg mx-auto ${interactive ? "cursor-text" : ""}`}
+                 dangerouslySetInnerHTML={{ __html: subheading }} />
               </div>
 
               <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
+                  <div className={`grid gap-4 ${isMobileOrTablet ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
+                    <div className={`space-y-1.5 w-full min-w-0 ${isFlipped ? "order-2 md:order-2" : "order-1 md:order-1"}`}>
                       <label className="text-xs font-semibold text-foreground/80">Full Name</label>
                       <input
                         type="text"
@@ -4891,11 +4831,11 @@ export function ComponentRenderer({
                         placeholder="Jane Doe"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                         style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className={`space-y-1.5 w-full min-w-0 ${isFlipped ? "order-1 md:order-1" : "order-2 md:order-2"}`}>
                       <label className="text-xs font-semibold text-foreground/80">Email Address</label>
                       <input
                         type="email"
@@ -4903,23 +4843,23 @@ export function ComponentRenderer({
                         placeholder="jane@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                         style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                       />
                     </div>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full min-w-0">
                     <label className="text-xs font-semibold text-foreground/80">Subject</label>
                     <input
                       type="text"
                       placeholder="Project Inquiry"
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                       style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full min-w-0">
                     <label className="text-xs font-semibold text-foreground/80">Message</label>
                     <textarea
                       rows={4}
@@ -4927,7 +4867,7 @@ export function ComponentRenderer({
                       placeholder="Tell us about your timeline, budget, and requirements..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                      className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                       style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                     />
                   </div>
@@ -4940,14 +4880,12 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
                       }}
                       style={{ outline: "none" }}
                       className={interactive ? "cursor-text" : ""}
-                    >
-                      {buttonText}
-                    </span>
+                     dangerouslySetInnerHTML={{ __html: buttonText }} />
                   </button>
                 </form>
             </div>
@@ -4955,159 +4893,147 @@ export function ComponentRenderer({
 
           {/* Variant 2: split-contact-info-form */}
           {variant === "split-contact-info-form" && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start text-left">
-              {/* Left Column: Direct Contact Info */}
-              <div className="lg:col-span-5 space-y-8">
+            <div className={`grid items-start text-left ${isMobileOrTablet ? "grid-cols-1 w-full gap-6 md:gap-8" : "grid-cols-1 lg:grid-cols-12 gap-12"}`}>
+              {/* Direct Contact Info */}
+              <div className={`${isMobileOrTablet ? "w-full space-y-6" : "lg:col-span-5 space-y-8"} ${isFlipped ? "lg:order-2" : "lg:order-1"}`}>
                 <div className="space-y-3">
                   <h2
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== heading) onUpdateProps?.({ heading: next });
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {heading}
-                  </h2>
+                    className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                   dangerouslySetInnerHTML={{ __html: heading }} />
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== subheading) onUpdateProps?.({ subheading: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
-                    className={`text-base ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {subheading}
-                  </p>
+                    className={`text-sm sm:text-base ${interactive ? "cursor-text" : ""}`}
+                   dangerouslySetInnerHTML={{ __html: subheading }} />
                 </div>
 
-                <div className="space-y-4">
-                  <div className="p-4 rounded-2xl border flex items-start gap-4 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
-                    <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                <div className="space-y-3.5">
+                  <div className="p-3.5 sm:p-4 rounded-2xl border flex items-start gap-3.5 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary shrink-0">
                       <Mail className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email Support</h4>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">Email Support</h4>
                       <p
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== contactEmail) onUpdateProps?.({ contactEmail: next });
                         }}
                         style={{ outline: "none", color: textColor }}
-                        className={`font-semibold text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
-                      >
-                        {contactEmail}
-                      </p>
+                        className={`font-semibold text-xs sm:text-sm mt-0.5 break-all ${interactive ? "cursor-text" : ""}`}
+                       dangerouslySetInnerHTML={{ __html: contactEmail }} />
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl border flex items-start gap-4 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
-                    <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <div className="p-3.5 sm:p-4 rounded-2xl border flex items-start gap-3.5 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary shrink-0">
                       <Phone className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Call Us Directly</h4>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">Call Us Directly</h4>
                       <p
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== contactPhone) onUpdateProps?.({ contactPhone: next });
                         }}
                         style={{ outline: "none", color: textColor }}
-                        className={`font-semibold text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
-                      >
-                        {contactPhone}
-                      </p>
+                        className={`font-semibold text-xs sm:text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
+                       dangerouslySetInnerHTML={{ __html: contactPhone }} />
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl border flex items-start gap-4 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
-                    <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <div className="p-3.5 sm:p-4 rounded-2xl border flex items-start gap-3.5 transition-all hover:border-primary/40" style={{ backgroundColor: cardBg, borderColor }}>
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary shrink-0">
                       <MapPin className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Headquarters</h4>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground">Headquarters</h4>
                       <p
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== contactAddress) onUpdateProps?.({ contactAddress: next });
                         }}
                         style={{ outline: "none", color: textColor }}
-                        className={`font-semibold text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
-                      >
-                        {contactAddress}
-                      </p>
+                        className={`font-semibold text-xs sm:text-sm mt-0.5 ${interactive ? "cursor-text" : ""}`}
+                       dangerouslySetInnerHTML={{ __html: contactAddress }} />
                       <p
                         contentEditable={interactive}
                         suppressContentEditableWarning
                         onBlur={(e) => {
-                          const next = e.currentTarget.innerText.trim();
+                          const next = e.currentTarget.innerHTML;
                           if (next && next !== contactHours) onUpdateProps?.({ contactHours: next });
                         }}
                         style={{ outline: "none", color: subtextColor }}
                         className={`text-xs opacity-75 mt-1 ${interactive ? "cursor-text" : ""}`}
-                      >
-                        {contactHours}
-                      </p>
+                       dangerouslySetInnerHTML={{ __html: contactHours }} />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Form Card */}
+              {/* Form Card */}
               <div
-                className={`lg:col-span-7 p-8 sm:p-10 border ${borderColor} shadow-2xl backdrop-blur-md space-y-6`}
+                className={`${isMobileOrTablet ? "w-full p-4 sm:p-6 space-y-5" : "lg:col-span-7 p-8 sm:p-10 space-y-6"} border ${borderColor} shadow-2xl backdrop-blur-md ${isFlipped ? "lg:order-1" : "lg:order-2"}`}
                 style={{ backgroundColor: cardBg, borderRadius: theme.borderRadius || "24px" }}
               >
                 <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
+                  <div className={`grid gap-4 ${isMobileOrTablet ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
+                    <div className={`space-y-1.5 w-full min-w-0 ${isFlipped ? "order-2 md:order-2" : "order-1 md:order-1"}`}>
                       <label className="text-xs font-semibold text-foreground/80">First Name</label>
                       <input
                         type="text"
                         required={!interactive}
                         placeholder="Alex"
-                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                         style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className={`space-y-1.5 w-full min-w-0 ${isFlipped ? "order-1 md:order-1" : "order-2 md:order-2"}`}>
                       <label className="text-xs font-semibold text-foreground/80">Last Name</label>
                       <input
                         type="text"
                         required={!interactive}
                         placeholder="Smith"
-                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                         style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                       />
                     </div>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full min-w-0">
                     <label className="text-xs font-semibold text-foreground/80">Work Email</label>
                     <input
                       type="email"
                       required={!interactive}
                       placeholder="alex@company.com"
-                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                       style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full min-w-0">
                     <label className="text-xs font-semibold text-foreground/80">Message</label>
                     <textarea
                       rows={4}
                       required={!interactive}
                       placeholder="How can we help your business succeed?"
-                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                      className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                       style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                     />
                   </div>
@@ -5120,14 +5046,12 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
                       }}
                       style={{ outline: "none" }}
                       className={interactive ? "cursor-text" : ""}
-                    >
-                      {buttonText}
-                    </span>
+                     dangerouslySetInnerHTML={{ __html: buttonText }} />
                   </button>
                 </form>
               </div>
@@ -5137,68 +5061,66 @@ export function ComponentRenderer({
           {/* Variant 3: boxed-dark-glass-form / Modern Centered Form */}
           {variant === "boxed-dark-glass-form" && (
             <div
-              className={`w-full max-w-2xl sm:max-w-3xl mx-auto p-8 sm:p-12 border ${borderColor} shadow-2xl space-y-8`}
+              className={`w-full max-w-2xl sm:max-w-3xl mx-auto border ${borderColor} shadow-2xl ${
+                isMobile ? "p-4 sm:p-6 space-y-5" : isTablet ? "p-6 sm:p-8 space-y-6" : "p-8 sm:p-12 space-y-8"
+              }`}
               style={{
                 backgroundColor: cardBg,
                 color: textColor,
                 borderRadius: theme.borderRadius || "24px",
               }}
             >
-              <div className="text-center space-y-3">
+              <div className="text-center space-y-2.5">
                 <h2
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== heading) onUpdateProps?.({ heading: next });
                   }}
                   style={{ outline: "none", color: textColor }}
-                  className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
-                >
-                  {heading}
-                </h2>
+                  className={`text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                 dangerouslySetInnerHTML={{ __html: heading }} />
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== subheading) onUpdateProps?.({ subheading: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
-                  className={`text-sm max-w-lg mx-auto ${interactive ? "cursor-text" : ""}`}
-                >
-                  {subheading}
-                </p>
+                  className={`text-xs sm:text-sm max-w-lg mx-auto ${interactive ? "cursor-text" : ""}`}
+                 dangerouslySetInnerHTML={{ __html: subheading }} />
               </div>
 
               <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full min-w-0">
                   <label className="text-xs font-semibold" style={{ color: labelColor }}>Your Name</label>
                   <input
                     type="text"
                     required={!interactive}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400"
+                    className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400"
                     style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full min-w-0">
                   <label className="text-xs font-semibold" style={{ color: labelColor }}>Work Email</label>
                   <input
                     type="email"
                     required={!interactive}
                     placeholder="name@company.com"
-                    className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400"
+                    className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400"
                     style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full min-w-0">
                   <label className="text-xs font-semibold" style={{ color: labelColor }}>Project Overview</label>
                   <textarea
                     rows={4}
                     required={!interactive}
                     placeholder="Briefly describe your goals, budget range, and desired launch date..."
-                    className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none placeholder:text-slate-400"
+                    className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none placeholder:text-slate-400"
                     style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                   />
                 </div>
@@ -5211,14 +5133,12 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
                     }}
                     style={{ outline: "none" }}
                     className={interactive ? "cursor-text" : ""}
-                  >
-                    {buttonText}
-                  </span>
+                   dangerouslySetInnerHTML={{ __html: buttonText }} />
                 </button>
               </form>
             </div>
@@ -5226,40 +5146,36 @@ export function ComponentRenderer({
 
           {/* Variant 4: map-split-form */}
           {variant === "map-split-form" && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch text-left">
-              {/* Left Column: Office Location Card */}
+            <div className={`grid items-stretch text-left ${isMobileOrTablet ? "grid-cols-1 w-full gap-6 md:gap-8" : "grid-cols-1 lg:grid-cols-12 gap-8"}`}>
+              {/* Office Location Card */}
               <div
-                className={`lg:col-span-5 p-8 border ${borderColor} flex flex-col justify-between space-y-6 shadow-xl`}
+                className={`${isMobileOrTablet ? "w-full p-4 sm:p-6 space-y-4" : "lg:col-span-5 p-8 space-y-6"} border ${borderColor} flex flex-col justify-between shadow-xl ${isFlipped ? "lg:order-2" : "lg:order-1"}`}
                 style={{ backgroundColor: cardBg, borderRadius: theme.borderRadius || "24px" }}
               >
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== heading) onUpdateProps?.({ heading: next });
                     }}
                     style={{ outline: "none", color: textColor }}
-                    className={`text-2xl font-bold ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {heading}
-                  </h3>
+                    className={`text-xl sm:text-2xl font-bold ${interactive ? "cursor-text" : ""}`}
+                   dangerouslySetInnerHTML={{ __html: heading }} />
                   <p
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== subheading) onUpdateProps?.({ subheading: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
-                    className={`text-sm ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {subheading}
-                  </p>
+                    className={`text-xs sm:text-sm ${interactive ? "cursor-text" : ""}`}
+                   dangerouslySetInnerHTML={{ __html: subheading }} />
                 </div>
 
-                <div className="p-4 rounded-2xl border space-y-3" style={{ backgroundColor: inputBg, borderColor }}>
+                <div className="p-3.5 sm:p-4 rounded-2xl border space-y-3" style={{ backgroundColor: inputBg, borderColor }}>
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold" style={{ color: textColor }}>Studio Location</span>
                     <span className="text-emerald-500 font-bold">Open</span>
@@ -5268,88 +5184,82 @@ export function ComponentRenderer({
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== contactAddress) onUpdateProps?.({ contactAddress: next });
                     }}
                     style={{ outline: "none", color: subtextColor }}
                     className={`text-xs ${interactive ? "cursor-text" : ""}`}
-                  >
-                    {contactAddress}
-                  </p>
-                  <div className="pt-2 border-t flex items-center justify-between text-xs opacity-80" style={{ borderColor, color: subtextColor }}>
+                   dangerouslySetInnerHTML={{ __html: contactAddress }} />
+                  <div className="pt-2 border-t flex flex-wrap items-center justify-between gap-2 text-xs opacity-80" style={{ borderColor, color: subtextColor }}>
                     <span
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== contactEmail) onUpdateProps?.({ contactEmail: next });
                       }}
                       style={{ outline: "none" }}
-                      className={interactive ? "cursor-text" : ""}
-                    >
-                      {contactEmail}
-                    </span>
+                      className={`break-all ${interactive ? "cursor-text" : ""}`}
+                     dangerouslySetInnerHTML={{ __html: contactEmail }} />
                     <span
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== contactPhone) onUpdateProps?.({ contactPhone: next });
                       }}
                       style={{ outline: "none" }}
                       className={interactive ? "cursor-text" : ""}
-                    >
-                      {contactPhone}
-                    </span>
+                     dangerouslySetInnerHTML={{ __html: contactPhone }} />
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Detailed Contact Form */}
+              {/* Detailed Contact Form */}
               <div
-                className={`lg:col-span-7 p-8 sm:p-10 border ${borderColor} shadow-xl backdrop-blur-md space-y-6`}
+                className={`${isMobileOrTablet ? "w-full p-4 sm:p-6 space-y-5" : "lg:col-span-7 p-8 sm:p-10 space-y-6"} border ${borderColor} shadow-xl backdrop-blur-md ${isFlipped ? "lg:order-1" : "lg:order-2"}`}
                 style={{ backgroundColor: cardBg, borderRadius: theme.borderRadius || "24px" }}
               >
                 <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="space-y-4 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
+                  <div className={`grid gap-4 ${isMobileOrTablet ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
+                    <div className={`space-y-1.5 w-full min-w-0 ${isFlipped ? "order-2 md:order-2" : "order-1 md:order-1"}`}>
                       <label className="text-xs font-semibold text-foreground/80">First Name</label>
                       <input
                         type="text"
                         required={!interactive}
                         placeholder="Alex"
-                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                         style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className={`space-y-1.5 w-full min-w-0 ${isFlipped ? "order-1 md:order-1" : "order-2 md:order-2"}`}>
                       <label className="text-xs font-semibold text-foreground/80">Last Name</label>
                       <input
                         type="text"
                         required={!interactive}
                         placeholder="Morgan"
-                        className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                         style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                       />
                     </div>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full min-w-0">
                     <label className="text-xs font-semibold text-foreground/80">Email Address</label>
                     <input
                       type="email"
                       required={!interactive}
                       placeholder="alex@company.com"
-                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
                       style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 w-full min-w-0">
                     <label className="text-xs font-semibold text-foreground/80">Message</label>
                     <textarea
                       rows={4}
                       required={!interactive}
                       placeholder="How can our studio assist you?"
-                      className="w-full px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                      className="w-full min-w-0 box-border px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                       style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                     />
                   </div>
@@ -5362,14 +5272,12 @@ export function ComponentRenderer({
                       contentEditable={interactive}
                       suppressContentEditableWarning
                       onBlur={(e) => {
-                        const next = e.currentTarget.innerText.trim();
+                        const next = e.currentTarget.innerHTML;
                         if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
                       }}
                       style={{ outline: "none" }}
                       className={interactive ? "cursor-text" : ""}
-                    >
-                      {buttonText}
-                    </span>
+                     dangerouslySetInnerHTML={{ __html: buttonText }} />
                   </button>
                 </form>
               </div>
@@ -5379,64 +5287,62 @@ export function ComponentRenderer({
           {/* Variant 5: compact-newsletter-contact */}
           {variant === "compact-newsletter-contact" && (
             <div
-              className={`p-6 sm:p-8 border ${borderColor} shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 text-left`}
+              className={`border ${borderColor} shadow-xl text-left ${
+                isMobileOrTablet
+                  ? `p-4 sm:p-6 flex space-y-4 w-full ${isFlipped ? "flex-col-reverse" : "flex-col"}`
+                  : `p-6 sm:p-8 flex items-center justify-between gap-6 ${isFlipped ? "md:flex-row-reverse" : "md:flex-row"}`
+              }`}
               style={{
                 backgroundColor: cardBg,
                 borderRadius: theme.borderRadius || "20px",
               }}
             >
-              <div className="space-y-1 max-w-md">
+              <div className={`space-y-1 ${isMobileOrTablet ? "w-full" : "max-w-md"}`}>
                 <h3
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== heading) onUpdateProps?.({ heading: next });
                   }}
                   style={{ outline: "none", color: textColor }}
-                  className={`text-xl font-bold tracking-tight ${interactive ? "cursor-text" : ""}`}
-                >
-                  {heading}
-                </h3>
+                  className={`text-lg sm:text-xl font-bold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                 dangerouslySetInnerHTML={{ __html: heading }} />
                 <p
                   contentEditable={interactive}
                   suppressContentEditableWarning
                   onBlur={(e) => {
-                    const next = e.currentTarget.innerText.trim();
+                    const next = e.currentTarget.innerHTML;
                     if (next && next !== subheading) onUpdateProps?.({ subheading: next });
                   }}
                   style={{ outline: "none", color: subtextColor }}
                   className={`text-xs ${interactive ? "cursor-text" : ""}`}
-                >
-                  {subheading}
-                </p>
+                 dangerouslySetInnerHTML={{ __html: subheading }} />
               </div>
 
-              <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <form onSubmit={(e) => { e.preventDefault(); if (!interactive) handleSubmit(e); }} className={`flex gap-3 ${isMobileOrTablet ? "flex-col w-full" : "flex-col sm:flex-row items-center w-full md:w-auto"}`}>
                 <input
                   type="email"
                   required={!interactive}
                   placeholder="Enter your email"
-                  className="w-full sm:w-64 px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className={`px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 ${isMobileOrTablet ? "w-full" : "w-full sm:w-64"}`}
                   style={{ backgroundColor: inputBg, borderColor, color: textColor, borderRadius: theme.borderRadius || "12px" }}
                 />
                 <button
                   type={interactive ? "button" : "submit"}
-                  className="w-full sm:w-auto py-3 px-6 font-bold text-sm text-white shadow-md transition-all hover:brightness-110 shrink-0 cursor-pointer border-2 border-transparent"
+                  className={`py-3 px-6 font-bold text-sm text-white shadow-md transition-all hover:brightness-110 shrink-0 cursor-pointer border-2 border-transparent ${isMobileOrTablet ? "w-full justify-center" : "w-full sm:w-auto"}`}
                   style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
                 >
                   <span
                     contentEditable={interactive}
                     suppressContentEditableWarning
                     onBlur={(e) => {
-                      const next = e.currentTarget.innerText.trim();
+                      const next = e.currentTarget.innerHTML;
                       if (next && next !== buttonText) onUpdateProps?.({ buttonText: next });
                     }}
                     style={{ outline: "none" }}
                     className={interactive ? "cursor-text" : ""}
-                  >
-                    {buttonText}
-                  </span>
+                   dangerouslySetInnerHTML={{ __html: buttonText }} />
                 </button>
               </form>
             </div>
@@ -5466,7 +5372,7 @@ export function ComponentRenderer({
             contentEditable={interactive}
             suppressContentEditableWarning
             onBlur={(e) => {
-              const newText = e.currentTarget.innerText.trim();
+              const newText = e.currentTarget.innerHTML;
               if (newText && newText !== props.heading) {
                 onUpdateProps?.({ heading: newText });
               }
@@ -5475,16 +5381,14 @@ export function ComponentRenderer({
             className={`text-2xl font-bold mb-4 ${
               interactive ? "cursor-text transition-all" : ""
             }`}
-          >
-            {props.heading}
-          </h2>
+           dangerouslySetInnerHTML={{ __html: props.heading }} />
         )}
         {props.text && (
           <p
             contentEditable={interactive}
             suppressContentEditableWarning
             onBlur={(e) => {
-              const newText = e.currentTarget.innerText.trim();
+              const newText = e.currentTarget.innerHTML;
               if (newText && newText !== props.text) {
                 onUpdateProps?.({ text: newText });
               }
@@ -5493,9 +5397,7 @@ export function ComponentRenderer({
             className={`text-muted-foreground ${
               interactive ? "cursor-text transition-all" : ""
             }`}
-          >
-            {props.text}
-          </p>
+           dangerouslySetInnerHTML={{ __html: props.text }} />
         )}
       </Center>
     </section>

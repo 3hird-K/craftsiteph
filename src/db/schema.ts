@@ -56,6 +56,18 @@ export type ComponentProps = {
   logoFontFamily?: string;
   logoFontSize?: string;
   logoFontWeight?: string;
+  logoIcon?: string;
+  contactTitle?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  contactAddress?: string;
+  companyName?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  hoursDays1?: string;
+  hoursDays2?: string;
+  hoursTime1?: string;
+  hoursTime2?: string;
   logoFontStyle?: string;
   logoTextTransform?: string;
   logoColor?: string;

@@ -19,6 +19,7 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { Canvas } from "./Canvas";
 import { ComponentVariantModal } from "./ComponentVariantModal";
 import { PageSetupModal } from "./PageSetupModal";
+import { FloatingTextToolbar } from "./FloatingTextToolbar";
 import { isDarkColor } from "@/components/renderer/ComponentRenderer";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useProjectRealtime } from "@/hooks/useProjectRealtime";
@@ -1110,6 +1111,7 @@ export function BuilderEditor({ project }: Props) {
           changeTheme({ containerWidth: width });
         }}
       />
+      <FloatingTextToolbar />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import type { BuilderComponent, ComponentProps, ComponentStyle, ComponentType, SiteTheme } from "@/lib/types";
+import { isTwoColumnLayout } from "@/lib/types";
 import { ComponentRenderer, isDarkColor } from "@/components/renderer/ComponentRenderer";
 import { PALETTE, COMPONENT_VARIANTS } from "@/lib/presets";
 import { Plus, Trash2, ArrowUp, ArrowDown, Hash, LayoutGrid, GripVertical, ArrowLeftRight, Wifi, Battery, Signal, Lock, RotateCw, Copy, Monitor, Type } from "lucide-react";
@@ -468,13 +469,7 @@ export function Canvas({
                           <LayoutGrid className="h-3 w-3" /> Layouts
                         </button>
                       )}
-                      {(c.type === "hero" && (
-                          c.props.variant === "split-showcase-hero" ||
-                          c.props.variant === "bento-grid-hero" ||
-                          c.props.variant === "mobile-app-hero" ||
-                          c.props.variant === "split-image" ||
-                          (c.props.variant === "bento-hero" && c.props.imageLayout !== "background")
-                      )) && (
+                      {isTwoColumnLayout(c) && (
                         <button
                           type="button"
                           onClick={(e) => {
@@ -483,11 +478,11 @@ export function Canvas({
                             const nextPos = currentPos === "left" ? "right" : "left";
                             onUpdateProps?.(c.id, { imagePosition: nextPos, reverseLayout: nextPos === "left" });
                           }}
-                          className="rounded-full bg-muted/90 hover:bg-primary hover:text-white px-2 py-1 text-xs font-bold text-foreground border border-border shadow-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                          className="rounded-full bg-muted/90 hover:bg-primary hover:text-white px-2.5 py-1 text-xs font-bold text-foreground border border-border shadow-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
                           title="Switch / Flip Left & Right Grid Items"
                         >
                           <ArrowLeftRight className="h-3 w-3" />
-                          <span>Flip Sides</span>
+                          <span>Switch Sides</span>
                         </button>
                       )}
 

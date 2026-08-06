@@ -58,6 +58,15 @@ export type ComponentProps = {
   logoHref?: string;
   logoFontFamily?: string;
   logoFontSize?: string;
+  logoIcon?: string;
+  contactTitle?: string;
+  companyName?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  hoursDays1?: string;
+  hoursDays2?: string;
+  hoursTime1?: string;
+  hoursTime2?: string;
   logoFontWeight?: string;
   logoFontStyle?: string;
   logoTextTransform?: string;
@@ -193,3 +202,42 @@ export const FONT_OPTIONS = [
   { label: "Georgia (Editorial Serif)", value: "Georgia, serif" },
   { label: "Mono (Developer/Code)", value: "ui-monospace, SFMono-Regular, monospace" },
 ];
+
+export function isTwoColumnLayout(c: { type: string; props?: ComponentProps }): boolean {
+  if (!c || !c.props) return false;
+  const variant = c.props.variant;
+
+  if (c.type === "form") {
+    return variant === "split-contact-info-form" || variant === "map-split-form";
+  }
+
+  if (c.type === "hero") {
+    return (
+      variant === "split-showcase-hero" ||
+      variant === "bento-grid-hero" ||
+      variant === "mobile-app-hero" ||
+      variant === "split-image" ||
+      variant === "three-images-hero" ||
+      variant === "split-bg-showcase-hero" ||
+      (variant === "bento-hero" && c.props.imageLayout !== "background")
+    );
+  }
+
+  if (c.type === "cta") {
+    return variant === "split-headline-cta";
+  }
+
+  if (c.props.columns === 2) {
+    return true;
+  }
+
+  if (variant && (variant.includes("split") || variant.includes("side-by-side") || variant.includes("2-col"))) {
+    return true;
+  }
+
+  if (c.type === "image" && c.props.imagePosition !== undefined) {
+    return true;
+  }
+
+  return false;
+}
