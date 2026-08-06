@@ -29,6 +29,8 @@ export type ComponentStyle = {
 export type ComponentProps = {
   sectionId?: string;
   scrollBehavior?: "overlay" | "sticky" | "sticky-hide" | "static";
+  showActiveUnderline?: boolean;
+  activeStyle?: string;
   scrollAnimation?: string;
   scrollAnimationDuration?: string;
   text?: string;
@@ -224,7 +226,7 @@ export function isTwoColumnLayout(c: { type: string; props?: ComponentProps }): 
   }
 
   if (c.type === "cta") {
-    return variant === "split-headline-cta";
+    return variant === "split-headline-cta" || variant === "app-preview-cta";
   }
 
   if (c.props.columns === 2) {

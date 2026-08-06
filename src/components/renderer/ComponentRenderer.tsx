@@ -1546,6 +1546,28 @@ function SpacerEditItem({
 }
 
 
+export const cleanPlainText = (val?: string) => {
+  if (!val) return "";
+  let s = val;
+  if (typeof window !== "undefined") {
+    for (let i = 0; i < 3; i++) {
+      if (s.includes("&lt;") || s.includes("&gt;") || s.includes("&amp;")) {
+        try {
+          const doc = new DOMParser().parseFromString(s, "text/html");
+          s = doc.body.textContent || s;
+        } catch (_) {}
+      }
+    }
+  }
+  return s
+    .replace(/<[^>]*>/g, "")
+    .replace(/&lt;[^&]*&gt;/gi, "")
+    .replace(/&lt;\/?[a-z0-9]+&gt;/gi, "")
+    .replace(/^[✦\s\*\#\-\•]+/, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+};
+
 export function ComponentRenderer({
   component,
   allComponents = [],
@@ -1907,6 +1929,99 @@ export function ComponentRenderer({
       );
     };
 
+    const [activeSectionId, setActiveSectionId] = useState<string>("");
+
+    useEffect(() => {
+      const scrollContainer = document.getElementById("canvas-scroll-viewport") || window;
+
+      const updateActiveSection = () => {
+        const sectionElements = allComponents
+          .filter((c) => c.type !== "navbar")
+          .map((c) => {
+            const anchorId = getSectionAnchorId(c);
+            const el = document.getElementById(anchorId);
+            return { id: anchorId, el };
+          })
+          .filter((item): item is { id: string; el: HTMLElement } => Boolean(item.el));
+
+        if (sectionElements.length === 0) return;
+
+        const viewportTop = scrollContainer instanceof Window ? window.scrollY : (scrollContainer as HTMLElement).scrollTop;
+        const offset = 140;
+
+        for (let i = sectionElements.length - 1; i >= 0; i--) {
+          const { id, el } = sectionElements[i];
+          if (el.offsetTop - offset <= viewportTop) {
+            setActiveSectionId(id);
+            break;
+          }
+        }
+      };
+
+      scrollContainer.addEventListener("scroll", updateActiveSection, { passive: true });
+      updateActiveSection();
+
+      return () => {
+        scrollContainer.removeEventListener("scroll", updateActiveSection);
+      };
+    }, [allComponents]);
+
+    const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, href: string) => {
+      if (!href) return;
+      const targetAnchor = href.replace(/^#/, "").trim();
+      if (!targetAnchor || targetAnchor === "#") return;
+
+      let targetEl = document.getElementById(targetAnchor);
+      if (!targetEl) {
+        const matchedOption = sectionOptions.find(
+          (opt) => opt.anchorId.replace(/^#/, "").toLowerCase() === targetAnchor.toLowerCase() ||
+                   opt.label.toLowerCase().includes(targetAnchor.toLowerCase())
+        );
+        if (matchedOption) {
+          targetEl = document.getElementById(matchedOption.anchorId.replace(/^#/, ""));
+        }
+      }
+
+      if (!targetEl) {
+        const compMatch = allComponents.find((c) => {
+          const anchor = getSectionAnchorId(c);
+          return anchor.toLowerCase() === targetAnchor.toLowerCase() || c.type.toLowerCase() === targetAnchor.toLowerCase();
+        });
+        if (compMatch) {
+          targetEl = document.getElementById(getSectionAnchorId(compMatch));
+        }
+      }
+
+      if (targetEl) {
+        e.preventDefault();
+        const scrollContainer = document.getElementById("canvas-scroll-viewport");
+        if (scrollContainer) {
+          const containerTop = scrollContainer.getBoundingClientRect().top;
+          const targetTop = targetEl.getBoundingClientRect().top;
+          const relativeTop = targetTop - containerTop + scrollContainer.scrollTop - 20;
+          scrollContainer.scrollTo({ top: relativeTop, behavior: "smooth" });
+        } else {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        const matchedComp = allComponents.find(c => document.getElementById(getSectionAnchorId(c)) === targetEl);
+        if (matchedComp) {
+          setActiveSectionId(getSectionAnchorId(matchedComp));
+        }
+        if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+      }
+    };
+
+    const isLinkActive = (link: { label: string; href?: string }) => {
+      if (!activeSectionId) return false;
+      const cleanHref = (link.href || "").replace(/^#/, "").trim().toLowerCase();
+      const cleanLabel = link.label.trim().toLowerCase();
+      const activeLower = activeSectionId.toLowerCase();
+      
+      if (cleanHref && (cleanHref === activeLower || activeLower.includes(cleanHref))) return true;
+      if (cleanLabel && (activeLower.includes(cleanLabel) || cleanLabel.includes(activeLower))) return true;
+      return false;
+    };
+
     const LinksElement = ({ mobile = false }: { mobile?: boolean }) => {
       const isMobileNav = mobile || isMobile;
 
@@ -1923,35 +2038,60 @@ export function ComponentRenderer({
             const href = link.href || "#";
             const isEditingThis = interactive && activeEditPopover === `link-${i}`;
             const isBtn = link.variant === "button";
+            const activeColor = primary || "#8b5cf6";
             
+            const isFirstNonBtnLink = !isBtn && (props.links || []).findIndex((l) => l.variant !== "button") === i;
+            const isActive = isLinkActive(link) || (interactive && isFirstNonBtnLink && !activeSectionId);
+
+            const showUnderline = props.showActiveUnderline === true || props.activeStyle === "underline";
+
             const linkClass = isMobileNav
-              ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl ${!isDarkNav ? "hover:bg-foreground/5" : "hover:bg-white/10"} text-sm font-semibold transition-all cursor-pointer select-none text-left ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""}`
-              : `transition-all cursor-pointer select-none inline-flex items-center gap-1.5 ${!isBtn ? "hover:text-[var(--nav-hover)]" : ""} ${
-                  link.variant === "bold"
+              ? `w-full flex items-center justify-start gap-2.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none text-left ${
+                  isActive
+                    ? "font-bold shadow-xs border-l-4 pl-3"
+                    : !isDarkNav
+                    ? "hover:bg-foreground/5"
+                    : "hover:bg-white/10"
+                } ${!isBtn && !isActive ? "hover:text-[var(--nav-hover)]" : ""}`
+              : `relative inline-flex items-center gap-1.5 transition-all cursor-pointer select-none ${!isBtn && !isActive ? "hover:text-[var(--nav-hover)]" : ""} ${
+                  isBtn
+                    ? "px-3.5 py-1.5 rounded-md font-semibold opacity-100 hover:brightness-110 shadow-sm hover:text-white"
+                    : isActive
+                    ? "font-extrabold opacity-100"
+                    : link.variant === "bold"
                     ? "font-bold opacity-100"
                     : link.variant === "muted"
                     ? "opacity-75"
-                    : link.variant === "button"
-                    ? "px-3.5 py-1.5 rounded-md font-semibold opacity-100 hover:brightness-110 shadow-sm hover:text-white"
                     : "opacity-90"
                 }`;
             
-            const linkStyle = isBtn ? {
+            const linkStyle: React.CSSProperties = isBtn ? {
               color: "#ffffff",
-              backgroundColor: primary,
+              backgroundColor: activeColor,
               borderRadius: btnRadius,
-            } : undefined;
+            } : isActive ? {
+              color: activeColor,
+              backgroundColor: isMobileNav ? `${activeColor}1a` : undefined,
+              borderColor: isMobileNav ? activeColor : undefined,
+            } : {};
 
             return (
               <div key={i} className={isMobileNav ? "w-full text-left relative" : "group/link relative inline-flex items-center"}>
                 {!interactive ? (
                   <a
                     href={href}
+                    onClick={(e) => handleSmoothScroll(e, href)}
                     className={linkClass}
                     style={linkStyle}
                   >
                     <RenderIcon icon={link.icon} className="h-4 w-4 shrink-0" />
                     <span>{link.label}</span>
+                    {isActive && !isBtn && !isMobileNav && showUnderline && (
+                      <span
+                        className="absolute -bottom-2 left-0 right-0 h-[2.5px] rounded-full z-10 animate-in fade-in-50"
+                        style={{ backgroundColor: activeColor }}
+                      />
+                    )}
                   </a>
                 ) : (
                   <button
@@ -1965,6 +2105,12 @@ export function ComponentRenderer({
                   >
                     <RenderIcon icon={link.icon} className="h-4 w-4 shrink-0" />
                     <span>{link.label || "Link"}</span>
+                    {isActive && !isBtn && !isMobileNav && showUnderline && (
+                      <span
+                        className="absolute -bottom-2 left-0 right-0 h-[2.5px] rounded-full z-10 animate-in fade-in-50"
+                        style={{ backgroundColor: activeColor }}
+                      />
+                    )}
                   </button>
                 )}
 
@@ -2006,45 +2152,73 @@ export function ComponentRenderer({
           })}
 
           {interactive && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="flex h-5 w-5 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-muted/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all"
-                  title="Add Link"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-40 rounded-xl">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => {
-                    const next = [...(props.links || []), { label: "Work", href: "#", variant: "default", icon: "briefcase" }];
-                    onUpdateProps?.({ links: next });
-                  }}
-                >
-                  Work Link
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => {
-                    const next = [...(props.links || []), { label: "About", href: "#", variant: "default", icon: "info" }];
-                    onUpdateProps?.({ links: next });
-                  }}
-                >
-                  About Link
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => {
-                    const next = [...(props.links || []), { label: "Blog", href: "#", variant: "default", icon: "book" }];
-                    onUpdateProps?.({ links: next });
-                  }}
-                >
-                  Blog Link
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex h-5 w-5 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-muted/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all"
+                    title="Add Link"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-40 rounded-xl">
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const next = [...(props.links || []), { label: "Work", href: "#", variant: "default", icon: "briefcase" }];
+                      onUpdateProps?.({ links: next });
+                    }}
+                  >
+                    Work Link
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const next = [...(props.links || []), { label: "About", href: "#", variant: "default", icon: "info" }];
+                      onUpdateProps?.({ links: next });
+                    }}
+                  >
+                    About Link
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const next = [...(props.links || []), { label: "Blog", href: "#", variant: "default", icon: "book" }];
+                      onUpdateProps?.({ links: next });
+                    }}
+                  >
+                    Blog Link
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex h-5 items-center justify-center gap-1 px-2 rounded-full border border-dashed border-foreground/30 bg-muted/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground text-[10px] font-bold transition-all cursor-pointer ml-1"
+                    title="Active Link Indicator Style"
+                  >
+                    Active Style
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-48 rounded-xl">
+                  <DropdownMenuItem
+                    className="cursor-pointer font-medium"
+                    onClick={() => onUpdateProps?.({ showActiveUnderline: false, activeStyle: "color" })}
+                  >
+                    Color Only (Default)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer font-medium"
+                    onClick={() => onUpdateProps?.({ showActiveUnderline: true, activeStyle: "underline" })}
+                  >
+                    Color + Underline Bar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </nav>
       );
@@ -3243,10 +3417,17 @@ export function ComponentRenderer({
         ? `linear-gradient(135deg, ${primary}, #312e81)`
         : "transparent";
 
+    const ctaBgImageStyle = (props.imageUrl && (props.imageLayout === "background" || variant === "fullbleed-cta")) ? {
+      backgroundImage: `linear-gradient(to bottom, rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.88)), url("${props.imageUrl}")`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    } : {};
+
     const ctaBg = (style.backgroundColor && !isDefaultPresetCtaBg) ? style.backgroundColor : defaultBg;
     const ctaRadius = "0px";
 
-    const ctaBgDark = isDarkColor(ctaBg);
+    const ctaBgDark = (props.imageUrl && (props.imageLayout === "background" || variant === "fullbleed-cta")) ? true : isDarkColor(ctaBg);
     const isDarkBg = ctaBgDark !== undefined ? ctaBgDark : pageBgDark;
 
     const textColor = isDarkBg
@@ -3255,7 +3436,8 @@ export function ComponentRenderer({
 
     const subtextColor = isDarkBg ? "rgba(255, 255, 255, 0.85)" : "#475569";
 
-    const isSplitLayout = variant === "split-headline-cta" || variant === "minimal-inline-cta";
+    const isSplitLayout = variant === "split-headline-cta" || variant === "minimal-inline-cta" || variant === "app-preview-cta";
+    const isFlipped = props.imagePosition === "left" || props.reverseLayout;
 
     const buttonsList = props.buttons || [
       {
@@ -3266,6 +3448,8 @@ export function ComponentRenderer({
     ];
 
     const [activeCtaPopover, setActiveCtaPopover] = useState<string | null>(null);
+    const isEditingCtaImage = activeCtaPopover === "image";
+    const setIsEditingCtaImage = (val: boolean) => setActiveCtaPopover(val ? "image" : null);
 
     useEffect(() => {
       if (!selected) {
@@ -3274,7 +3458,7 @@ export function ComponentRenderer({
     }, [selected]);
 
     const renderCtaButtons = () => (
-      <div className={`flex flex-wrap items-center gap-3 ${isSplitLayout ? "justify-start" : "justify-center"}`}>
+      <div className={`flex flex-wrap items-center gap-3 ${isMobileOrTablet || !isSplitLayout ? "justify-center" : "justify-start"}`}>
         {buttonsList.map((btn, i) => {
           const isEditingThis = interactive && activeCtaPopover === `button-${i}`;
           const isSolid = btn.variant === "solid" || !btn.variant;
@@ -3419,6 +3603,7 @@ export function ComponentRenderer({
           backgroundColor: ctaBg,
           color: textColor,
           borderRadius: ctaRadius,
+          ...ctaBgImageStyle,
         }}
         className={`py-16 md:py-20 transition-all ${
           isFollowingNavbar
@@ -3429,13 +3614,100 @@ export function ComponentRenderer({
         }`}
       >
         <Center maxWidth={effectiveMaxWidth}>
-          {isSplitLayout ? (
-            <div className={`flex justify-between gap-8 text-left ${isMobileOrTablet ? `flex-col items-start text-left ${(props.imagePosition === "left" || props.reverseLayout) ? "flex-col-reverse" : ""}` : `flex-col md:flex-row items-center ${(props.imagePosition === "left" || props.reverseLayout) ? "md:flex-row-reverse" : ""}`}`}>
-              <div className="space-y-3 max-w-2xl">
+          {variant === "app-preview-cta" ? (
+            <div className={`grid gap-8 items-center text-left ${isMobileOrTablet ? `grid-cols-1 ${isFlipped ? "flex flex-col-reverse" : ""}` : `grid-cols-1 md:grid-cols-12 ${isFlipped ? "md:flex-row-reverse" : ""}`}`}>
+              <div className={`space-y-4 ${isMobileOrTablet ? "w-full text-center" : "md:col-span-6 text-left"} ${isFlipped ? "md:order-2" : "md:order-1"}`}>
                 {props.heading && (
                   <h2
                     contentEditable={interactive}
                     suppressContentEditableWarning
+                    suppressHydrationWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerHTML;
+                      if (newText && newText !== props.heading) onUpdateProps?.({ heading: newText });
+                    }}
+                    style={{ outline: "none", color: textColor }}
+                    className={`${isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl"} font-extrabold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                   dangerouslySetInnerHTML={{ __html: props.heading }} />
+                )}
+                {props.subheading && (
+                  <div
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    suppressHydrationWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerHTML;
+                      if (newText && newText !== props.subheading) onUpdateProps?.({ subheading: newText });
+                    }}
+                    style={{ outline: "none", color: subtextColor }}
+                    className={`${isMobile ? "text-sm" : "text-base font-medium"} opacity-90 ${interactive ? "cursor-text" : ""}`}
+                   dangerouslySetInnerHTML={{ __html: props.subheading }} />
+                )}
+                <div className={`pt-2 ${isMobileOrTablet ? "flex justify-center" : ""}`}>
+                  {renderCtaButtons()}
+                </div>
+              </div>
+              <div className={`${isMobileOrTablet ? "w-full" : "md:col-span-6"} ${isFlipped ? "md:order-1" : "md:order-2"}`}>
+                <div className="relative overflow-hidden group">
+                  <img
+                    src={props.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80"}
+                    alt={props.imageAlt || "Platform Preview"}
+                    style={{
+                      borderRadius: props.imageBorderRadius || "20px",
+                      objectFit: (props.imageObjectFit as any) || "cover",
+                      aspectRatio: props.imageAspectRatio !== "auto" ? props.imageAspectRatio : undefined,
+                    }}
+                    className="w-full h-auto object-cover max-h-[360px] sm:max-h-[420px] shadow-2xl transition-transform duration-300 hover:scale-[1.01]"
+                  />
+                  {interactive && (
+                    <div className="absolute top-4 right-4 z-40">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsEditingCtaImage(!isEditingCtaImage);
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                        style={{ borderRadius: theme.borderRadius || "12px" }}
+                      >
+                        <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                      </button>
+                      {isEditingCtaImage && (
+                        <div className="absolute top-12 right-0 z-50">
+                          <ImageEditItem
+                            currentUrl={props.imageUrl || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80"}
+                            currentAlt={props.imageAlt}
+                            currentBorderRadius={props.imageBorderRadius}
+                            currentObjectFit={props.imageObjectFit}
+                            currentAspectRatio={props.imageAspectRatio}
+                            hideLayoutOptions
+                            onSave={(editProps) => {
+                              onUpdateProps?.({
+                                imageUrl: editProps.url,
+                                imageAlt: editProps.alt,
+                                imageBorderRadius: editProps.imageBorderRadius,
+                                imageObjectFit: editProps.objectFit as any,
+                                imageAspectRatio: editProps.aspectRatio as any,
+                              });
+                              setIsEditingCtaImage(false);
+                            }}
+                            onClose={() => setIsEditingCtaImage(false)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : isSplitLayout ? (
+            <div className={`flex justify-between gap-8 ${isMobileOrTablet ? `flex-col items-center text-center ${isFlipped ? "flex-col-reverse" : ""}` : `flex-col md:flex-row items-center ${isFlipped ? "md:flex-row-reverse" : ""}`}`}>
+              <div className={`space-y-3 max-w-2xl w-full ${isMobileOrTablet ? "text-center" : "text-left"}`}>
+                {props.heading && (
+                  <h2
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    suppressHydrationWarning
                     onBlur={(e) => {
                       const newText = e.currentTarget.innerHTML;
                       if (newText && newText !== props.heading) {
@@ -3444,14 +3716,15 @@ export function ComponentRenderer({
                     }}
                     style={{ outline: "none", color: textColor }}
                     className={`${
-                      isMobile ? "text-2xl sm:text-3xl" : isTablet ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl lg:text-6xl"
+                      isMobile ? "text-xl sm:text-2xl" : isTablet ? "text-2xl md:text-3xl" : "text-2xl md:text-3xl lg:text-4xl"
                     } font-extrabold tracking-tight ${interactive ? "cursor-text transition-all" : ""}`}
                    dangerouslySetInnerHTML={{ __html: props.heading }} />
                 )}
                 {props.subheading && (
-                  <p
+                  <div
                     contentEditable={interactive}
                     suppressContentEditableWarning
+                    suppressHydrationWarning
                     onBlur={(e) => {
                       const newText = e.currentTarget.innerHTML;
                       if (newText && newText !== props.subheading) {
@@ -3464,19 +3737,79 @@ export function ComponentRenderer({
                     }`}
                    dangerouslySetInnerHTML={{ __html: props.subheading }} />
                 )}
-                {interactive && !props.subheading && (
-                  <button
-                    type="button"
-                    onClick={() => onUpdateProps?.({ subheading: "Enter your subtitle here..." })}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-transparent hover:bg-foreground/5 text-foreground/50 hover:text-foreground/80 transition-all cursor-pointer mt-2"
-                    title="Add Subheading"
-                  >
-                    <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
-                  </button>
-                )}
               </div>
-              <div className="shrink-0">
+              <div className={`shrink-0 ${isMobileOrTablet ? "w-full flex justify-center pt-2" : ""}`}>
                 {renderCtaButtons()}
+              </div>
+            </div>
+          ) : variant === "newsletter-input-cta" ? (
+            <div className="max-w-2xl mx-auto text-center space-y-5 w-full py-4">
+              {props.heading && (
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  suppressHydrationWarning
+                  onBlur={(e) => {
+                    const newText = e.currentTarget.innerHTML;
+                    if (newText && newText !== props.heading) onUpdateProps?.({ heading: newText });
+                  }}
+                  style={{ outline: "none", color: textColor }}
+                  className={`${isMobile ? "text-xl" : isTablet ? "text-2xl" : "text-2xl sm:text-3xl md:text-4xl"} font-extrabold tracking-tight`}
+                 dangerouslySetInnerHTML={{ __html: props.heading }} />
+              )}
+              {props.subheading && (
+                <div
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  suppressHydrationWarning
+                  onBlur={(e) => {
+                    const newText = e.currentTarget.innerHTML;
+                    if (newText && newText !== props.subheading) onUpdateProps?.({ subheading: newText });
+                  }}
+                  style={{ outline: "none", color: subtextColor }}
+                  className="text-xs sm:text-sm max-w-lg mx-auto opacity-90"
+                 dangerouslySetInnerHTML={{ __html: props.subheading }} />
+              )}
+              <form onSubmit={(e) => e.preventDefault()} className={`flex ${isMobile ? "flex-col w-full" : "flex-col sm:flex-row"} items-center justify-center gap-3 max-w-md mx-auto pt-2`}>
+                <input
+                  type="email"
+                  required={!interactive}
+                  placeholder="Enter your work email..."
+                  className={`w-full ${isMobile ? "w-full" : "sm:w-72"} px-4 py-3 text-sm border outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20`}
+                  style={{ backgroundColor: isDarkBg ? "rgba(255, 255, 255, 0.1)" : "#ffffff", borderColor: isDarkBg ? "rgba(255,255,255,0.2)" : "#cbd5e1", color: textColor, borderRadius: theme.borderRadius || "12px" }}
+                />
+                <button
+                  type={interactive ? "button" : "submit"}
+                  className={`w-full ${isMobile ? "w-full" : "sm:w-auto"} py-3 px-6 font-bold text-sm text-white shadow-lg transition-all hover:brightness-110 active:scale-95 cursor-pointer shrink-0`}
+                  style={{ backgroundColor: primary, borderRadius: theme.borderRadius || "12px" }}
+                >
+                  <span
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    suppressHydrationWarning
+                    onBlur={(e) => {
+                      const newText = e.currentTarget.innerHTML;
+                      if (newText) onUpdateProps?.({ buttonText: newText });
+                    }}
+                    className={interactive ? "cursor-text outline-none" : ""}
+                  >
+                    {props.buttonText || "Claim Free Access"}
+                  </span>
+                </button>
+              </form>
+              <div className="text-xs text-muted-foreground opacity-80 pt-1 flex items-center justify-center gap-1.5">
+                <span
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  suppressHydrationWarning
+                  onBlur={(e) => {
+                    const clean = cleanPlainText(e.currentTarget.innerText || e.currentTarget.textContent || "");
+                    if (clean) onUpdateProps?.({ copyright: clean });
+                  }}
+                  className={interactive ? "cursor-text outline-none hover:bg-foreground/5 rounded px-1 transition-all" : ""}
+                >
+                  {cleanPlainText(props.copyright) || "No credit card required. Cancel anytime."}
+                </span>
               </div>
             </div>
           ) : (
@@ -3485,13 +3818,26 @@ export function ComponentRenderer({
                 <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold mb-2 ${
                   isDarkBg ? "bg-white/10 backdrop-blur-md border-white/20 text-white" : "bg-primary/10 border-primary/20 text-primary"
                 }`}>
-                  <span>✦</span> <span>ANNOUNCEMENT</span>
+                  <span className="shrink-0">✦</span>
+                  <span
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    suppressHydrationWarning
+                    onBlur={(e) => {
+                      const clean = cleanPlainText(e.currentTarget.innerText || e.currentTarget.textContent || "");
+                      if (clean) onUpdateProps?.({ tagline: clean });
+                    }}
+                    className={interactive ? "cursor-text outline-none hover:bg-foreground/5 rounded px-1 transition-all" : ""}
+                  >
+                    {cleanPlainText(props.tagline) || "ANNOUNCEMENT: PRO EDITION v2.0"}
+                  </span>
                 </div>
               )}
               {props.heading && (
                 <h2
                   contentEditable={interactive}
                   suppressContentEditableWarning
+                  suppressHydrationWarning
                   onBlur={(e) => {
                     const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.heading) {
@@ -3505,9 +3851,10 @@ export function ComponentRenderer({
                  dangerouslySetInnerHTML={{ __html: props.heading }} />
               )}
               {props.subheading && (
-                <p
+                <div
                   contentEditable={interactive}
                   suppressContentEditableWarning
+                  suppressHydrationWarning
                   onBlur={(e) => {
                     const newText = e.currentTarget.innerHTML;
                     if (newText && newText !== props.subheading) {
@@ -3515,24 +3862,65 @@ export function ComponentRenderer({
                     }
                   }}
                   style={{ outline: "none", color: subtextColor }}
-                  className={`text-lg md:text-xl opacity-90 max-w-2xl mx-auto ${
+                  className={`${isMobile ? "text-sm" : "text-base sm:text-lg md:text-xl"} opacity-90 max-w-2xl mx-auto ${
                     interactive ? "cursor-text transition-all" : ""
                   }`}
                  dangerouslySetInnerHTML={{ __html: props.subheading }} />
               )}
-              {interactive && !props.subheading && (
-                <button
-                  type="button"
-                  onClick={() => onUpdateProps?.({ subheading: "Enter your subtitle here..." })}
-                  className="flex h-8 w-8 mx-auto items-center justify-center rounded-full border border-dashed border-foreground/30 bg-transparent hover:bg-foreground/5 text-foreground/50 hover:text-foreground/80 transition-all cursor-pointer mt-2"
-                  title="Add Subheading"
-                >
-                  <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
-                </button>
-              )}
               <div className="pt-2">
                 {renderCtaButtons()}
               </div>
+
+              {variant === "gradient-glow-cta" && (
+                <div className="flex flex-wrap items-center justify-center gap-4 pt-4 text-xs font-semibold opacity-90">
+                  {(props.items && props.items.length > 0
+                    ? props.items
+                    : [
+                        { title: "Custom Domains", description: "" },
+                        { title: "React Code Export", description: "" },
+                        { title: "24/7 Priority Support", description: "" },
+                      ]
+                  ).map((item, idx, arr) => (
+                    <span key={idx} className="flex items-center gap-1.5">
+                      <span className="text-emerald-400 font-black">✓</span>
+                      <span
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        suppressHydrationWarning
+                        onBlur={(e) => {
+                          const clean = cleanPlainText(e.currentTarget.innerText || e.currentTarget.textContent || "");
+                          if (clean) {
+                            const updated = [...arr];
+                            updated[idx] = { ...updated[idx], title: clean };
+                            onUpdateProps?.({ items: updated });
+                          }
+                        }}
+                        className={interactive ? "cursor-text outline-none hover:bg-foreground/5 rounded px-1 transition-all" : ""}
+                      >
+                        {cleanPlainText(item.title) || item.title}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {variant === "full-width-primary" && (
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-3 text-xs font-semibold opacity-85">
+                  <span className="text-amber-400 tracking-widest">★ ★ ★ ★ ★</span>
+                  <span
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    suppressHydrationWarning
+                    onBlur={(e) => {
+                      const clean = cleanPlainText(e.currentTarget.innerText || e.currentTarget.textContent || "");
+                      if (clean) onUpdateProps?.({ tagline: clean });
+                    }}
+                    className={interactive ? "cursor-text outline-none hover:bg-foreground/5 rounded px-1 transition-all" : ""}
+                  >
+                    {cleanPlainText(props.tagline) || "Rated 4.9/5 by 10,000+ creators worldwide"}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </Center>

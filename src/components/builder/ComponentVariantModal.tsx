@@ -477,6 +477,7 @@ function RealisticLayoutPreview({
 
     // CTA VARIANTS
     case "full-width-primary":
+    case "full-width-primary":
     case "full-width-cta":
       return (
         <div
@@ -485,24 +486,14 @@ function RealisticLayoutPreview({
         >
           <span className="font-extrabold text-xs" style={{ color: cardTextColor }}>Ready to ship your next page?</span>
           <span className="text-[9px] opacity-75 line-clamp-1">Join thousands of makers designing with CraftSite.</span>
-          <span className="mt-0.5 px-3 py-1 text-[9px] font-extrabold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-            Create Free Project
-          </span>
-        </div>
-      );
-
-    case "boxed-glass-card":
-    case "boxed-cta":
-      return (
-        <div
-          className={`w-full p-3 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all shadow-md`}
-          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
-        >
-          <span className="font-bold text-xs" style={{ color: cardTextColor }}>Accelerate your workflow today</span>
-          <span className="text-[9px] opacity-75 line-clamp-1">Get instant access to design templates.</span>
-          <span className="mt-0.5 px-3 py-1 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-            Get Started Now
-          </span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="px-3 py-1 text-[9px] font-extrabold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+              Create Free Project
+            </span>
+            <span className="px-2.5 py-1 text-[9px] font-bold border opacity-80" style={{ borderColor: primaryColor, borderRadius: navRadius }}>
+              Contact Sales
+            </span>
+          </div>
         </div>
       );
 
@@ -516,9 +507,27 @@ function RealisticLayoutPreview({
             <span className="font-extrabold text-[11px] block" style={{ color: cardTextColor }}>Start building faster today</span>
             <span className="text-[9px] opacity-75 block line-clamp-1">Everything you need to launch products.</span>
           </div>
-          <span className="px-2.5 py-1 text-[9px] font-bold text-white shadow-xs shrink-0" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-            Start Free Trial
-          </span>
+          <div className="flex items-center gap-1 shrink-0">
+            <span className="px-2.5 py-1 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+              Start Free Trial
+            </span>
+          </div>
+        </div>
+      );
+
+    case "newsletter-input-cta":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} text-center flex flex-col items-center justify-center gap-1.5 transition-all shadow-md`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "14px" }}
+        >
+          <span className="font-extrabold text-xs" style={{ color: cardTextColor }}>Get instant access to CraftSite Pro</span>
+          <div className="w-full max-w-[220px] flex items-center gap-1 bg-muted/70 p-1 border border-border/80 rounded-lg">
+            <span className="text-[8px] opacity-60 px-1 truncate">name@company.com</span>
+            <span className="px-2 py-0.5 text-[8px] font-bold text-white shrink-0 shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: "6px" }}>
+              Claim Free
+            </span>
+          </div>
         </div>
       );
 
@@ -536,9 +545,32 @@ function RealisticLayoutPreview({
             ✦ PRO EDITION
           </span>
           <span className="font-extrabold text-xs text-white">Unlock unlimited site creation</span>
+          <div className="flex gap-2 text-[7px] text-white/80 opacity-90 my-0.5">
+            <span>✓ Custom Domains</span>
+            <span>✓ Clean Export</span>
+          </div>
           <span className="px-3 py-0.5 text-[9px] font-bold text-slate-950 bg-white shadow-xs rounded-md">
             Upgrade Pro Plan
           </span>
+        </div>
+      );
+
+    case "app-preview-cta":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="flex-1 space-y-0.5 text-left">
+            <span className="font-extrabold text-[10px] leading-tight block" style={{ color: cardTextColor }}>Accelerate with live preview</span>
+            <span className="text-[8px] opacity-75 block line-clamp-1">Responsive previews & automatic code export.</span>
+            <span className="px-2 py-0.5 text-[8px] font-bold text-white inline-block shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
+              Explore Platform
+            </span>
+          </div>
+          <div className="w-16 h-12 bg-muted/80 border border-border flex items-center justify-center text-[7px] font-bold shrink-0 opacity-80" style={{ borderRadius: "8px" }}>
+            3D Dashboard
+          </div>
         </div>
       );
 
@@ -546,28 +578,14 @@ function RealisticLayoutPreview({
       return (
         <div
           className={`w-full p-2.5 border ${borderStyle} flex items-center justify-between gap-2 transition-all`}
-          style={{ backgroundColor: isLightTheme ? "#f8fafc" : "#0f172a", color: cardTextColor, borderRadius: "12px" }}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: "12px" }}
         >
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: primaryColor }} />
-            <span className="font-bold text-[10px]" style={{ color: cardTextColor }}>Want to see it in action?</span>
+            <span className="font-bold text-[10px]" style={{ color: cardTextColor }}>Want to see CraftSite in action?</span>
           </div>
           <span className="px-2 py-0.5 text-[9px] font-bold border opacity-90 hover:opacity-100 shrink-0" style={{ borderColor: primaryColor, color: primaryColor, borderRadius: navRadius }}>
             Watch Demo →
-          </span>
-        </div>
-      );
-
-    case "dark-card-badge":
-      return (
-        <div
-          className="w-full p-3 border border-slate-700/80 text-center flex flex-col items-center justify-center gap-1 transition-all shadow-md"
-          style={{ backgroundColor: "#020617", color: "#f8fafc", borderRadius: "14px" }}
-        >
-          <span className="font-extrabold text-xs text-white">Transform how you build</span>
-          <span className="text-[8px] text-slate-400">Join 50,000+ teams building next-generation websites.</span>
-          <span className="mt-1 px-3 py-0.5 text-[9px] font-bold text-white shadow-xs" style={{ backgroundColor: primaryColor, borderRadius: navRadius }}>
-            Join Waitlist
           </span>
         </div>
       );

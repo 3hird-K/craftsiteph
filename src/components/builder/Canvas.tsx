@@ -557,8 +557,8 @@ export function Canvas({
                     selected={selected}
                     interactive={editing}
                     device={device}
-                    onUpdateProps={(props) => onUpdateProps?.(c.id, props)}
-                    onUpdateStyle={(style) => onUpdateStyle?.(c.id, style)}
+                    onUpdateProps={(props: any) => onUpdateProps?.(c.id, props)}
+                    onUpdateStyle={(style: any) => onUpdateStyle?.(c.id, style)}
                   />
                 </div>
               </React.Fragment>
