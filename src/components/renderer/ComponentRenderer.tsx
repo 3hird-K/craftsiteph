@@ -38,6 +38,11 @@ import {
   Sparkles,
   Shield,
   Zap,
+  Layers,
+  Palette,
+  Rocket,
+  Monitor,
+  Database,
   MapPin,
   Clock,
   Send,
@@ -45,6 +50,8 @@ import {
   Moon,
   ArrowRight,
   ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
   Share2,
   Trash2,
 } from "lucide-react";
@@ -91,6 +98,11 @@ export const ICON_MAP: Record<string, React.ElementType> = {
   sparkles: Sparkles,
   shield: Shield,
   zap: Zap,
+  layers: Layers,
+  palette: Palette,
+  rocket: Rocket,
+  monitor: Monitor,
+  database: Database,
 };
 
 // Social Icons Polyfill (for missing lucide-react brand icons)
@@ -403,8 +415,8 @@ export function RenderIcon({ icon, className = "h-4 w-4 shrink-0" }: { icon?: st
   if (!icon) return null;
   const key = icon.toLowerCase().trim();
   const IconComp = ICON_MAP[key];
-  if (!IconComp) return null;
-  return <IconComp className={className} />;
+  if (IconComp) return <IconComp className={className} />;
+  return <span className={className}>{icon}</span>;
 }
 
 export function isDarkColor(colorStr?: string): boolean | undefined {
@@ -3514,7 +3526,7 @@ export function ComponentRenderer({
     );
   }
 
-  if (type === "empty-layout" || type === "stats") {
+  if (type === "stats") {
     const [editingItemImageIdx, setEditingItemImageIdx] = useState<number | null>(null);
     const items = props.items || [];
     const layoutMode = props.layoutMode || "grid";
@@ -3594,15 +3606,172 @@ export function ComponentRenderer({
 
           {/* EMPTY CONTAINER DROPZONE WHEN NO ITEMS */}
           {items.length === 0 ? (
-            <div className="w-full py-12 px-6 border-2 border-dashed border-border/80 hover:border-primary/60 rounded-3xl flex flex-col items-center justify-center text-center space-y-3 bg-muted/20 backdrop-blur-xs transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-xs">
-                <Plus className="h-6 w-6" />
+            <div className="w-full py-12 px-6 border-2 border-dashed border-border/80 hover:border-primary/60 rounded-3xl flex flex-col items-center justify-center text-center space-y-6 bg-muted/20 backdrop-blur-xs transition-all">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-xs">
+                <Plus className="h-7 w-7" />
               </div>
-              <div className="space-y-1">
-                <h4 className="text-base font-bold text-foreground">Empty Layout Container</h4>
-                <p className="text-xs text-muted-foreground max-w-md">
-                  This section layout is empty. Click any button below to add custom titles, copy, buttons, or cards, or switch layout modes above ({layoutMode.toUpperCase()}).
+              <div className="space-y-1.5 max-w-lg">
+                <h4 className="text-lg font-extrabold text-foreground tracking-tight">Custom Section Container</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This section is ready to build! Select a layout template below to instant-load Hero, Navbar, Features, Cards, Contact Form, CTA, or Footer, or add custom elements.
                 </p>
+              </div>
+
+              {/* QUICK LAYOUT TEMPLATE PICKER BUTTONS */}
+              <div className="w-full max-w-3xl pt-4 border-t border-border/40">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-primary block mb-3">
+                  1-Click Load Section Layout Template:
+                </span>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {[
+                    {
+                      id: "hero-empty-template",
+                      label: "Hero Layout",
+                      icon: "✦",
+                      props: {
+                        variant: "hero-empty-template",
+                        layoutMode: "hero",
+                        heading: "Build Something People Love",
+                        subheading: "Design beautiful responsive landing pages in minutes. Customize every block, style, and layout — then publish instantly.",
+                        items: [
+                          { type: "badge", badgeText: "✦ VISUAL WEBSITE BUILDER" },
+                          { type: "button", buttonText: "Start Building Free" },
+                          { type: "button", buttonText: "Watch 2-Min Tour" },
+                          { type: "image", imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80", title: "Hero Visual" },
+                        ],
+                      },
+                    },
+                    {
+                      id: "navbar-empty-template",
+                      label: "Navbar Header",
+                      icon: "☰",
+                      props: {
+                        variant: "navbar-empty-template",
+                        layoutMode: "navbar",
+                        logoText: "CraftSite",
+                        items: [
+                          { type: "text", description: "Home" },
+                          { type: "text", description: "Features" },
+                          { type: "text", description: "Pricing" },
+                          { type: "text", description: "Contact" },
+                          { type: "button", buttonText: "Get Started" },
+                        ],
+                      },
+                    },
+                    {
+                      id: "features-empty-template",
+                      label: "Features Grid",
+                      icon: "▦",
+                      props: {
+                        variant: "features-empty-template",
+                        layoutMode: "grid",
+                        columns: 3,
+                        heading: "Everything You Need",
+                        subheading: "Complete suite of visual tools engineered for design & engineering teams.",
+                        items: [
+                          { type: "stack", icon: "🎯", badgeText: "CANVAS", title: "Drag & Drop Builder", description: "Assemble pages visually with real-time DOM preview." },
+                          { type: "stack", icon: "🎨", badgeText: "THEMING", title: "Live Style System", description: "Tune colors, typography, borders, and shadows globally." },
+                          { type: "stack", icon: "🚀", badgeText: "PUBLISH", title: "One-Click Deploy", description: "Ship production-ready landing pages to custom domains." },
+                        ],
+                      },
+                    },
+                    {
+                      id: "cards-empty-template",
+                      label: "Cards Grid",
+                      icon: "▤",
+                      props: {
+                        variant: "cards-empty-template",
+                        layoutMode: "grid",
+                        columns: 3,
+                        heading: "Featured Showcases",
+                        subheading: "Explore curated templates designed for high conversion.",
+                        items: [
+                          { type: "card", imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80", badgeText: "SAAS", title: "Analytics SaaS", description: "Modern dashboard landing page layout.", buttonText: "View Demo" },
+                          { type: "card", imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&q=80", badgeText: "AGENCY", title: "Creative Studio", description: "Minimalist portfolio showcase for agencies.", buttonText: "View Demo" },
+                          { type: "card", imageUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80", badgeText: "STORE", title: "E-Commerce Hub", description: "High-conversion storefront product showcase.", buttonText: "View Demo" },
+                        ],
+                      },
+                    },
+                    {
+                      id: "contact-empty-template",
+                      label: "Contact Form",
+                      icon: "✎",
+                      props: {
+                        variant: "contact-empty-template",
+                        layoutMode: "form",
+                        heading: "Get in Touch With Us",
+                        subheading: "Have questions or want to build together? Send us a message.",
+                        items: [
+                          { type: "stack", title: "Email Support", description: "hello@craftsite.io\nResponse within 24 hours" },
+                          { type: "stack", title: "Office Location", description: "100 Montgomery St, Suite 1400\nSan Francisco, CA" },
+                          { type: "form", buttonText: "Send Message", title: "Contact Form" },
+                        ],
+                      },
+                    },
+                    {
+                      id: "cta-empty-template",
+                      label: "CTA Banner",
+                      icon: "➤",
+                      props: {
+                        variant: "cta-empty-template",
+                        layoutMode: "cta",
+                        flexJustify: "center",
+                        heading: "Ready to launch your site?",
+                        subheading: "Start creating with our free plan. No credit card required.",
+                        items: [
+                          { type: "button", buttonText: "Get Started Free" },
+                          { type: "button", buttonText: "Contact Sales" },
+                        ],
+                      },
+                    },
+                    {
+                      id: "footer-empty-template",
+                      label: "Footer Layout",
+                      icon: "⬇",
+                      props: {
+                        variant: "footer-empty-template",
+                        layoutMode: "footer",
+                        logoText: "CraftSite Inc.",
+                        subheading: "© 2026 CraftSite Inc. All rights reserved.",
+                        items: [
+                          { type: "stack", title: "Product", description: "Features, Roadmap, Pricing, Release Notes" },
+                          { type: "stack", title: "Resources", description: "Documentation, Tutorials, Community, Support" },
+                          { type: "stack", title: "Company", description: "About Us, Careers, Press, Privacy Policy" },
+                        ],
+                      },
+                    },
+                    {
+                      id: "blank-canvas-container",
+                      label: "Blank Grid",
+                      icon: "▢",
+                      props: {
+                        variant: "blank-canvas-container",
+                        layoutMode: "grid",
+                        columns: 3,
+                        heading: "",
+                        subheading: "",
+                        items: [
+                          { type: "card", title: "Custom Box 1", description: "Editable text block." },
+                          { type: "card", title: "Custom Box 2", description: "Editable text block." },
+                          { type: "card", title: "Custom Box 3", description: "Editable text block." },
+                        ],
+                      },
+                    },
+                  ].map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateProps?.(tpl.props as any);
+                      }}
+                      className="px-3.5 py-2 rounded-xl border border-border/80 bg-background hover:bg-primary hover:text-white hover:border-primary text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer group"
+                    >
+                      <span className="text-primary group-hover:text-white transition-colors">{tpl.icon}</span>
+                      <span>{tpl.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
@@ -4244,21 +4413,59 @@ export function ComponentRenderer({
     const variant = props.variant || (type === "card-grid" ? "bento-card-stack" : "bento-grid-features");
     const [editingItemImageIdx, setEditingItemImageIdx] = useState<number | null>(null);
     const [isEditingShowcaseImage, setIsEditingShowcaseImage] = useState(false);
+    const [activeCardIdx, setActiveCardIdx] = useState(2);
     const items = (props.items || [
       {
-        title: "Visual Drag & Drop Engine",
-        description: "Build pixel-perfect responsive layouts with real-time DOM updates, interactive component state management, and custom CSS design tokens.",
-        icon: "sparkles",
-        badgeText: "✦ SPOTLIGHT FEATURE",
-        imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80",
+        stepNumber: "Feature 01",
+        badgeText: "COMPONENT LIBRARY",
+        icon: "layers",
+        title: "15+ Visual Drag & Drop Blocks",
+        description: "Compose Navbars, Hero sections, Features, CTAs, and Footers with instant drag & drop feedback.",
+        buttonText: "Explore Feature →",
       },
       {
-        title: "AI Component Generator",
-        description: "Generate production-ready React components and responsive section layouts from natural language text prompts instantly.",
-        icon: "zap",
-        badgeText: "REAL-TIME AI",
+        stepNumber: "Feature 02",
+        badgeText: "DESIGN SYSTEM",
+        icon: "palette",
+        title: "Live OKLCH Theme Editor",
+        description: "Customize fonts, background color, margins, padding, and corner radius with instant live feedback.",
+        buttonText: "Explore Feature →",
       },
-    ]).slice(0, 4);
+      {
+        stepNumber: "Feature 03",
+        badgeText: "CLOUD INFRASTRUCTURE",
+        icon: "rocket",
+        title: "Instant 1-Click Cloud Deploy",
+        description: "Publish your web pages with custom slugs in one click. Every project state is safely persisted in PostgreSQL.",
+        buttonText: "Explore Feature →",
+      },
+      {
+        stepNumber: "Feature 04",
+        badgeText: "RESPONSIVE VIEWPORTS",
+        icon: "monitor",
+        title: "Multi-Device Viewport Preview",
+        description: "Test seamlessly across Desktop, Tablet, and Mobile devices with high-fidelity device frames.",
+        buttonText: "Explore Feature →",
+      },
+      {
+        stepNumber: "Feature 05",
+        badgeText: "STACK POWER",
+        icon: "database",
+        title: "Drizzle ORM & Supabase DB",
+        description: "Robust database schemas and automated SQL queries generated as you design your visual pages.",
+        buttonText: "Explore Feature →",
+      },
+    ]).slice(0, variant === "3d-carousel-deck-cards" ? 8 : 4);
+
+    const [isCarouselHovered, setIsCarouselHovered] = useState(false);
+
+    useEffect(() => {
+      if (variant !== "3d-carousel-deck-cards" || isCarouselHovered || items.length <= 1) return;
+      const timer = setInterval(() => {
+        setActiveCardIdx((prev) => (prev + 1) % items.length);
+      }, 4000);
+      return () => clearInterval(timer);
+    }, [variant, isCarouselHovered, items.length]);
 
     return (
       <section
@@ -4306,7 +4513,258 @@ export function ComponentRenderer({
             </div>
           )}
 
-          {variant === "bento-grid-features" || variant === "bento-card-stack" || variant === "bento-grid" ? (
+          {variant === "3d-carousel-deck-cards" ? (
+            <div
+              onMouseEnter={() => setIsCarouselHovered(true)}
+              onMouseLeave={() => setIsCarouselHovered(false)}
+              className="relative w-full max-w-5xl mx-auto py-2 sm:py-4 select-none"
+            >
+              {/* Desktop Floating Left Navigation Arrow */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCardIdx((prev) => (prev - 1 + items.length) % items.length);
+                }}
+                className="hidden sm:flex absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-50 h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-border/80 bg-card hover:bg-background text-foreground shadow-2xl backdrop-blur-md items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer"
+                style={{
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.18)",
+                }}
+                title="Previous Feature Card"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+
+              {/* Desktop Floating Right Navigation Arrow */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCardIdx((prev) => (prev + 1) % items.length);
+                }}
+                className="hidden sm:flex absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-50 h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-border/80 bg-card hover:bg-background text-foreground shadow-2xl backdrop-blur-md items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer"
+                style={{
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.18)",
+                }}
+                title="Next Feature Card"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+
+              {/* 3D Stack Deck Carousel Container */}
+              <div className="relative w-full h-[320px] sm:h-[380px] flex items-center justify-center overflow-visible">
+                {items.map((item: any, i: number) => {
+                  const total = items.length;
+                  let diff = i - (activeCardIdx % total);
+                  if (diff > total / 2) diff -= total;
+                  if (diff < -total / 2) diff += total;
+
+                  const isActive = diff === 0;
+                  const isLeft = diff === -1;
+                  const isRight = diff === 1;
+                  const isFarLeft = diff === -2 || diff < -1;
+                  const isFarRight = diff === 2 || diff > 1;
+
+                  let positionClasses = "";
+                  if (isActive) {
+                    positionClasses = "z-30 scale-100 opacity-100 translate-x-0 border-2 cursor-default";
+                  } else if (isLeft) {
+                    positionClasses = "z-20 scale-90 opacity-40 -translate-x-[40%] sm:-translate-x-[60%] blur-[0.4px] hover:opacity-85 cursor-pointer border border-border/60";
+                  } else if (isRight) {
+                    positionClasses = "z-20 scale-90 opacity-40 translate-x-[40%] sm:translate-x-[60%] blur-[0.4px] hover:opacity-85 cursor-pointer border border-border/60";
+                  } else if (isFarLeft) {
+                    positionClasses = "z-10 scale-75 opacity-20 -translate-x-[80%] sm:-translate-x-[110%] pointer-events-none hidden sm:flex border border-border/40";
+                  } else {
+                    positionClasses = "z-10 scale-75 opacity-20 translate-x-[80%] sm:translate-x-[110%] pointer-events-none hidden sm:flex border border-border/40";
+                  }
+
+                  const itemIcon = item.icon || "rocket";
+
+                  return (
+                    <div
+                      key={i}
+                      onClick={(e) => {
+                        if (!isActive) {
+                          e.stopPropagation();
+                          setActiveCardIdx(i);
+                        }
+                      }}
+                      className={`absolute w-[280px] sm:w-[380px] md:w-[420px] h-[300px] sm:h-[340px] p-5 sm:p-7 rounded-3xl bg-card transition-all duration-500 ease-out flex flex-col justify-between ${positionClasses}`}
+                      style={{
+                        borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "28px" : (theme.borderRadius || "28px"),
+                        borderColor: isActive ? primary : undefined,
+                        boxShadow: isActive ? `0 25px 60px -12px ${primary}40` : undefined,
+                      }}
+                    >
+                      {/* Top Row: Pill Badge + Icon Badge */}
+                      <div className="flex items-center justify-between">
+                        {item.badgeText && (
+                          <span
+                            contentEditable={interactive && isActive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], badgeText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: `${primary}18`,
+                              color: primary,
+                              borderColor: `${primary}35`,
+                            }}
+                            className={`px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full border shadow-2xs ${
+                              interactive && isActive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                          />
+                        )}
+
+                        <div
+                          className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shadow-xs shrink-0"
+                          style={{
+                            backgroundColor: `${primary}15`,
+                            color: primary,
+                          }}
+                        >
+                          <RenderIcon icon={itemIcon} className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </div>
+                      </div>
+
+                      {/* Content Middle */}
+                      <div className="space-y-2 my-auto">
+                        {item.title && (
+                          <h3
+                            contentEditable={interactive && isActive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], title: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none", color: headingTextColor }}
+                            className={`text-lg sm:text-2xl font-black tracking-tight ${
+                              interactive && isActive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.title }}
+                          />
+                        )}
+                        {item.description && (
+                          <p
+                            contentEditable={interactive && isActive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], description: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none", color: bodyTextColor }}
+                            className={`text-xs sm:text-sm leading-relaxed ${
+                              interactive && isActive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.description }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Footer Row: Feature Number + Action Link */}
+                      <div
+                        className="pt-3 border-t flex items-center justify-between text-xs font-bold"
+                        style={{ borderColor: isDarkSection ? `${primary}20` : "rgba(0,0,0,0.08)" }}
+                      >
+                        <span
+                          contentEditable={interactive && isActive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], stepNumber: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none" }}
+                          className={`text-muted-foreground font-semibold ${interactive && isActive ? "cursor-text" : ""}`}
+                          dangerouslySetInnerHTML={{ __html: item.stepNumber || `Feature 0${i + 1}` }}
+                        />
+
+                        {item.buttonText && (
+                          <span
+                            contentEditable={interactive && isActive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], buttonText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none", color: primary }}
+                            className={`font-extrabold flex items-center gap-1 hover:translate-x-1 transition-transform ${
+                              interactive && isActive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.buttonText }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Navigation & Pagination Controls Bar */}
+              <div className="flex items-center justify-center gap-3 sm:gap-4 mt-6 z-40 relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCardIdx((prev) => (prev - 1 + items.length) % items.length);
+                  }}
+                  className="sm:hidden h-9 w-9 rounded-full border border-border/80 bg-background/90 hover:bg-background text-foreground shadow-md backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Previous Feature Card"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {items.map((_, idx) => {
+                    const isCurrent = idx === activeCardIdx;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveCardIdx(idx);
+                        }}
+                        style={{
+                          backgroundColor: isCurrent ? primary : undefined,
+                        }}
+                        className={`transition-all duration-300 cursor-pointer ${
+                          isCurrent
+                            ? "w-8 h-2.5 rounded-full shadow-xs"
+                            : "w-2.5 h-2.5 rounded-full bg-muted-foreground/30 hover:bg-muted-foreground/60"
+                        }`}
+                        title={`Go to slide ${idx + 1}`}
+                      />
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCardIdx((prev) => (prev + 1) % items.length);
+                  }}
+                  className="sm:hidden h-9 w-9 rounded-full border border-border/80 bg-background/90 hover:bg-background text-foreground shadow-md backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Next Feature Card"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ) : variant === "bento-grid-features" || variant === "bento-card-stack" || variant === "bento-grid" ? (
             <div className={`grid gap-3.5 sm:gap-4 ${
               isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             }`}>

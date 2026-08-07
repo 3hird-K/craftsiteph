@@ -49,7 +49,7 @@ export type ComponentProps = {
   imageLayout?: "single" | "split" | "bento" | "background";
   imagePosition?: "left" | "right";
   reverseLayout?: boolean;
-  layoutMode?: "grid" | "flex";
+  layoutMode?: "grid" | "flex" | "hero" | "navbar" | "footer" | "form" | "cta";
   flexJustify?: "start" | "center" | "end" | "between";
   items?: {
     type?: string;
@@ -124,8 +124,7 @@ export type ComponentType =
   | "spacer"
   | "divider"
   | "form"
-  | "stats"
-  | "empty-layout";
+  | "stats";
 
 export type BuilderComponent = {
   id: string;

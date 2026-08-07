@@ -405,7 +405,39 @@ function RealisticLayoutPreview({
       );
 
     // FEATURES & CARDS VARIANTS
-    case "bento-grid-features":
+    case "3d-carousel-deck-cards":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex flex-col items-center text-center space-y-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-[10px] tracking-tight block" style={{ color: cardTextColor }}>Everything You Need</span>
+          <div className="relative w-full h-16 flex items-center justify-center overflow-hidden py-1">
+            <div className="absolute left-1 w-20 p-1.5 rounded-lg bg-muted/50 border border-border/40 scale-85 opacity-50 space-y-0.5 text-[6px]">
+              <span className="font-bold block">15+ Blocks</span>
+            </div>
+            <div className="z-10 w-28 p-2 rounded-xl bg-card border-2 border-primary shadow-lg scale-100 space-y-1 text-left">
+              <div className="flex items-center justify-between">
+                <span className="px-1 text-[6px] font-extrabold text-primary bg-primary/10 rounded">CLOUD</span>
+                <span className="text-[7px]">🚀</span>
+              </div>
+              <span className="font-extrabold text-[8px] block text-foreground leading-tight">Instant 1-Click Deploy</span>
+              <div className="flex items-center justify-between text-[6px] pt-0.5 border-t opacity-80">
+                <span>Feature 03</span>
+                <span className="text-primary font-bold">Explore →</span>
+              </div>
+            </div>
+            <div className="absolute right-1 w-20 p-1.5 rounded-lg bg-muted/50 border border-border/40 scale-85 opacity-50 space-y-0.5 text-[6px]">
+              <span className="font-bold block">Viewport Preview</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-1">
+            <span className="h-1 w-1 rounded-full bg-muted/60" />
+            <span className="h-1 w-3 rounded-full bg-primary" />
+            <span className="h-1 w-1 rounded-full bg-muted/60" />
+          </div>
+        </div>
+      );
     case "bento-card-stack":
       return (
         <div
@@ -899,6 +931,8 @@ function RealisticLayoutPreview({
           </div>
         </div>
       );
+
+
 
     default:
       return (

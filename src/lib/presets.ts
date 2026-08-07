@@ -24,7 +24,6 @@ export const PALETTE: PaletteItem[] = [
   // CONTENT
   { type: "features", label: "Features", description: "Icon feature grid", icon: "▦", category: "content" },
   { type: "card-grid", label: "Cards", description: "Card grid section", icon: "▤", category: "content" },
-  { type: "empty-layout", label: "Empty Layout", description: "Customizable blank section container", icon: "▢", category: "layout" },
   { type: "testimonial", label: "Testimonial", description: "Quote + author", icon: "❝", category: "content" },
   { type: "heading", label: "Heading", description: "Section title", icon: "H", category: "content" },
   { type: "text", label: "Text", description: "Paragraph body copy", icon: "¶", category: "content" },
@@ -524,6 +523,65 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       },
     },
     {
+      id: "3d-carousel-deck-cards",
+      name: "3D Stack Carousel Deck Cards",
+      description: "Interactive 3D stacked deck carousel card slider with primary card focus, navigation arrows, pagination dots, pill badges & CTA links.",
+      badge: "3D Carousel",
+      previewType: "grid",
+      applyProps: {
+        variant: "3d-carousel-deck-cards",
+        heading: "Everything You Need to Ship Beautiful Websites",
+        subheading: "Explore the core capabilities of our modern visual builder engine",
+        items: [
+          {
+            stepNumber: "Feature 01",
+            badgeText: "COMPONENT LIBRARY",
+            icon: "layers",
+            title: "15+ Visual Drag & Drop Blocks",
+            description: "Compose Navbars, Hero sections, Features, CTAs, and Footers with instant drag & drop feedback.",
+            buttonText: "Explore Feature →",
+          },
+          {
+            stepNumber: "Feature 02",
+            badgeText: "DESIGN SYSTEM",
+            icon: "palette",
+            title: "Live OKLCH Theme Editor",
+            description: "Customize fonts, background color, margins, padding, and corner radius with instant live feedback.",
+            buttonText: "Explore Feature →",
+          },
+          {
+            stepNumber: "Feature 03",
+            badgeText: "CLOUD INFRASTRUCTURE",
+            icon: "rocket",
+            title: "Instant 1-Click Cloud Deploy",
+            description: "Publish your web pages with custom slugs in one click. Every project state is safely persisted in PostgreSQL.",
+            buttonText: "Explore Feature →",
+          },
+          {
+            stepNumber: "Feature 04",
+            badgeText: "RESPONSIVE VIEWPORTS",
+            icon: "monitor",
+            title: "Multi-Device Viewport Preview",
+            description: "Test seamlessly across Desktop, Tablet, and Mobile devices with high-fidelity device frames.",
+            buttonText: "Explore Feature →",
+          },
+          {
+            stepNumber: "Feature 05",
+            badgeText: "STACK POWER",
+            icon: "database",
+            title: "Drizzle ORM & Supabase DB",
+            description: "Robust database schemas and automated SQL queries generated as you design your visual pages.",
+            buttonText: "Explore Feature →",
+          },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+      },
+    },
+    {
       id: "visual-cover-cards",
       name: "Visual Showcase & Case Study Cards",
       description: "Visual-first card layout featuring high-res cover image zoom, floating category pills, sleek titles, and interactive action links.",
@@ -948,40 +1006,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
     },
   ],
 
-  "empty-layout": [
-    {
-      id: "blank-canvas-container",
-      name: "Blank Canvas (Grid / Flex)",
-      description: "Clean empty container. Switch between Grid or Flex mode and add any components.",
-      badge: "Blank Canvas",
-      previewType: "boxed",
-      applyProps: {
-        variant: "blank-canvas-container",
-        heading: "",
-        subheading: "",
-        layoutMode: "grid",
-        columns: 3,
-        items: [],
-      },
-      applyStyle: { backgroundColor: "transparent", paddingY: "64px", paddingX: "32px" },
-    },
-    {
-      id: "flex-container-layout",
-      name: "Flex Row Layout Box",
-      description: "Empty flexbox container to align buttons, badges, images, or text blocks horizontally.",
-      badge: "Flexbox Layout",
-      previewType: "floating",
-      applyProps: {
-        variant: "flex-container-layout",
-        heading: "",
-        subheading: "",
-        layoutMode: "flex",
-        flexJustify: "center",
-        items: [],
-      },
-      applyStyle: { backgroundColor: "transparent", paddingY: "64px", paddingX: "32px" },
-    },
-  ],
+
   stats: [
     {
       id: "dark-stats-bar",
@@ -1287,22 +1312,21 @@ export function createComponent(type: ComponentType, variantId?: string): Builde
         },
       };
       break;
-    case "empty-layout":
     case "stats":
       base = {
         id,
-        type: "empty-layout",
+        type: "stats",
         props: {
-          variant: "blank-canvas-container",
+          variant: "dark-stats-bar",
           heading: "",
           subheading: "",
           layoutMode: "grid",
-          columns: 3,
+          columns: 4,
           items: [],
         },
         style: {
-          backgroundColor: "transparent",
-          paddingY: "64px",
+          backgroundColor: "#0f172a",
+          paddingY: "48px",
           paddingX: "32px",
           textAlign: "center",
         },

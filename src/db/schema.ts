@@ -42,7 +42,7 @@ export type ComponentProps = {
   scrollAnimationDuration?: string;
   imageUrl?: string;
   imageAlt?: string;
-  layoutMode?: "grid" | "flex";
+  layoutMode?: "grid" | "flex" | "hero" | "navbar" | "footer" | "form" | "cta";
   flexJustify?: "start" | "center" | "end" | "between";
   items?: {
     type?: string;
@@ -101,8 +101,7 @@ export type BuilderComponent = {
     | "spacer"
     | "divider"
     | "form"
-    | "stats"
-    | "empty-layout";
+    | "stats";
   props: ComponentProps;
   style: ComponentStyle;
 };

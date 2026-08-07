@@ -543,73 +543,7 @@ export function Canvas({
                           </button>
                         </div>
                       )}
-                      {c.type === "empty-layout" && (
-                        <div className="flex items-center gap-1 bg-muted/90 border border-border/80 rounded-full p-0.5 text-xs shrink-0 shadow-xs">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const currentMode = c.props.layoutMode || "grid";
-                              onUpdateProps?.(c.id, { layoutMode: currentMode === "grid" ? "flex" : "grid" });
-                            }}
-                            className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer"
-                            title="Toggle between Grid and Flexbox layout mode"
-                          >
-                            Mode: {(c.props.layoutMode || "grid").toUpperCase()}
-                          </button>
 
-                          {(c.props.layoutMode || "grid") === "grid" ? (
-                            <>
-                              <span className="text-[10px] font-extrabold uppercase text-muted-foreground px-1 hidden sm:inline">Cols:</span>
-                              {[1, 2, 3, 4].map((num) => (
-                                <button
-                                  key={num}
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onUpdateProps?.(c.id, { columns: num });
-                                  }}
-                                  className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all cursor-pointer ${
-                                    (c.props.columns || 3) === num
-                                      ? "bg-primary text-white shadow-xs"
-                                      : "hover:bg-background text-muted-foreground"
-                                  }`}
-                                  title={`Set ${num} Column Grid`}
-                                >
-                                  {num} Col
-                                </button>
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-[10px] font-extrabold uppercase text-muted-foreground px-1 hidden sm:inline">Align:</span>
-                              {[
-                                { label: "Left", val: "start" },
-                                { label: "Center", val: "center" },
-                                { label: "Right", val: "end" },
-                                { label: "Between", val: "between" },
-                              ].map((opt) => (
-                                <button
-                                  key={opt.val}
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onUpdateProps?.(c.id, { flexJustify: opt.val as any });
-                                  }}
-                                  className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all cursor-pointer ${
-                                    (c.props.flexJustify || "center") === opt.val
-                                      ? "bg-primary text-white shadow-xs"
-                                      : "hover:bg-background text-muted-foreground"
-                                  }`}
-                                  title={`Flex align ${opt.label}`}
-                                >
-                                  {opt.label}
-                                </button>
-                              ))}
-                            </>
-                          )}
-                        </div>
-                      )}
                       {isTwoColumnLayout(c) && (
                         <button
                           type="button"
