@@ -544,22 +544,7 @@ export function Canvas({
                         </div>
                       )}
 
-                      {isTwoColumnLayout(c) && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const currentPos = c.props.imagePosition || (c.props.reverseLayout ? "left" : "right");
-                            const nextPos = currentPos === "left" ? "right" : "left";
-                            onUpdateProps?.(c.id, { imagePosition: nextPos, reverseLayout: nextPos === "left" });
-                          }}
-                          className="rounded-full bg-muted/90 hover:bg-primary hover:text-white px-2.5 py-1 text-xs font-bold text-foreground border border-border shadow-xs transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                          title="Switch / Flip Left & Right Grid Items"
-                        >
-                          <ArrowLeftRight className="h-3 w-3" />
-                          <span>Switch Sides</span>
-                        </button>
-                      )}
+
 
 
                       {c.type !== "navbar" && (

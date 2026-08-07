@@ -54,6 +54,11 @@ import {
   ChevronRight,
   Share2,
   Trash2,
+  Video,
+  Play,
+  Quote,
+  TrendingUp,
+  CheckCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -103,6 +108,11 @@ export const ICON_MAP: Record<string, React.ElementType> = {
   rocket: Rocket,
   monitor: Monitor,
   database: Database,
+  video: Video,
+  play: Play,
+  quote: Quote,
+  trending: TrendingUp,
+  check: CheckCircle,
 };
 
 // Social Icons Polyfill (for missing lucide-react brand icons)
@@ -1140,6 +1150,157 @@ function LogoEditItem({
           <Check className="h-3.5 w-3.5" /> Done
         </button>
       </div>
+      </div>
+    </EditModalPortal>
+  );
+}
+
+export function getYouTubeEmbedUrl(url?: string, autoplay: boolean = false): string | null {
+  if (!url) return null;
+  const str = url.trim();
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = str.match(regExp);
+  if (match && match[2] && match[2].length === 11) {
+    return `https://www.youtube.com/embed/${match[2]}?autoplay=${autoplay ? "1" : "0"}&rel=0`;
+  }
+  if (str.includes("youtube.com/embed/")) {
+    if (!autoplay && str.includes("autoplay=1")) {
+      return str.replace("autoplay=1", "autoplay=0");
+    }
+    return str;
+  }
+  return null;
+}
+
+export function RenderBadgeIcon({
+  tagText = "",
+  primaryColor = "#3b82f6",
+  className = "h-3.5 w-3.5 shrink-0",
+}: {
+  tagText?: string;
+  primaryColor?: string;
+  className?: string;
+}) {
+  const text = tagText.toLowerCase();
+  if (text.includes("★") || text.includes("csat") || text.includes("rating") || text.includes("star")) {
+    return <Star className={`${className} text-amber-400 fill-amber-400`} />;
+  }
+  if (text.includes("⚡") || text.includes("zap") || text.includes("fast") || text.includes("speed")) {
+    return <Zap className={`${className} text-amber-400 fill-amber-400`} />;
+  }
+  if (text.includes("+") || text.includes("%") || text.includes("growth") || text.includes("conversion")) {
+    return <TrendingUp className={className} style={{ color: primaryColor }} />;
+  }
+  if (text.includes("verified") || text.includes("check") || text.includes("customer")) {
+    return <CheckCircle className={className} style={{ color: primaryColor }} />;
+  }
+  if (text.includes("rocket") || text.includes("deploy") || text.includes("ship")) {
+    return <Rocket className={className} style={{ color: primaryColor }} />;
+  }
+  return <Sparkles className={className} style={{ color: primaryColor }} />;
+}
+
+function VideoEditItem({
+  currentVideoUrl,
+  currentThumbnailUrl,
+  onSave,
+  onClose,
+}: {
+  currentVideoUrl?: string;
+  currentThumbnailUrl?: string;
+  onSave: (videoUrl: string, thumbnailUrl?: string) => void;
+  onClose: () => void;
+}) {
+  const [draftVideoUrl, setDraftVideoUrl] = useState(currentVideoUrl || "");
+  const [draftThumbnailUrl, setDraftThumbnailUrl] = useState(currentThumbnailUrl || "");
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (popoverRef.current?.contains(target)) return;
+      onClose();
+    };
+
+    const timer = setTimeout(() => {
+      window.addEventListener("click", handleOutsideClick);
+    }, 10);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleOutsideClick);
+    };
+  }, [onClose]);
+
+  return (
+    <EditModalPortal onClose={onClose}>
+      <div
+        ref={popoverRef}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md my-auto p-5 bg-background border border-border shadow-2xl rounded-2xl text-foreground text-xs space-y-4 animate-in zoom-in-95 cursor-default text-left font-normal"
+      >
+        <div className="flex items-center justify-between pb-2 border-b border-border/60">
+          <span className="font-extrabold text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <Video className="h-4 w-4 text-primary" /> Edit Video Testimonial Link
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all cursor-pointer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+              YouTube Video Link or Embed URL
+            </label>
+            <input
+              type="url"
+              value={draftVideoUrl}
+              onChange={(e) => setDraftVideoUrl(e.target.value)}
+              placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+              className="w-full px-3 py-2 text-xs border border-border rounded-xl bg-muted/40 focus:outline-none focus:border-primary text-foreground"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Paste any YouTube video link (e.g. youtube.com/watch?v=... or youtu.be/...).
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+              Custom Video Poster Image URL (Optional)
+            </label>
+            <input
+              type="url"
+              value={draftThumbnailUrl}
+              onChange={(e) => setDraftThumbnailUrl(e.target.value)}
+              placeholder="e.g. https://images.unsplash.com/photo-..."
+              className="w-full px-3 py-2 text-xs border border-border rounded-xl bg-muted/40 focus:outline-none focus:border-primary text-foreground"
+            />
+          </div>
+        </div>
+
+        <div className="pt-2 border-t border-border/60 flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 py-1.5 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => onSave(draftVideoUrl, draftThumbnailUrl)}
+            className="px-4 py-1.5 text-xs font-bold text-white bg-primary hover:brightness-110 shadow-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <Check className="h-3.5 w-3.5" /> Save Video Link
+          </button>
+        </div>
       </div>
     </EditModalPortal>
   );
@@ -5801,6 +5962,1019 @@ export function ComponentRenderer({
                   </div>
                 );
               })}
+            </div>
+          )}
+        </Center>
+      </section>
+    );
+  }
+
+  if (type === "testimonial") {
+    const variant = props.variant || "3d-testimonial-deck";
+    const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
+    const [isTestimonialHovered, setIsTestimonialHovered] = useState(false);
+    const [editingAvatarIdx, setEditingAvatarIdx] = useState<number | null>(null);
+    const [isEditingVideo, setIsEditingVideo] = useState(false);
+    const [isPlayingVideo, setIsPlayingVideo] = useState(false);
+
+    const items = (props.items || [
+      {
+        quote: props.quote || props.text || "“This builder completely transformed our agency workflow. We ship pixel-perfect client sites in hours instead of weeks.”",
+        authorName: props.authorName || props.heading || "Sarah Jenkins",
+        authorRole: props.authorRole || props.subheading || "Head of Product, Designflow",
+        avatarUrl: props.avatarUrl || props.imageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80",
+        rating: props.rating || 5,
+        companyLogo: props.companyLogo || "DESIGNFLOW",
+        metricTag: props.metricTag || "4.9/5 CSAT Score",
+      },
+      {
+        quote: "“The 1-click cloud publishing and live color theme editor make custom web design feel like magic.”",
+        authorName: "Marcus Vance",
+        authorRole: "Founder & Lead Architect, ScaleVenture",
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
+        rating: 5,
+        companyLogo: "SCALEVENTURE",
+        metricTag: "+340% Conversion",
+      },
+      {
+        quote: "“Our dev team relies on the generated schema and instant DOM synchronization. Essential tool for modern stacks.”",
+        authorName: "Elena Rostova",
+        authorRole: "VP of Engineering, CloudPulse",
+        avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
+        rating: 5,
+        companyLogo: "CLOUDPULSE",
+        metricTag: "10x Faster Ship",
+      },
+      {
+        quote: "“Clean code output, beautiful component presets, and lightning fast UI. Best web builder engine we've tested.”",
+        authorName: "Alex Chen",
+        authorRole: "Senior UI Architect, Nexus Studio",
+        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+        rating: 5,
+        companyLogo: "NEXUS",
+        metricTag: "Verified Customer",
+      },
+    ]);
+
+    useEffect(() => {
+      if (variant !== "3d-testimonial-deck" || isTestimonialHovered || items.length <= 1) return;
+      const timer = setInterval(() => {
+        setActiveTestimonialIdx((prev) => (prev + 1) % items.length);
+      }, 4500);
+      return () => clearInterval(timer);
+    }, [variant, isTestimonialHovered, items.length]);
+
+    const youtubeEmbed = getYouTubeEmbedUrl(props.videoUrl || props.videoPreviewUrl, isPlayingVideo);
+
+    const renderStars = (count = 5) => (
+      <div className="flex items-center gap-1 text-amber-400">
+        {Array.from({ length: count }).map((_, idx) => (
+          <Star key={idx} className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-amber-400 text-amber-400 shrink-0" />
+        ))}
+      </div>
+    );
+
+    return (
+      <section
+        {...aosAttrs}
+        id={currentSectionId}
+        style={{
+          ...css,
+          backgroundColor: style.backgroundColor || "transparent",
+        }}
+        className={`w-full transition-all relative overflow-hidden group/section ${
+          isMobile ? "py-6 px-1" : isTablet ? "py-10 px-3" : "py-12 sm:py-24"
+        }`}
+      >
+        <Center maxWidth={effectiveMaxWidth} isMobile={isMobile}>
+          {(props.heading || props.subheading) && (
+            <div className={`text-center space-y-2.5 max-w-3xl mx-auto ${isMobile ? "mb-6" : "mb-12"}`}>
+              {props.heading && (
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.heading) onUpdateProps?.({ heading: next });
+                  }}
+                  style={{ outline: "none", color: headingTextColor }}
+                  className={`font-black tracking-tight ${
+                    isMobile ? "text-2xl" : isTablet ? "text-3xl" : "text-4xl md:text-5xl"
+                  } ${interactive ? "cursor-text transition-all" : ""}`}
+                  dangerouslySetInnerHTML={{ __html: props.heading }}
+                />
+              )}
+              {props.subheading && (
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.subheading) onUpdateProps?.({ subheading: next });
+                  }}
+                  style={{ outline: "none", color: bodyTextColor }}
+                  className={`leading-relaxed ${
+                    isMobile ? "text-xs px-2" : "text-sm md:text-lg"
+                  } ${interactive ? "cursor-text transition-all" : ""}`}
+                  dangerouslySetInnerHTML={{ __html: props.subheading }}
+                />
+              )}
+            </div>
+          )}
+
+          {/* VARIANT 1: 3d-testimonial-deck */}
+          {variant === "3d-testimonial-deck" && (
+            <div
+              onMouseEnter={() => setIsTestimonialHovered(true)}
+              onMouseLeave={() => setIsTestimonialHovered(false)}
+              className="relative w-full max-w-5xl mx-auto py-1 sm:py-4 select-none"
+            >
+              {/* Desktop Floating Left Navigation Arrow */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveTestimonialIdx((prev) => (prev - 1 + items.length) % items.length);
+                }}
+                className="hidden sm:flex absolute -left-3 md:-left-6 top-1/2 -translate-y-1/2 z-50 h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-border/80 bg-card hover:bg-background text-foreground shadow-2xl backdrop-blur-md items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer"
+                title="Previous Testimonial"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+
+              {/* Desktop Floating Right Navigation Arrow */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveTestimonialIdx((prev) => (prev + 1) % items.length);
+                }}
+                className="hidden sm:flex absolute -right-3 md:-right-6 top-1/2 -translate-y-1/2 z-50 h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-border/80 bg-card hover:bg-background text-foreground shadow-2xl backdrop-blur-md items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer"
+                title="Next Testimonial"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+
+              {/* 3D Stack Deck Container */}
+              <div className={`relative w-full flex items-center justify-center overflow-visible ${
+                isMobile ? "h-[290px]" : "h-[330px] sm:h-[380px]"
+              }`}>
+                {items.map((item: any, i: number) => {
+                  const total = items.length;
+                  let diff = i - (activeTestimonialIdx % total);
+                  if (diff > total / 2) diff -= total;
+                  if (diff < -total / 2) diff += total;
+
+                  const isActive = diff === 0;
+                  const isLeft = diff === -1;
+                  const isRight = diff === 1;
+                  const isFarLeft = diff === -2 || diff < -1;
+                  const isFarRight = diff === 2 || diff > 1;
+
+                  let positionClasses = "";
+                  if (isActive) {
+                    positionClasses = "z-30 scale-100 opacity-100 translate-x-0 border-2 cursor-default";
+                  } else if (isLeft) {
+                    positionClasses = isMobile
+                      ? "z-20 scale-75 opacity-30 -translate-x-[25%] blur-[0.6px] border border-border/60"
+                      : "z-20 scale-90 opacity-40 -translate-x-[45%] sm:-translate-x-[60%] blur-[0.4px] hover:opacity-85 cursor-pointer border border-border/60";
+                  } else if (isRight) {
+                    positionClasses = isMobile
+                      ? "z-20 scale-75 opacity-30 translate-x-[25%] blur-[0.6px] border border-border/60"
+                      : "z-20 scale-90 opacity-40 translate-x-[45%] sm:translate-x-[60%] blur-[0.4px] hover:opacity-85 cursor-pointer border border-border/60";
+                  } else if (isFarLeft) {
+                    positionClasses = "z-10 scale-75 opacity-20 -translate-x-[80%] sm:-translate-x-[110%] pointer-events-none hidden sm:flex border border-border/40";
+                  } else {
+                    positionClasses = "z-10 scale-75 opacity-20 translate-x-[80%] sm:translate-x-[110%] pointer-events-none hidden sm:flex border border-border/40";
+                  }
+
+                  return (
+                    <div
+                      key={i}
+                      onClick={(e) => {
+                        if (!isActive) {
+                          e.stopPropagation();
+                          setActiveTestimonialIdx(i);
+                        }
+                      }}
+                      className={`absolute rounded-3xl bg-card transition-all duration-500 ease-out flex flex-col justify-between overflow-hidden ${
+                        isMobile
+                          ? "w-[305px] h-[285px] p-4 space-y-2"
+                          : "w-[330px] sm:w-[400px] md:w-[460px] h-[310px] sm:h-[350px] p-5 sm:p-7"
+                      } ${positionClasses}`}
+                      style={{
+                        borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "28px" : (theme.borderRadius || "28px"),
+                        borderColor: isActive ? primary : undefined,
+                        boxShadow: isActive ? `0 25px 60px -12px ${primary}40` : undefined,
+                      }}
+                    >
+                      {/* Top Header Row: Rating + Metric Tag */}
+                      <div className="flex items-center justify-between gap-1.5 min-w-0">
+                        <div className="shrink-0">
+                          {renderStars(item.rating || 5)}
+                        </div>
+                        {item.metricTag && (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider rounded-full border shadow-2xs shrink-0 max-w-[135px] sm:max-w-[180px] overflow-hidden"
+                            style={{
+                              backgroundColor: `${primary}18`,
+                              color: primary,
+                              borderColor: `${primary}35`,
+                            }}
+                          >
+                            <RenderBadgeIcon tagText={item.metricTag} primaryColor={primary} className="h-3 w-3 shrink-0" />
+                            <span
+                              contentEditable={interactive && isActive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerHTML;
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], metricTag: next };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              style={{ outline: "none" }}
+                              className={`truncate ${interactive && isActive ? "cursor-text" : ""}`}
+                              dangerouslySetInnerHTML={{ __html: item.metricTag }}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Middle Quote Text */}
+                      <div className="my-auto space-y-1.5 overflow-hidden">
+                        <p
+                          contentEditable={interactive && isActive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], quote: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: headingTextColor }}
+                          className={`font-bold italic leading-relaxed line-clamp-4 ${
+                            isMobile ? "text-xs" : "text-sm sm:text-base md:text-lg"
+                          } ${interactive && isActive ? "cursor-text" : ""}`}
+                          dangerouslySetInnerHTML={{ __html: item.quote || item.text }}
+                        />
+                      </div>
+
+                      {/* Footer Row: Reviewer Profile + Company Logo */}
+                      <div
+                        className="pt-2 border-t flex items-center justify-between gap-1.5 text-xs min-w-0"
+                        style={{ borderColor: isDarkSection ? `${primary}20` : "rgba(0,0,0,0.08)" }}
+                      >
+                        <div className="flex items-center gap-2 min-w-0 shrink">
+                          <div className="relative group/avatar shrink-0">
+                            <img
+                              src={item.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"}
+                              alt={item.authorName}
+                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 shadow-xs"
+                              style={{ borderColor: primary }}
+                            />
+                            {interactive && isActive && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingAvatarIdx(editingAvatarIdx === i ? null : i);
+                                }}
+                                className="absolute -bottom-1 -right-1 p-0.5 sm:p-1 rounded-full bg-background border border-border text-foreground shadow-md hover:bg-primary hover:text-white transition-all text-[8px] cursor-pointer z-10"
+                                title="Change Avatar Image"
+                              >
+                                ✎
+                              </button>
+                            )}
+                            {editingAvatarIdx === i && (
+                              <ImageEditItem
+                                currentUrl={item.avatarUrl}
+                                hideLayoutOptions={true}
+                                onSave={(editProps) => {
+                                  const nextItems = [...items];
+                                  nextItems[i] = { ...nextItems[i], avatarUrl: editProps.url };
+                                  onUpdateProps?.({ items: nextItems });
+                                  setEditingAvatarIdx(null);
+                                }}
+                                onClose={() => setEditingAvatarIdx(null)}
+                              />
+                            )}
+                          </div>
+
+                          <div className="text-left min-w-0">
+                            <h4
+                              contentEditable={interactive && isActive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerHTML;
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], authorName: next };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              style={{ outline: "none", color: headingTextColor }}
+                              className={`font-black text-xs sm:text-sm leading-tight truncate max-w-[100px] sm:max-w-[140px] ${
+                                interactive && isActive ? "cursor-text" : ""
+                              }`}
+                              dangerouslySetInnerHTML={{ __html: item.authorName || item.heading }}
+                            />
+                            <p
+                              contentEditable={interactive && isActive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerHTML;
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], authorRole: next };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              style={{ outline: "none", color: bodyTextColor }}
+                              className={`text-[10px] sm:text-[11px] font-semibold text-muted-foreground truncate max-w-[100px] sm:max-w-[140px] ${
+                                interactive && isActive ? "cursor-text" : ""
+                              }`}
+                              dangerouslySetInnerHTML={{ __html: item.authorRole || item.subheading }}
+                            />
+                          </div>
+                        </div>
+
+                        {item.companyLogo && (
+                          <div className="inline-flex items-center gap-1 font-black text-[10px] sm:text-xs uppercase tracking-wider shrink-0 max-w-[90px] sm:max-w-[120px] overflow-hidden" style={{ color: primary }}>
+                            <RenderBadgeIcon tagText={item.companyLogo} primaryColor={primary} className="h-3 w-3 shrink-0" />
+                            <span
+                              contentEditable={interactive && isActive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerHTML;
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], companyLogo: next };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              style={{ outline: "none" }}
+                              className={`truncate ${interactive && isActive ? "cursor-text" : ""}`}
+                              dangerouslySetInnerHTML={{ __html: item.companyLogo }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Controls Bar */}
+              <div className="flex items-center justify-center gap-3 sm:gap-4 mt-4 sm:mt-6 z-40 relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveTestimonialIdx((prev) => (prev - 1 + items.length) % items.length);
+                  }}
+                  className="sm:hidden h-8 w-8 rounded-full border border-border/80 bg-background/90 hover:bg-background text-foreground shadow-md backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Previous Testimonial"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  {items.map((_, idx) => {
+                    const isCurrent = idx === activeTestimonialIdx;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTestimonialIdx(idx);
+                        }}
+                        style={{
+                          backgroundColor: isCurrent ? primary : undefined,
+                        }}
+                        className={`transition-all duration-300 cursor-pointer ${
+                          isCurrent
+                            ? "w-6 sm:w-8 h-2 sm:h-2.5 rounded-full shadow-xs"
+                            : "w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-muted-foreground/30 hover:bg-muted-foreground/60"
+                        }`}
+                        title={`Go to slide ${idx + 1}`}
+                      />
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveTestimonialIdx((prev) => (prev + 1) % items.length);
+                  }}
+                  className="sm:hidden h-8 w-8 rounded-full border border-border/80 bg-background/90 hover:bg-background text-foreground shadow-md backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Next Testimonial"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* VARIANT 2: bento-testimonial-grid */}
+          {variant === "bento-testimonial-grid" && (
+            <div className={`grid gap-3.5 sm:gap-6 ${
+              isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 md:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => {
+                const isSpotlight = item.isSpotlight || i === 0;
+                const colSpanClass = isMobile
+                  ? "col-span-1"
+                  : isTablet
+                  ? (isSpotlight ? "col-span-2" : "col-span-1")
+                  : (isSpotlight ? "md:col-span-2" : "md:col-span-1");
+
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-3xl border bg-card transition-all duration-300 hover:shadow-xl flex flex-col justify-between space-y-3.5 ${
+                      isMobile ? "p-4 sm:p-6" : "p-6 sm:p-7"
+                    } ${colSpanClass} ${isSpotlight ? "border-2" : ""}`}
+                    style={{
+                      borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "28px" : (theme.borderRadius || "28px"),
+                      borderColor: isSpotlight ? primary : `${primary}25`,
+                      boxShadow: isSpotlight ? `0 20px 50px -10px ${primary}25` : undefined,
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      {renderStars(item.rating || 5)}
+                      {item.metricTag && (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full border shrink-0"
+                          style={{ backgroundColor: `${primary}18`, color: primary, borderColor: `${primary}35` }}
+                        >
+                          <RenderBadgeIcon tagText={item.metricTag} primaryColor={primary} />
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], metricTag: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none" }}
+                            className={`truncate max-w-[120px] ${interactive ? "cursor-text" : ""}`}
+                            dangerouslySetInnerHTML={{ __html: item.metricTag }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <p
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerHTML;
+                        const nextItems = [...items];
+                        nextItems[i] = { ...nextItems[i], quote: next };
+                        onUpdateProps?.({ items: nextItems });
+                      }}
+                      style={{ outline: "none", color: headingTextColor }}
+                      className={`font-bold italic leading-relaxed ${
+                        isSpotlight ? (isMobile ? "text-base" : "text-lg sm:text-xl") : "text-xs sm:text-base"
+                      } ${interactive ? "cursor-text" : ""}`}
+                      dangerouslySetInnerHTML={{ __html: item.quote || item.text }}
+                    />
+
+                    <div className="flex items-center gap-3 pt-3 border-t border-border/40">
+                      <div className="relative group/avatar shrink-0">
+                        <img
+                          src={item.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"}
+                          alt={item.authorName}
+                          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border"
+                          style={{ borderColor: primary }}
+                        />
+                        {interactive && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingAvatarIdx(editingAvatarIdx === i ? null : i);
+                            }}
+                            className="absolute -bottom-1 -right-1 p-0.5 sm:p-1 rounded-full bg-background border border-border text-foreground shadow-md hover:bg-primary hover:text-white transition-all text-[8px] cursor-pointer"
+                            title="Change Avatar Image"
+                          >
+                            ✎
+                          </button>
+                        )}
+                        {editingAvatarIdx === i && (
+                          <ImageEditItem
+                            currentUrl={item.avatarUrl}
+                            hideLayoutOptions={true}
+                            onSave={(editProps) => {
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], avatarUrl: editProps.url };
+                              onUpdateProps?.({ items: nextItems });
+                              setEditingAvatarIdx(null);
+                            }}
+                            onClose={() => setEditingAvatarIdx(null)}
+                          />
+                        )}
+                      </div>
+
+                      <div className="text-left min-w-0">
+                        <h4
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], authorName: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: headingTextColor }}
+                          className={`font-extrabold text-xs sm:text-sm leading-tight truncate ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.authorName || item.heading }}
+                        />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], authorRole: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: bodyTextColor }}
+                          className={`text-[11px] sm:text-xs opacity-75 truncate ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.authorRole || item.subheading }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* VARIANT 3: spotlight-testimonial-hero */}
+          {variant === "spotlight-testimonial-hero" && (
+            <div
+              className={`max-w-4xl mx-auto rounded-3xl bg-card border-2 shadow-2xl text-center relative overflow-hidden ${
+                isMobile ? "p-5 space-y-4" : isTablet ? "p-8 space-y-5" : "p-8 sm:p-14 space-y-6"
+              }`}
+              style={{
+                borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "32px" : (theme.borderRadius || "32px"),
+                borderColor: primary,
+                boxShadow: `0 30px 70px -15px ${primary}30`,
+              }}
+            >
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {renderStars(props.rating || 5)}
+                {props.metricTag && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-black rounded-full border"
+                    style={{ backgroundColor: `${primary}18`, color: primary, borderColor: `${primary}35` }}
+                  >
+                    <RenderBadgeIcon tagText={props.metricTag} primaryColor={primary} />
+                    <span
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerHTML;
+                        if (next && next !== props.metricTag) onUpdateProps?.({ metricTag: next });
+                      }}
+                      style={{ outline: "none" }}
+                      className={interactive ? "cursor-text" : ""}
+                      dangerouslySetInnerHTML={{ __html: props.metricTag }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <p
+                contentEditable={interactive}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  const next = e.currentTarget.innerHTML;
+                  if (next && next !== (props.quote || props.text)) onUpdateProps?.({ quote: next, text: next });
+                }}
+                style={{ outline: "none", color: headingTextColor }}
+                className={`font-black italic leading-relaxed tracking-tight ${
+                  isMobile ? "text-base" : isTablet ? "text-xl" : "text-xl sm:text-2xl md:text-3xl"
+                } ${interactive ? "cursor-text" : ""}`}
+                dangerouslySetInnerHTML={{ __html: props.quote || props.text || "“CraftSite allowed us to launch 12 high-converting landing pages in a single month.”" }}
+              />
+
+              <div className="flex flex-col items-center justify-center space-y-1.5 pt-3 border-t border-border/40">
+                <div className="relative group/avatar shrink-0">
+                  <img
+                    src={props.avatarUrl || props.imageUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80"}
+                    alt={props.authorName || "Reviewer"}
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 shadow-md"
+                    style={{ borderColor: primary }}
+                  />
+                  {interactive && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingAvatarIdx(editingAvatarIdx === 999 ? null : 999);
+                      }}
+                      className="absolute -bottom-1 -right-1 p-1 rounded-full bg-background border border-border text-foreground shadow-md hover:bg-primary hover:text-white transition-all text-[10px] cursor-pointer"
+                      title="Change Avatar Image"
+                    >
+                      ✎
+                    </button>
+                  )}
+                  {editingAvatarIdx === 999 && (
+                    <ImageEditItem
+                      currentUrl={props.avatarUrl || props.imageUrl}
+                      hideLayoutOptions={true}
+                      onSave={(editProps) => {
+                        onUpdateProps?.({ avatarUrl: editProps.url, imageUrl: editProps.url });
+                        setEditingAvatarIdx(null);
+                      }}
+                      onClose={() => setEditingAvatarIdx(null)}
+                    />
+                  )}
+                </div>
+
+                <h4
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.authorName) onUpdateProps?.({ authorName: next });
+                  }}
+                  style={{ outline: "none", color: headingTextColor }}
+                  className={`font-extrabold text-base sm:text-lg leading-tight ${interactive ? "cursor-text" : ""}`}
+                  dangerouslySetInnerHTML={{ __html: props.authorName || props.heading || "David Sterling" }}
+                />
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.authorRole) onUpdateProps?.({ authorRole: next });
+                  }}
+                  style={{ outline: "none", color: bodyTextColor }}
+                  className={`text-xs font-semibold text-muted-foreground ${interactive ? "cursor-text" : ""}`}
+                  dangerouslySetInnerHTML={{ __html: props.authorRole || props.subheading || "Chief Marketing Officer, HyperScale Inc." }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* VARIANT 4: wall-of-love-testimonials */}
+          {variant === "wall-of-love-testimonials" && (
+            <div className={`grid gap-3.5 sm:gap-6 ${
+              isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => (
+                <div
+                  key={i}
+                  className={`rounded-2xl border bg-card/90 backdrop-blur-md transition-all duration-300 hover:shadow-xl text-left space-y-3 flex flex-col justify-between ${
+                    isMobile ? "p-4" : "p-6"
+                  }`}
+                  style={{
+                    borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px"),
+                    borderColor: `${primary}25`,
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    {renderStars(item.rating || 5)}
+                    {item.date && (
+                      <span
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerHTML;
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], date: next };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none" }}
+                        className={`text-[10px] sm:text-[11px] font-semibold text-muted-foreground ${interactive ? "cursor-text" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: item.date }}
+                      />
+                    )}
+                  </div>
+
+                  <p
+                    contentEditable={interactive}
+                    suppressContentEditableWarning
+                    onBlur={(e) => {
+                      const next = e.currentTarget.innerHTML;
+                      const nextItems = [...items];
+                      nextItems[i] = { ...nextItems[i], quote: next };
+                      onUpdateProps?.({ items: nextItems });
+                    }}
+                    style={{ outline: "none", color: headingTextColor }}
+                    className={`leading-relaxed ${
+                      isMobile ? "text-xs" : "text-sm sm:text-base"
+                    } ${interactive ? "cursor-text" : ""}`}
+                    dangerouslySetInnerHTML={{ __html: item.quote || item.text }}
+                  />
+
+                  <div className="flex items-center gap-3 pt-3 border-t border-border/40">
+                    <div className="relative group/avatar shrink-0">
+                      <img
+                        src={item.avatarUrl || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80"}
+                        alt={item.authorName}
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border"
+                        style={{ borderColor: primary }}
+                      />
+                      {interactive && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingAvatarIdx(editingAvatarIdx === i ? null : i);
+                          }}
+                          className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-background border border-border text-foreground shadow-md hover:bg-primary hover:text-white transition-all text-[8px] cursor-pointer"
+                          title="Change Avatar Image"
+                        >
+                          ✎
+                        </button>
+                      )}
+                      {editingAvatarIdx === i && (
+                        <ImageEditItem
+                          currentUrl={item.avatarUrl}
+                          hideLayoutOptions={true}
+                          onSave={(editProps) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], avatarUrl: editProps.url };
+                            onUpdateProps?.({ items: nextItems });
+                            setEditingAvatarIdx(null);
+                          }}
+                          onClose={() => setEditingAvatarIdx(null)}
+                        />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h4
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerHTML;
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], authorName: next };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none", color: headingTextColor }}
+                        className={`font-extrabold text-xs truncate ${interactive ? "cursor-text" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: item.authorName || item.heading }}
+                      />
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const next = e.currentTarget.innerHTML;
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], authorHandle: next };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none", color: primary }}
+                        className={`text-[10px] sm:text-[11px] font-bold truncate ${interactive ? "cursor-text" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: item.authorHandle || item.authorRole || "@creator" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* VARIANT 5: split-story-testimonial */}
+          {variant === "split-story-testimonial" && (
+            <div className={`grid items-center ${
+              isMobileOrTablet ? "grid-cols-1 space-y-6" : "grid-cols-1 lg:grid-cols-12 gap-8"
+            }`}>
+              {/* Left Video / Case Study Preview Card */}
+              <div className={`${isMobileOrTablet ? "w-full" : "lg:col-span-6"} relative group`}>
+                <div
+                  className="absolute -inset-1 rounded-3xl opacity-30 blur-xl group-hover:opacity-60 transition-all duration-500 pointer-events-none"
+                  style={{ background: `linear-gradient(135deg, ${primary}40 0%, ${primary}10 100%)` }}
+                />
+                <div className="relative overflow-hidden rounded-3xl border shadow-2xl bg-black" style={{ borderColor: `${primary}35` }}>
+                  {youtubeEmbed && (isPlayingVideo || !interactive) ? (
+                    <iframe
+                      src={youtubeEmbed}
+                      title="Customer Video Case Study"
+                      className={`w-full rounded-3xl border-none ${
+                        isMobile ? "h-[220px]" : "h-[280px] sm:h-[360px]"
+                      }`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className={`relative w-full ${
+                      isMobile ? "h-[220px]" : "h-[280px] sm:h-[360px]"
+                    }`}>
+                      <img
+                        src={props.videoPreviewUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"}
+                        alt="Case study story"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-between p-4 sm:p-6">
+                        {props.metricTag && (
+                          <div className="inline-flex items-center gap-1.5 self-start px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-black rounded-full shadow-lg text-white"
+                            style={{ backgroundColor: primary }}
+                          >
+                            <RenderBadgeIcon tagText={props.metricTag} primaryColor="#ffffff" />
+                            <span
+                              contentEditable={interactive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerHTML;
+                                if (next && next !== props.metricTag) onUpdateProps?.({ metricTag: next });
+                              }}
+                              style={{ outline: "none" }}
+                              className={interactive ? "cursor-text" : ""}
+                              dangerouslySetInnerHTML={{ __html: props.metricTag }}
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setIsPlayingVideo(true)}
+                            className="flex items-center gap-2.5 group/play cursor-pointer"
+                          >
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 group-hover/play:bg-white text-primary flex items-center justify-center shadow-2xl backdrop-blur-md transition-all group-hover/play:scale-110 shrink-0">
+                              <Play className="h-4 w-4 sm:h-5 sm:w-5 fill-primary text-primary ml-0.5" />
+                            </div>
+                            <span className="text-white font-extrabold text-xs sm:text-sm drop-shadow-md">Watch Case Study Video</span>
+                          </button>
+
+                          {interactive && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsEditingVideo(true);
+                              }}
+                              className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-background/90 border border-border shadow-lg hover:border-primary text-foreground text-[10px] sm:text-xs font-mono transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                              title="Edit YouTube Video Link"
+                            >
+                              <Video className="h-3 w-3 text-primary" />
+                              <span>Edit Video</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {interactive && !youtubeEmbed && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsEditingVideo(true);
+                      }}
+                      className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-background border border-border shadow-lg hover:border-primary text-foreground text-[10px] font-mono transition-all cursor-pointer flex items-center gap-1 z-30"
+                      title="Edit YouTube Video Link"
+                    >
+                      <Video className="h-3 w-3 text-primary" />
+                      <span>YouTube Video</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Story Quote Content */}
+              <div className={`space-y-4 sm:space-y-6 text-left ${isMobileOrTablet ? "w-full" : "lg:col-span-6"}`}>
+                {renderStars(props.rating || 5)}
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== (props.quote || props.text)) onUpdateProps?.({ quote: next, text: next });
+                  }}
+                  style={{ outline: "none", color: headingTextColor }}
+                  className={`font-black italic leading-relaxed ${
+                    isMobile ? "text-base" : "text-xl sm:text-2xl"
+                  } ${interactive ? "cursor-text" : ""}`}
+                  dangerouslySetInnerHTML={{ __html: props.quote || props.text || "“We replaced complex manual frontend boilerplate with modular visual sections.”" }}
+                />
+                <div className="flex items-center gap-3 pt-3 sm:pt-4 border-t border-border/40">
+                  <div className="relative group/avatar shrink-0">
+                    <img
+                      src={props.avatarUrl || "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80"}
+                      alt={props.authorName || "Reviewer"}
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 shadow-md"
+                      style={{ borderColor: primary }}
+                    />
+                    {interactive && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingAvatarIdx(editingAvatarIdx === 888 ? null : 888);
+                        }}
+                        className="absolute -bottom-1 -right-1 p-1 rounded-full bg-background border border-border text-foreground shadow-md hover:bg-primary hover:text-white transition-all text-[9px] cursor-pointer"
+                        title="Change Avatar Image"
+                      >
+                        ✎
+                      </button>
+                    )}
+                    {editingAvatarIdx === 888 && (
+                      <ImageEditItem
+                        currentUrl={props.avatarUrl}
+                        hideLayoutOptions={true}
+                        onSave={(editProps) => {
+                          onUpdateProps?.({ avatarUrl: editProps.url });
+                          setEditingAvatarIdx(null);
+                        }}
+                        onClose={() => setEditingAvatarIdx(null)}
+                      />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <h4
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerHTML;
+                        if (next && next !== props.authorName) onUpdateProps?.({ authorName: next });
+                      }}
+                      style={{ outline: "none", color: headingTextColor }}
+                      className={`font-extrabold text-sm sm:text-base leading-tight truncate ${
+                        interactive ? "cursor-text" : ""
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: props.authorName || props.heading || "Amara Okonkwo" }}
+                    />
+                    <p
+                      contentEditable={interactive}
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const next = e.currentTarget.innerHTML;
+                        if (next && next !== props.authorRole) onUpdateProps?.({ authorRole: next });
+                      }}
+                      style={{ outline: "none", color: bodyTextColor }}
+                      className={`text-xs font-semibold text-muted-foreground truncate ${
+                        interactive ? "cursor-text" : ""
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: props.authorRole || props.subheading || "Director of Digital Strategy, ScaleVenture" }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Video Link Edit Modal */}
+          {isEditingVideo && (
+            <VideoEditItem
+              currentVideoUrl={props.videoUrl || props.videoPreviewUrl}
+              currentThumbnailUrl={props.videoPreviewUrl}
+              onSave={(vUrl, tUrl) => {
+                onUpdateProps?.({ videoUrl: vUrl, videoPreviewUrl: tUrl || vUrl });
+                setIsEditingVideo(false);
+                setIsPlayingVideo(true);
+              }}
+              onClose={() => setIsEditingVideo(false)}
+            />
+          )}
+
+          {/* Interactive Item Management Toolbar (Only for multi-card layout variants) */}
+          {interactive && selected && (variant === "3d-testimonial-deck" || variant === "bento-testimonial-grid" || variant === "wall-of-love-testimonials") && (
+            <div className="mt-6 sm:mt-8 pt-4 border-t border-border/40 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const nextItems = [
+                    ...items,
+                    {
+                      quote: "“Fantastic tool! Reduced our release timelines dramatically with stunning UI defaults.”",
+                      authorName: "Jordan Lee",
+                      authorRole: "Lead Frontend Engineer",
+                      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80",
+                      rating: 5,
+                      companyLogo: "DESIGNSTUDIO",
+                      metricTag: "Verified Reviewer",
+                    },
+                  ];
+                  onUpdateProps?.({ items: nextItems });
+                  toast.success("New Review Card Added!");
+                }}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-xl shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add Review Card
+              </button>
+
+              {items.length > 1 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const nextItems = [...items];
+                    nextItems.pop();
+                    onUpdateProps?.({ items: nextItems });
+                  }}
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/30 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Remove Last Card
+                </button>
+              )}
             </div>
           )}
         </Center>

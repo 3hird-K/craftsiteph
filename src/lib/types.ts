@@ -51,6 +51,17 @@ export type ComponentProps = {
   reverseLayout?: boolean;
   layoutMode?: "grid" | "flex" | "hero" | "navbar" | "footer" | "form" | "cta";
   flexJustify?: "start" | "center" | "end" | "between";
+  // Testimonials & Reviews
+  quote?: string;
+  authorName?: string;
+  authorRole?: string;
+  authorHandle?: string;
+  avatarUrl?: string;
+  companyLogo?: string;
+  rating?: number;
+  metricTag?: string;
+  videoUrl?: string;
+  videoPreviewUrl?: string;
   items?: {
     type?: string;
     title?: string;
@@ -62,6 +73,16 @@ export type ComponentProps = {
     metric?: string;
     buttonText?: string;
     stepNumber?: string;
+    quote?: string;
+    authorName?: string;
+    authorRole?: string;
+    authorHandle?: string;
+    avatarUrl?: string;
+    companyLogo?: string;
+    rating?: number;
+    metricTag?: string;
+    date?: string;
+    isSpotlight?: boolean;
   }[];
   links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string; icon?: string }[];
   columns?: number | { title: string; links: string[] }[];

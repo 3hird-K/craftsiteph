@@ -438,6 +438,115 @@ function RealisticLayoutPreview({
           </div>
         </div>
       );
+    // TESTIMONIAL VARIANTS
+    case "3d-testimonial-deck":
+      return (
+        <div
+          className={`w-full p-2.5 border ${borderStyle} flex flex-col items-center text-center space-y-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="font-extrabold text-[9px] tracking-tight block text-primary">★ 5.0 Rating</span>
+          <div className="relative w-full h-16 flex items-center justify-center overflow-hidden py-1">
+            <div className="absolute left-1 w-20 p-1.5 rounded-lg bg-muted/40 border border-border/30 scale-85 opacity-40 text-[6px]">
+              <span>“Best engine...”</span>
+            </div>
+            <div className="z-10 w-32 p-2 rounded-xl bg-card border-2 border-primary shadow-lg scale-100 space-y-1 text-left">
+              <span className="text-amber-400 text-[8px] font-bold block">★★★★★</span>
+              <span className="font-extrabold text-[7px] block leading-tight text-foreground">“Transformed our agency workflow...”</span>
+              <div className="flex items-center gap-1 pt-0.5 border-t border-border/40">
+                <div className="w-2.5 h-2.5 rounded-full bg-primary/20 shrink-0" />
+                <span className="text-[6px] font-bold text-muted-foreground">Sarah J. — Designflow</span>
+              </div>
+            </div>
+            <div className="absolute right-1 w-20 p-1.5 rounded-lg bg-muted/40 border border-border/30 scale-85 opacity-40 text-[6px]">
+              <span>“1-Click Deploy...”</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-1">
+            <span className="h-1 w-1 rounded-full bg-muted/60" />
+            <span className="h-1 w-3 rounded-full bg-primary" />
+            <span className="h-1 w-1 rounded-full bg-muted/60" />
+          </div>
+        </div>
+      );
+
+    case "bento-testimonial-grid":
+      return (
+        <div
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="col-span-2 p-2 bg-primary/10 border border-primary/30 text-[8px] space-y-1" style={{ borderRadius: navRadius }}>
+            <span className="text-amber-400 text-[7px] font-bold block">★★★★★</span>
+            <span className="font-bold block text-foreground leading-tight">“Cut dev cycles by 80%.”</span>
+            <span className="text-[6px] text-muted-foreground block">Sophia M. — VP Apex</span>
+          </div>
+          <div className="p-1.5 bg-muted/60 text-[7px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-amber-400 text-[6px] block">★★★★★</span>
+            <span className="font-semibold block leading-tight">“Unmatched speed.”</span>
+          </div>
+        </div>
+      );
+
+    case "spotlight-testimonial-hero":
+      return (
+        <div
+          className={`w-full p-3 border ${borderStyle} flex flex-col items-center text-center space-y-1.5 transition-all`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <span className="text-amber-400 text-[9px]">★★★★★</span>
+          <span className="font-extrabold text-[9px] max-w-[180px] leading-tight text-foreground">“Launched 12 pages in a single month!”</span>
+          <div className="flex items-center gap-1.5 pt-1">
+            <div className="w-4 h-4 rounded-full bg-primary/20" />
+            <div className="text-left text-[7px]">
+              <span className="font-bold block">David Sterling</span>
+              <span className="text-muted-foreground text-[6px] block">CMO, HyperScale</span>
+            </div>
+          </div>
+        </div>
+      );
+
+    case "wall-of-love-testimonials":
+      return (
+        <div
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-1.5 bg-muted/50 border border-border/40 text-[7px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-amber-400 text-[6px] block">★★★★★</span>
+            <span className="font-bold block leading-tight">“Visually incredible!”</span>
+            <span className="text-[5px] text-muted-foreground block">@mchang</span>
+          </div>
+          <div className="p-1.5 bg-muted/50 border border-border/40 text-[7px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-amber-400 text-[6px] block">★★★★★</span>
+            <span className="font-bold block leading-tight">“10/10 upgrade!”</span>
+            <span className="text-[5px] text-muted-foreground block">@rachel_ui</span>
+          </div>
+          <div className="p-1.5 bg-muted/50 border border-border/40 text-[7px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-amber-400 text-[6px] block">★★★★★</span>
+            <span className="font-bold block leading-tight">“Brilliant work!”</span>
+            <span className="text-[5px] text-muted-foreground block">@liam_tech</span>
+          </div>
+        </div>
+      );
+
+    case "split-story-testimonial":
+      return (
+        <div
+          className={`grid grid-cols-2 gap-2 p-2 border ${borderStyle} transition-all w-full items-center`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="h-12 bg-primary/20 border border-primary/40 rounded-lg flex items-center justify-center text-[7px] font-bold text-primary">
+            ▶ Video Preview
+          </div>
+          <div className="text-left space-y-0.5 text-[7px]">
+            <span className="text-amber-400 text-[6px] block">★★★★★</span>
+            <span className="font-bold block leading-tight text-foreground">“Conversion skyrocketed!”</span>
+            <span className="text-[6px] text-muted-foreground block">Amara O. — ScaleVenture</span>
+          </div>
+        </div>
+      );
+
     case "bento-card-stack":
       return (
         <div
