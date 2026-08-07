@@ -25,16 +25,10 @@ export const PALETTE: PaletteItem[] = [
   { type: "features", label: "Features", description: "Icon feature grid", icon: "▦", category: "content" },
   { type: "card-grid", label: "Cards", description: "Card grid section", icon: "▤", category: "content" },
   { type: "testimonial", label: "Testimonial", description: "Quote + author", icon: "❝", category: "content" },
-  { type: "heading", label: "Heading", description: "Section title", icon: "H", category: "content" },
-  { type: "text", label: "Text", description: "Paragraph body copy", icon: "¶", category: "content" },
 
   // INTERACTIVE
   { type: "form", label: "Contact Form", description: "Name, email, message", icon: "✎", category: "interactive" },
   { type: "cta", label: "CTA Band", description: "Full-width call to action", icon: "➤", category: "interactive" },
-  { type: "button", label: "Button", description: "Call-to-action button", icon: "◉", category: "interactive" },
-
-  // MEDIA
-  { type: "image", label: "Image", description: "Photo or illustration", icon: "▣", category: "media" },
 ];
 
 export type ComponentVariant = {
@@ -1149,7 +1143,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
             authorRole: "Head of Product, Designflow",
             avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80",
             rating: 5,
-            companyLogo: "⚡ DESIGNFLOW",
+            companyLogo: "DESIGNFLOW",
             metricTag: "★ 4.9/5 CSAT Score",
           },
           {
@@ -1158,7 +1152,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
             authorRole: "Founder & Lead Architect, ScaleVenture",
             avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
             rating: 5,
-            companyLogo: "🚀 SCALEVENTURE",
+            companyLogo: "SCALEVENTURE",
             metricTag: "+340% Conversion",
           },
           {
@@ -1167,7 +1161,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
             authorRole: "VP of Engineering, CloudPulse",
             avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
             rating: 5,
-            companyLogo: "✦ CLOUDPULSE",
+            companyLogo: "CLOUDPULSE",
             metricTag: "10x Faster Ship",
           },
           {
@@ -1176,7 +1170,7 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
             authorRole: "Senior UI Architect, Nexus Studio",
             avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
             rating: 5,
-            companyLogo: "💎 NEXUS",
+            companyLogo: "NEXUS",
             metricTag: "Verified Customer",
           },
         ],

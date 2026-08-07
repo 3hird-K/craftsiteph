@@ -103,6 +103,13 @@ export function BuilderEditor({ project }: Props) {
     textColor: initialMode === "dark" ? "#f8fafc" : "#0f172a",
   });
 
+  // Sync user primaryColor customization with root --primary CSS variable for toasts & UI
+  useEffect(() => {
+    if (theme.primaryColor) {
+      document.documentElement.style.setProperty("--primary", theme.primaryColor);
+    }
+  }, [theme.primaryColor]);
+
   // Sync Builder Canvas Theme Mode with global app UI dark class mutations
   useEffect(() => {
     const syncWithAppTheme = () => {

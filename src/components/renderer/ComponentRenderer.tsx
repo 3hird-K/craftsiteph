@@ -2034,6 +2034,12 @@ export function ComponentRenderer({
     ? (theme.bodyColor && isDarkColor(theme.bodyColor) === false ? theme.bodyColor : "#cbd5e1")
     : (theme.bodyColor && isDarkColor(theme.bodyColor) === true ? theme.bodyColor : "#475569");
 
+  const globalHeadingFont = theme.headingFontFamily || theme.fontFamily || "inherit";
+  const globalHeadingWeight = theme.headingWeight ? Number(theme.headingWeight) : undefined;
+  const globalHeadingTransform = (theme.headingTransform as any) || "none";
+
+  const globalBodyFont = theme.bodyFontFamily || theme.fontFamily || "inherit";
+
   const getSectionAnchorId = (c: BuilderComponent): string => {
     const sameType = allComponents.filter((item) => item.type === c.type);
     const typeIndex = sameType.findIndex((item) => item.id === c.id) + 1;
@@ -6057,8 +6063,14 @@ export function ComponentRenderer({
                     const next = e.currentTarget.innerHTML;
                     if (next && next !== props.heading) onUpdateProps?.({ heading: next });
                   }}
-                  style={{ outline: "none", color: headingTextColor }}
-                  className={`font-black tracking-tight ${
+                  style={{
+                    outline: "none",
+                    color: headingTextColor,
+                    fontFamily: globalHeadingFont,
+                    fontWeight: globalHeadingWeight,
+                    textTransform: globalHeadingTransform as any,
+                  }}
+                  className={`tracking-tight ${
                     isMobile ? "text-2xl" : isTablet ? "text-3xl" : "text-4xl md:text-5xl"
                   } ${interactive ? "cursor-text transition-all" : ""}`}
                   dangerouslySetInnerHTML={{ __html: props.heading }}
@@ -6072,7 +6084,11 @@ export function ComponentRenderer({
                     const next = e.currentTarget.innerHTML;
                     if (next && next !== props.subheading) onUpdateProps?.({ subheading: next });
                   }}
-                  style={{ outline: "none", color: bodyTextColor }}
+                  style={{
+                    outline: "none",
+                    color: bodyTextColor,
+                    fontFamily: globalBodyFont,
+                  }}
                   className={`leading-relaxed ${
                     isMobile ? "text-xs px-2" : "text-sm md:text-lg"
                   } ${interactive ? "cursor-text transition-all" : ""}`}
@@ -9399,6 +9415,14 @@ export function PageRenderer({
     if (theme.mode) setMode(theme.mode);
   }, [theme.mode]);
 
+  useEffect(() => {
+    if (mode === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [mode]);
+
   const isDark = mode === "dark";
 
   const effectiveTheme: SiteTheme = {
@@ -9410,6 +9434,19 @@ export function PageRenderer({
     textColor: isDark ? "#f8fafc" : (theme.textColor && theme.textColor !== "#f8fafc" ? theme.textColor : "#0f172a"),
   };
 
+  const fontsToLoad = React.useMemo(() => {
+    const fontSet = new Set<string>();
+    [theme.fontFamily, theme.headingFontFamily, theme.bodyFontFamily].forEach((raw) => {
+      if (raw) {
+        const clean = raw.replace(/['"]/g, "").split(",")[0].trim();
+        if (clean && clean !== "inherit" && clean !== "system-ui" && clean !== "sans-serif") {
+          fontSet.add(clean);
+        }
+      }
+    });
+    return Array.from(fontSet);
+  }, [theme.fontFamily, theme.headingFontFamily, theme.bodyFontFamily]);
+
   return (
     <main
       className={`min-h-screen transition-colors duration-300 pt-0.5 relative ${isDark ? "dark bg-black text-slate-100" : "bg-[#f1f5f9] text-slate-900"}`}
@@ -9419,7 +9456,13 @@ export function PageRenderer({
         fontFamily: theme.fontFamily || "inherit",
       }}
     >
-
+      {fontsToLoad.map((font) => (
+        <style key={font}>{`
+          @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(
+            font.replace(/ /g, "+")
+          )}:wght@300;400;500;600;700;800;900&display=swap');
+        `}</style>
+      ))}
 
       {components.map((component) =>
         component.type === "navbar" &&
@@ -9449,6 +9492,27 @@ export function PageRenderer({
           />
         )
       )}
+
+      {/* Floating Theme Switcher Icon Widget */}
+      <div className="fixed bottom-4 left-4 z-[99999] flex items-center justify-center select-none">
+        <button
+          type="button"
+          onClick={() => setMode((prev) => (prev === "dark" ? "light" : "dark"))}
+          aria-label="Toggle Theme Mode"
+          title={`Switch to ${isDark ? "Light" : "Dark"} Mode`}
+          className={`flex items-center justify-center h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-full border shadow-lg backdrop-blur-xl transition-all duration-300 hover:scale-110 cursor-pointer active:scale-95 ${
+            isDark
+              ? "bg-black/90 border-neutral-800 text-white hover:bg-neutral-900 hover:border-neutral-700 shadow-black/80"
+              : "bg-white/90 border-slate-200/90 text-slate-800 hover:bg-slate-50 hover:border-slate-300 shadow-slate-300/50"
+          }`}
+        >
+          {isDark ? (
+            <Moon className="h-4 w-4 text-slate-100 transition-transform duration-300" />
+          ) : (
+            <Sun className="h-4 w-4 text-amber-500 transition-transform duration-300" />
+          )}
+        </button>
+      </div>
     </main>
   );
 }

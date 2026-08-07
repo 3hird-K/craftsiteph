@@ -221,14 +221,24 @@ html, body, #canvas-scroll-viewport {
   padding: 10px 18px !important;
 }
 
-/* Dark Mode Toast Styling */
+/* Dark Mode Toast Styling - Black background for dark mode with user color customization */
 .dark [data-sonner-toast],
 html.dark [data-sonner-toast],
 [data-theme="dark"] [data-sonner-toast] {
-  background: rgba(15, 23, 42, 0.95) !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid color-mix(in srgb, var(--primary, #3b82f6) 40%, rgba(255, 255, 255, 0.16)) !important;
+  box-shadow: 0 12px 35px -8px rgba(0, 0, 0, 0.9), 0 0 0 1px color-mix(in srgb, var(--primary, #3b82f6) 30%, transparent) !important;
+}
+
+[data-sonner-toast] [data-icon] {
+  color: var(--primary, #3b82f6) !important;
+}
+
+[data-sonner-toast] [data-button] {
+  background: var(--primary, #3b82f6) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
 }
 
 [data-sonner-toast] [data-title] {
@@ -248,7 +258,7 @@ html.dark [data-sonner-toast],
 .dark [data-sonner-toast] [data-description],
 html.dark [data-sonner-toast] [data-description],
 [data-theme="dark"] [data-sonner-toast] [data-description] {
-  color: rgba(248, 250, 252, 0.7) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
 /* Hyperlink Rich Text Styles - only for text explicitly edited as linked */
@@ -278,5 +288,32 @@ a.rich-text-link:active {
 [contenteditable="true"] a:visited,
 a[data-edited-link="true"]:visited,
 a.rich-text-link:visited {
-  color: #7c3aed !important;
+  color: #2563eb !important;
+}
+
+/* Dark Mode Component Text & Card Readability Fix */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6,
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+  color: #f8fafc !important;
+}
+
+.dark h1 *, .dark h2 *, .dark h3 *, .dark h4 *, .dark h5 *, .dark h6 *,
+html.dark h1 *, html.dark h2 *, html.dark h3 *, html.dark h4 *, html.dark h5 *, html.dark h6 *,
+[data-theme="dark"] h1 *, [data-theme="dark"] h2 *, [data-theme="dark"] h3 *, [data-theme="dark"] h4 *, [data-theme="dark"] h5 *, [data-theme="dark"] h6 * {
+  color: inherit !important;
+}
+
+.dark p, html.dark p, [data-theme="dark"] p {
+  color: #cbd5e1 !important;
+}
+
+.dark p *, html.dark p *, [data-theme="dark"] p * {
+  color: inherit;
+}
+
+.dark .bg-card, html.dark .bg-card, [data-theme="dark"] .bg-card {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }

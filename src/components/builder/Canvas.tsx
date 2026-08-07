@@ -205,9 +205,18 @@ export function Canvas({
 }: Props) {
   const editing = previewMode === "edit";
 
-  const cleanFontName = theme.fontFamily
-    ? theme.fontFamily.replace(/['"]/g, "").split(",")[0].trim()
-    : "";
+  const fontsToLoad = React.useMemo(() => {
+    const fontSet = new Set<string>();
+    [theme.fontFamily, theme.headingFontFamily, theme.bodyFontFamily].forEach((raw) => {
+      if (raw) {
+        const clean = raw.replace(/['"]/g, "").split(",")[0].trim();
+        if (clean && clean !== "inherit" && clean !== "system-ui" && clean !== "sans-serif") {
+          fontSet.add(clean);
+        }
+      }
+    });
+    return Array.from(fontSet);
+  }, [theme.fontFamily, theme.headingFontFamily, theme.bodyFontFamily]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -284,13 +293,13 @@ export function Canvas({
       className="flex-1 h-full w-full flex justify-center items-start overflow-hidden bg-[linear-gradient(45deg,var(--color-border)_25%,transparent_25%),linear-gradient(-45deg,var(--color-border)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,var(--color-border)_75%),linear-gradient(-45deg,transparent_75%,var(--color-border)_75%)] bg-[length:20px_20px] bg-[position:0_0,0_10px,10px_-10px,-10px_0]"
       onClick={handleCanvasClick}
     >
-      {cleanFontName && (
-        <style>{`
+      {fontsToLoad.map((font) => (
+        <style key={font}>{`
           @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(
-            cleanFontName.replace(/ /g, "+")
-          )}:wght@400;500;600;700;800&display=swap');
+            font.replace(/ /g, "+")
+          )}:wght@300;400;500;600;700;800;900&display=swap');
         `}</style>
-      )}
+      ))}
       
       <div 
         className="flex items-center justify-center w-full h-full"
