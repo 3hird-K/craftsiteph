@@ -22,10 +22,26 @@ async function getPublished(slug: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getPublished(slug);
-  if (!project) return { title: "Page not found" };
+  if (!project) return { title: "Page Not Found | CraftSite" };
+
+  const pageTitle = project.name || "Published Website";
+  const pageDescription =
+    project.description || `Explore ${pageTitle}, built with visual builder tools on CraftSite.`;
+
   return {
-    title: project.name,
-    description: project.description || `Published with CraftSite`,
+    title: `${pageTitle} — CraftSite`,
+    description: pageDescription,
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+      siteName: pageTitle,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: pageTitle,
+      description: pageDescription,
+    },
   };
 }
 
@@ -35,6 +51,11 @@ export default async function PublicPage({ params }: Props) {
   if (!project) notFound();
 
   return (
-    <PageRenderer components={project.components || []} theme={project.theme} />
+    <PageRenderer
+      components={project.components || []}
+      theme={project.theme}
+      title={project.name}
+      description={project.description}
+    />
   );
 }

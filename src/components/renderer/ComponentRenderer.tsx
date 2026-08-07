@@ -9405,9 +9405,13 @@ export function ComponentRenderer({
 export function PageRenderer({
   components,
   theme,
+  title,
+  description,
 }: {
   components: BuilderComponent[];
   theme: SiteTheme;
+  title?: string;
+  description?: string | null;
 }) {
   const [mode, setMode] = useState<"light" | "dark">(theme.mode || "light");
 
@@ -9422,6 +9426,12 @@ export function PageRenderer({
       document.documentElement.classList.remove("dark");
     }
   }, [mode]);
+
+  useEffect(() => {
+    if (title) {
+      document.title = `${title} — CraftSite`;
+    }
+  }, [title]);
 
   const isDark = mode === "dark";
 

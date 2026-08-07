@@ -29,6 +29,15 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
   }
 }
 
+function slugify(name: string): string {
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 48);
+  return `${base || "project"}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
 export async function PUT(req: NextRequest, ctx: Ctx) {
   try {
     const { id } = await ctx.params;
@@ -46,7 +55,12 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     if (Array.isArray(body.components)) updates.components = body.components;
     if (body.theme && typeof body.theme === "object") updates.theme = body.theme;
     if (typeof body.isPublished === "boolean") updates.isPublished = body.isPublished;
-    if (typeof body.slug === "string") updates.slug = body.slug;
+    if (typeof body.slug === "string" && body.slug.trim()) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.slug);
+      updates.slug = isUuid ? slugify(body.name || "project") : body.slug.trim();
+    } else if (body.isPublished && updates.name) {
+      updates.slug = slugify(updates.name);
+    }
 
     const [row] = await db
       .update(projects)

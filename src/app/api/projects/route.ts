@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
     const description = typeof body.description === "string" ? body.description : "";
     const components = Array.isArray(body.components) ? body.components : blankProjectComponents();
     const theme = body.theme && typeof body.theme === "object" ? { ...DEFAULT_THEME, ...body.theme } : DEFAULT_THEME;
-    const slug = typeof body.slug === "string" && body.slug ? body.slug : crypto.randomUUID();
+    const isUuid = typeof body.slug === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.slug);
+    const slug = typeof body.slug === "string" && body.slug && !isUuid ? body.slug : slugify(name);
 
     const [row] = await db
       .insert(projects)
