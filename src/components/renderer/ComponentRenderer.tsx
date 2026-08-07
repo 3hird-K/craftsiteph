@@ -3514,11 +3514,737 @@ export function ComponentRenderer({
     );
   }
 
+  if (type === "empty-layout" || type === "stats") {
+    const [editingItemImageIdx, setEditingItemImageIdx] = useState<number | null>(null);
+    const items = props.items || [];
+    const layoutMode = props.layoutMode || "grid";
+    const flexJustify = props.flexJustify || "center";
+    const columnsCount = props.columns || 3;
+
+    const justifyClass =
+      flexJustify === "start"
+        ? "justify-start"
+        : flexJustify === "end"
+        ? "justify-end"
+        : flexJustify === "between"
+        ? "justify-between"
+        : "justify-center";
+
+    const gridColsClass = isMobile
+      ? "grid-cols-1"
+      : isTablet
+      ? "grid-cols-2"
+      : columnsCount === 1
+      ? "grid-cols-1"
+      : columnsCount === 2
+      ? "grid-cols-1 sm:grid-cols-2"
+      : columnsCount === 4
+      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+
+    const containerClass = layoutMode === "flex"
+      ? `flex flex-wrap items-center ${justifyClass} gap-5 sm:gap-6 w-full`
+      : `grid gap-5 sm:gap-6 ${gridColsClass} w-full`;
+
+    return (
+      <section
+        {...aosAttrs}
+        id={currentSectionId}
+        style={{
+          ...css,
+          backgroundColor: style.backgroundColor || "transparent",
+        }}
+        className="w-full py-10 sm:py-24 transition-all"
+      >
+        <Center maxWidth={effectiveMaxWidth} isMobile={isMobile}>
+          {(props.heading || props.subheading) && (
+            <div className="text-center mb-10 space-y-3.5 max-w-3xl mx-auto">
+              {props.heading && (
+                <h2
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.heading) onUpdateProps?.({ heading: next });
+                  }}
+                  style={{ outline: "none", color: headingTextColor }}
+                  className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: props.heading }}
+                />
+              )}
+              {props.subheading && (
+                <p
+                  contentEditable={interactive}
+                  suppressContentEditableWarning
+                  onBlur={(e) => {
+                    const next = e.currentTarget.innerHTML;
+                    if (next && next !== props.subheading) onUpdateProps?.({ subheading: next });
+                  }}
+                  style={{ outline: "none", color: bodyTextColor }}
+                  className={`text-base md:text-lg leading-relaxed ${
+                    interactive ? "cursor-text transition-all" : ""
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: props.subheading }}
+                />
+              )}
+            </div>
+          )}
+
+          {/* EMPTY CONTAINER DROPZONE WHEN NO ITEMS */}
+          {items.length === 0 ? (
+            <div className="w-full py-12 px-6 border-2 border-dashed border-border/80 hover:border-primary/60 rounded-3xl flex flex-col items-center justify-center text-center space-y-3 bg-muted/20 backdrop-blur-xs transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shadow-xs">
+                <Plus className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-base font-bold text-foreground">Empty Layout Container</h4>
+                <p className="text-xs text-muted-foreground max-w-md">
+                  This section layout is empty. Click any button below to add custom titles, copy, buttons, or cards, or switch layout modes above ({layoutMode.toUpperCase()}).
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className={containerClass}>
+              {items.map((item: any, i: number) => {
+                const effectiveRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "20px" : (theme.borderRadius || "16px");
+                const itemType = item.type || "card";
+
+                // STANDALONE HEADING ELEMENT
+                if (itemType === "heading") {
+                  return (
+                    <div key={i} className="group relative p-2.5 rounded-xl transition-all hover:bg-muted/40">
+                      {interactive && selected && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onUpdateProps?.({ items: items.filter((_: any, idx: number) => idx !== i) });
+                          }}
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-destructive text-white text-xs z-30 shadow-md cursor-pointer"
+                          title="Delete Heading"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                      <h3
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], title: e.currentTarget.innerHTML };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none", color: headingTextColor }}
+                        className={`text-2xl sm:text-3xl font-black tracking-tight ${interactive ? "cursor-text" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: item.title || "Custom Heading Title" }}
+                      />
+                    </div>
+                  );
+                }
+
+                // STANDALONE TEXT PARAGRAPH ELEMENT
+                if (itemType === "text") {
+                  return (
+                    <div key={i} className="group relative p-2.5 rounded-xl transition-all hover:bg-muted/40">
+                      {interactive && selected && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onUpdateProps?.({ items: items.filter((_: any, idx: number) => idx !== i) });
+                          }}
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-destructive text-white text-xs z-30 shadow-md cursor-pointer"
+                          title="Delete Text"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                      <p
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], description: e.currentTarget.innerHTML };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{ outline: "none", color: bodyTextColor }}
+                        className={`text-sm sm:text-base leading-relaxed ${interactive ? "cursor-text" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: item.description || "Paragraph text copy block." }}
+                      />
+                    </div>
+                  );
+                }
+
+                // STANDALONE BUTTON ELEMENT
+                if (itemType === "button") {
+                  const btnBg = primary;
+                  const btnTextColor = isDarkColor(btnBg) === false ? "#000000" : "#ffffff";
+                  const btnRadiusStyle = style.borderRadius || theme.borderRadius || "12px";
+
+                  return (
+                    <div key={i} className="group relative inline-block p-1">
+                      {interactive && selected && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onUpdateProps?.({ items: items.filter((_: any, idx: number) => idx !== i) });
+                          }}
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-destructive text-white text-xs z-30 shadow-md cursor-pointer"
+                          title="Delete Button"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], buttonText: e.currentTarget.innerHTML };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{
+                          outline: "none",
+                          backgroundColor: btnBg,
+                          color: btnTextColor,
+                          borderRadius: btnRadiusStyle,
+                          fontFamily: style.fontFamily || theme.fontFamily || "inherit",
+                        }}
+                        className={`px-6 py-3 text-sm font-bold shadow-lg transition-all hover:opacity-90 active:scale-95 ${
+                          interactive ? "cursor-text" : ""
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: item.buttonText || item.title || "Call to Action" }}
+                      />
+                    </div>
+                  );
+                }
+
+                // STANDALONE BADGE ELEMENT
+                if (itemType === "badge") {
+                  return (
+                    <div key={i} className="group relative inline-block p-1">
+                      {interactive && selected && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onUpdateProps?.({ items: items.filter((_: any, idx: number) => idx !== i) });
+                          }}
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-destructive text-white text-xs z-30 shadow-md cursor-pointer"
+                          title="Delete Badge"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                      <span
+                        contentEditable={interactive}
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                          const nextItems = [...items];
+                          nextItems[i] = { ...nextItems[i], badgeText: e.currentTarget.innerHTML };
+                          onUpdateProps?.({ items: nextItems });
+                        }}
+                        style={{
+                          outline: "none",
+                          backgroundColor: `${primary}18`,
+                          color: primary,
+                          borderColor: `${primary}35`,
+                          borderRadius: theme.borderRadius === "0px" ? "0px" : "9999px",
+                          fontFamily: style.fontFamily || theme.fontFamily || "inherit",
+                        }}
+                        className={`px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider rounded-full border shadow-2xs ${
+                          interactive ? "cursor-text" : ""
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: item.badgeText || item.title || "BADGE" }}
+                      />
+                    </div>
+                  );
+                }
+
+                // STANDALONE IMAGE ELEMENT
+                if (itemType === "image") {
+                  const imgUrl = item.imageUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80";
+                  const imgRadius = style.borderRadius || theme.borderRadius || "16px";
+
+                  return (
+                    <div key={i} className="group relative p-2 rounded-2xl transition-all">
+                      {interactive && selected && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onUpdateProps?.({ items: items.filter((_: any, idx: number) => idx !== i) });
+                          }}
+                          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full bg-destructive text-white text-xs z-40 shadow-md cursor-pointer"
+                          title="Delete Image"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                      <div className="relative overflow-hidden shadow-md" style={{ borderRadius: imgRadius }}>
+                        <img src={imgUrl} alt={item.title || "Custom Image"} className="w-full h-auto object-cover max-h-80 group-hover:scale-105 transition-transform duration-500" style={{ borderRadius: imgRadius }} />
+                        {interactive && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingItemImageIdx(editingItemImageIdx === i ? null : i);
+                            }}
+                            className="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-30"
+                          >
+                            <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                          </button>
+                        )}
+                        {editingItemImageIdx === i && (
+                          <ImageEditItem
+                            currentUrl={imgUrl}
+                            hideLayoutOptions={true}
+                            onSave={(editProps) => {
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], imageUrl: editProps.url };
+                              onUpdateProps?.({ items: nextItems });
+                              setEditingItemImageIdx(null);
+                            }}
+                            onClose={() => setEditingItemImageIdx(null)}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+
+                // VERTICAL STACK COLUMN BLOCK (UNBOXED, CLEAN & COMPLETELY OPTIONAL INTERNAL COMPONENTS)
+                if (itemType === "stack") {
+                  const imgUrl = item.imageUrl;
+                  const stackBtnBg = primary;
+                  const stackBtnTextColor = isDarkColor(stackBtnBg) === false ? "#000000" : "#ffffff";
+                  const stackBtnRadius = style.borderRadius || theme.borderRadius || "12px";
+
+                  return (
+                    <div key={i} className="group relative flex flex-col justify-between space-y-4 p-2 rounded-2xl transition-all">
+                      {interactive && selected && (
+                        <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 z-30">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onUpdateProps?.({ items: items.filter((_: any, idx: number) => idx !== i) });
+                            }}
+                            className="p-1.5 rounded-full bg-destructive text-white text-xs shadow-md cursor-pointer hover:scale-105 transition-transform"
+                            title="Delete Stack Column"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      )}
+
+                      {/* OPTIONAL STACK IMAGE */}
+                      {imgUrl && (
+                        <div className="relative w-full overflow-hidden shadow-sm" style={{ borderRadius: stackBtnRadius }}>
+                          <img src={imgUrl} alt={item.title || "Stack Image"} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" style={{ borderRadius: stackBtnRadius }} />
+                          {interactive && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingItemImageIdx(editingItemImageIdx === i ? null : i);
+                              }}
+                              className="absolute top-2 right-2 px-2.5 py-1 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-md hover:bg-primary hover:text-white transition-all flex items-center gap-1 cursor-pointer z-30"
+                            >
+                              <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                            </button>
+                          )}
+                          {editingItemImageIdx === i && (
+                            <ImageEditItem
+                              currentUrl={imgUrl}
+                              hideLayoutOptions={true}
+                              onSave={(editProps) => {
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], imageUrl: editProps.url };
+                                onUpdateProps?.({ items: nextItems });
+                                setEditingItemImageIdx(null);
+                              }}
+                              onClose={() => setEditingItemImageIdx(null)}
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      {/* OPTIONAL BADGE */}
+                      {item.badgeText && (
+                        <div>
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], badgeText: e.currentTarget.innerHTML };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: `${primary}18`,
+                              color: primary,
+                              borderColor: `${primary}35`,
+                              borderRadius: theme.borderRadius === "0px" ? "0px" : "9999px",
+                              fontFamily: style.fontFamily || theme.fontFamily || "inherit",
+                            }}
+                            className={`inline-block px-3 py-1 text-xs font-extrabold uppercase tracking-wider rounded-full border ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                          />
+                        </div>
+                      )}
+
+                      {/* OPTIONAL TITLE (TOP) */}
+                      {item.title && (
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: e.currentTarget.innerHTML };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: style.textColor || headingTextColor, fontFamily: style.fontFamily || theme.fontFamily || "inherit" }}
+                          className={`text-xl sm:text-2xl font-bold tracking-tight ${interactive ? "cursor-text" : ""}`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                      )}
+
+                      {/* OPTIONAL SUBTITLE / DESCRIPTION */}
+                      {item.description && (
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: e.currentTarget.innerHTML };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: style.textColor || bodyTextColor, fontFamily: style.fontFamily || theme.fontFamily || "inherit" }}
+                          className={`text-sm sm:text-base leading-relaxed ${interactive ? "cursor-text" : ""}`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      )}
+
+                      {/* OPTIONAL BUTTON (BOTTOM) */}
+                      {item.buttonText && (
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], buttonText: e.currentTarget.innerHTML };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: stackBtnBg,
+                              color: stackBtnTextColor,
+                              borderRadius: stackBtnRadius,
+                              fontFamily: style.fontFamily || theme.fontFamily || "inherit",
+                            }}
+                            className={`px-5 py-2.5 text-sm font-bold shadow-md transition-all hover:opacity-90 active:scale-95 ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.buttonText }}
+                          />
+                        </div>
+                      )}
+
+                      {/* INLINE STACK TOOLBAR TO ADD OPTIONAL COMPONENTS INTO THIS SPECIFIC STACK */}
+                      {interactive && selected && (
+                        <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity flex flex-wrap items-center gap-1.5 text-[10px]">
+                          {!item.title && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], title: "Title Heading" };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              className="px-2 py-0.5 rounded-md bg-muted/80 hover:bg-primary hover:text-white transition-all cursor-pointer font-semibold"
+                            >
+                              + Title
+                            </button>
+                          )}
+                          {!item.description && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], description: "Subtitle description text block." };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              className="px-2 py-0.5 rounded-md bg-muted/80 hover:bg-primary hover:text-white transition-all cursor-pointer font-semibold"
+                            >
+                              + Subtitle
+                            </button>
+                          )}
+                          {!item.buttonText && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], buttonText: "Click Here" };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              className="px-2 py-0.5 rounded-md bg-muted/80 hover:bg-primary hover:text-white transition-all cursor-pointer font-semibold"
+                            >
+                              + Button
+                            </button>
+                          )}
+                          {!item.imageUrl && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              className="px-2 py-0.5 rounded-md bg-muted/80 hover:bg-primary hover:text-white transition-all cursor-pointer font-semibold"
+                            >
+                              + Image
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                // CARD CONTAINER ELEMENT
+                return (
+                  <div
+                    key={i}
+                    className={`group relative flex flex-col justify-between p-6 border transition-all duration-300 ${
+                      layoutMode === "flex" ? "min-w-[260px] max-w-sm flex-1" : ""
+                    } ${
+                      isDarkSection
+                        ? "bg-card/90 border-border/80 hover:border-primary/50 shadow-xl"
+                        : "bg-card/90 border-border/60 hover:border-primary/40 shadow-md hover:shadow-xl hover:-translate-y-0.5"
+                    }`}
+                    style={{
+                      borderRadius: effectiveRadius,
+                      fontFamily: theme.fontFamily || "inherit",
+                      borderColor: isDarkSection ? `${primary}30` : `${primary}20`,
+                    }}
+                  >
+                    {interactive && selected && (
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 z-30 bg-background/90 backdrop-blur-md p-1 rounded-xl border border-border shadow-md">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const nextItems = items.filter((_: any, idx: number) => idx !== i);
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          className="p-1 rounded-lg hover:bg-destructive/10 text-destructive text-xs cursor-pointer"
+                          title="Delete Element"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      {item.badgeText && (
+                        <span
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], badgeText: e.currentTarget.innerHTML };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            backgroundColor: `${primary}15`,
+                            color: primary,
+                            borderColor: `${primary}30`,
+                          }}
+                          className={`inline-block px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                        />
+                      )}
+
+                      {item.title && (
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: e.currentTarget.innerHTML };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: headingTextColor }}
+                          className={`text-lg sm:text-xl font-bold tracking-tight ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                      )}
+
+                      {item.description && (
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: e.currentTarget.innerHTML };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: bodyTextColor }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      )}
+                    </div>
+
+                    {(item.buttonText || itemType === "button") && (
+                      <div className="pt-4 mt-4 border-t border-border/40 flex items-center justify-between">
+                        <button
+                          type="button"
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], buttonText: e.currentTarget.innerHTML };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            backgroundColor: primary,
+                            color: "#ffffff",
+                            borderRadius: theme.borderRadius || "10px",
+                          }}
+                          className={`px-4 py-2 text-xs font-bold shadow-md transition-all hover:opacity-90 ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.buttonText || "Learn More" }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ADD CUSTOM ELEMENT TOOLBAR IN INTERACTIVE MODE */}
+          {interactive && selected && (
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-2 p-2 bg-background/95 backdrop-blur-md border border-border rounded-2xl shadow-xl z-20">
+              <span className="text-[11px] font-extrabold uppercase text-muted-foreground px-2">
+                Add Component Element:
+              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newItem = { type: "stack", title: `Stack Title ${items.length + 1}`, description: "Subtitle description text for this column stack.", buttonText: "Get Started" };
+                  onUpdateProps?.({ items: [...items, newItem] });
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                title="Add Column Stack Block (Title -> Subtitle -> Button)"
+              >
+                + Stack Block
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newItem = { type: "heading", title: `Heading Title ${items.length + 1}` };
+                  onUpdateProps?.({ items: [...items, newItem] });
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+              >
+                + Heading
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newItem = { type: "text", description: "Paragraph copy text description." };
+                  onUpdateProps?.({ items: [...items, newItem] });
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+              >
+                + Text
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newItem = { type: "button", buttonText: "Click Here" };
+                  onUpdateProps?.({ items: [...items, newItem] });
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+              >
+                + Button
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newItem = { type: "image", imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80", title: "Showcase Photo" };
+                  onUpdateProps?.({ items: [...items, newItem] });
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+              >
+                + Image
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const newItem = { type: "card", badgeText: "NEW", title: `Custom Card ${items.length + 1}`, description: "Visual component card item.", buttonText: "View Details" };
+                  onUpdateProps?.({ items: [...items, newItem] });
+                }}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+              >
+                + Card
+              </button>
+              {items.length > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdateProps?.({ items: [] });
+                  }}
+                  className="px-2.5 py-1.5 text-xs font-bold rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all flex items-center gap-1 cursor-pointer ml-2"
+                  title="Clear All Elements"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Clear All
+                </button>
+              )}
+            </div>
+          )}
+        </Center>
+      </section>
+    );
+  }
+
   if (type === "features" || type === "card-grid") {
     const variant = props.variant || (type === "card-grid" ? "bento-card-stack" : "bento-grid-features");
     const [editingItemImageIdx, setEditingItemImageIdx] = useState<number | null>(null);
     const [isEditingShowcaseImage, setIsEditingShowcaseImage] = useState(false);
-    const items = props.items || [
+    const items = (props.items || [
       {
         title: "Visual Drag & Drop Engine",
         description: "Build pixel-perfect responsive layouts with real-time DOM updates, interactive component state management, and custom CSS design tokens.",
@@ -3532,7 +4258,7 @@ export function ComponentRenderer({
         icon: "zap",
         badgeText: "REAL-TIME AI",
       },
-    ];
+    ]).slice(0, 4);
 
     return (
       <section
@@ -3828,81 +4554,795 @@ export function ComponentRenderer({
                 </div>
               ))}
             </div>
+          ) : variant === "glowing-stat-cards" ? (
+            <div className={`grid gap-5 sm:gap-6 ${
+              isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => {
+                const IconComp = item.icon === "globe" ? Globe : item.icon === "shield" ? Shield : item.icon === "sparkles" ? Sparkles : Zap;
+                const effectiveRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px");
+                const innerRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "9999px" : "14px";
+                return (
+                  <div
+                    key={i}
+                    className={`group relative overflow-hidden flex flex-col justify-between p-6 sm:p-7 border backdrop-blur-xl transition-all duration-300 ${
+                      isDarkSection
+                        ? "bg-card/95 hover:shadow-2xl"
+                        : "bg-card/90 shadow-md hover:shadow-2xl hover:-translate-y-0.5"
+                    }`}
+                    style={{
+                      borderRadius: effectiveRadius,
+                      fontFamily: theme.fontFamily || "inherit",
+                      borderColor: isDarkSection ? `${primary}35` : `${primary}25`,
+                    }}
+                  >
+                    <div
+                      className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      style={{
+                        background: `radial-gradient(circle at top right, ${primary}25, transparent 70%)`,
+                      }}
+                    />
+
+                    <div className="relative z-10 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div
+                          className="p-3 border transition-transform duration-300 group-hover:scale-110 flex items-center justify-center"
+                          style={{
+                            backgroundColor: isDarkSection ? `${primary}20` : `${primary}12`,
+                            color: primary,
+                            borderColor: `${primary}35`,
+                            borderRadius: innerRadius,
+                          }}
+                        >
+                          <IconComp className="h-5 w-5" />
+                        </div>
+
+                        {(item.metric || item.badgeText) && (
+                          <div className="flex items-center gap-1.5">
+                            {item.metric && (
+                              <span
+                                contentEditable={interactive}
+                                suppressContentEditableWarning
+                                onBlur={(e) => {
+                                  const next = e.currentTarget.innerHTML;
+                                  const nextItems = [...items];
+                                  nextItems[i] = { ...nextItems[i], metric: next };
+                                  onUpdateProps?.({ items: nextItems });
+                                }}
+                                style={{
+                                  outline: "none",
+                                  color: primary,
+                                  backgroundColor: `${primary}15`,
+                                  borderColor: `${primary}35`,
+                                }}
+                                className={`px-2.5 py-1 text-xs font-black rounded-full border ${
+                                  interactive ? "cursor-text" : ""
+                                }`}
+                                dangerouslySetInnerHTML={{ __html: item.metric }}
+                              />
+                            )}
+                            {item.badgeText && (
+                              <span
+                                contentEditable={interactive}
+                                suppressContentEditableWarning
+                                onBlur={(e) => {
+                                  const next = e.currentTarget.innerHTML;
+                                  const nextItems = [...items];
+                                  nextItems[i] = { ...nextItems[i], badgeText: next };
+                                  onUpdateProps?.({ items: nextItems });
+                                }}
+                                style={{
+                                  outline: "none",
+                                  backgroundColor: isDarkSection ? `${primary}25` : `${primary}12`,
+                                  color: isDarkSection ? "#ffffff" : primary,
+                                  borderColor: `${primary}35`,
+                                }}
+                                className={`px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border ${
+                                  interactive ? "cursor-text" : ""
+                                }`}
+                                dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {item.stat && (
+                        <div className="pt-2">
+                          <div
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], stat: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none", color: primary }}
+                            className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.stat }}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5 pt-1">
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: headingTextColor,
+                            fontFamily: theme.headingFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-lg sm:text-xl font-bold tracking-tight ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: bodyTextColor,
+                            fontFamily: theme.bodyFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      </div>
+                    </div>
+
+                    {item.buttonText && (
+                      <div
+                        className="relative z-10 pt-4 mt-4 flex items-center justify-between border-t"
+                        style={{ borderColor: isDarkSection ? `${primary}20` : "rgba(0,0,0,0.08)" }}
+                      >
+                        <span
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], buttonText: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: primary }}
+                          className={`text-xs font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.buttonText }}
+                        />
+                        <ArrowUpRight className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" style={{ color: primary }} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : variant === "visual-cover-cards" ? (
+            <div className={`grid gap-5 sm:gap-6 ${
+              isMobile
+                ? "grid-cols-1"
+                : isTablet
+                ? "grid-cols-2"
+                : items.length === 4
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                : items.length >= 5
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => {
+                const coverImage = item.imageUrl || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80";
+                const effectiveRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px");
+                return (
+                  <div
+                    key={i}
+                    className={`group relative flex flex-col justify-between border overflow-hidden transition-all duration-300 ${
+                      isDarkSection
+                        ? "bg-card/95 shadow-xl hover:border-primary/50"
+                        : "bg-card/90 shadow-md hover:shadow-2xl hover:-translate-y-0.5"
+                    }`}
+                    style={{
+                      borderRadius: effectiveRadius,
+                      fontFamily: theme.fontFamily || "inherit",
+                      borderColor: isDarkSection ? `${primary}30` : `${primary}20`,
+                    }}
+                  >
+                    <div className="relative h-44 sm:h-52 w-full overflow-hidden bg-muted">
+                      <img
+                        src={coverImage}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+
+                      {item.badgeText && (
+                        <div className="absolute top-3.5 left-3.5 z-10">
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], badgeText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: primary,
+                              color: "#ffffff",
+                            }}
+                            className={`px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-full shadow-lg ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                          />
+                        </div>
+                      )}
+
+                      {interactive && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingItemImageIdx(editingItemImageIdx === i ? null : i);
+                          }}
+                          className="absolute top-3.5 right-3.5 px-3 py-1.5 rounded-xl bg-background/90 backdrop-blur-md border border-border text-foreground text-xs font-bold shadow-lg hover:bg-primary hover:text-white transition-all flex items-center gap-1.5 cursor-pointer z-30"
+                        >
+                          <ImageIcon className="h-3.5 w-3.5" /> Edit Image
+                        </button>
+                      )}
+                      {editingItemImageIdx === i && (
+                        <ImageEditItem
+                          currentUrl={coverImage}
+                          hideLayoutOptions={true}
+                          onSave={(editProps) => {
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], imageUrl: editProps.url };
+                            onUpdateProps?.({ items: nextItems });
+                            setEditingItemImageIdx(null);
+                          }}
+                          onClose={() => setEditingItemImageIdx(null)}
+                        />
+                      )}
+                    </div>
+
+                    <div className="p-5 sm:p-6 space-y-3 flex-1 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: headingTextColor,
+                            fontFamily: theme.headingFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-lg sm:text-xl font-bold tracking-tight group-hover:text-primary transition-colors ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: bodyTextColor,
+                            fontFamily: theme.bodyFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      </div>
+
+                      {item.buttonText && (
+                        <div
+                          className="pt-3 border-t flex items-center justify-between text-xs font-bold"
+                          style={{
+                            borderColor: isDarkSection ? `${primary}20` : "rgba(0,0,0,0.08)",
+                            color: primary,
+                          }}
+                        >
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], buttonText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none" }}
+                            className={interactive ? "cursor-text" : ""}
+                            dangerouslySetInnerHTML={{ __html: item.buttonText }}
+                          />
+                          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" style={{ color: primary }} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : variant === "numbered-step-cards" ? (
+            <div className={`grid gap-5 sm:gap-6 ${
+              isMobile
+                ? "grid-cols-1"
+                : isTablet
+                ? "grid-cols-2"
+                : items.length === 4
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                : items.length >= 5
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => {
+                const stepNum = item.stepNumber || `0${i + 1}`;
+                const effectiveRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px");
+                return (
+                  <div
+                    key={i}
+                    className={`group relative flex flex-col justify-between p-6 sm:p-7 border transition-all duration-300 ${
+                      isDarkSection
+                        ? "bg-card/95 shadow-xl hover:border-primary/60"
+                        : "bg-card/90 shadow-md hover:shadow-2xl hover:-translate-y-0.5"
+                    }`}
+                    style={{
+                      borderRadius: effectiveRadius,
+                      fontFamily: theme.fontFamily || "inherit",
+                      borderColor: isDarkSection ? `${primary}30` : `${primary}20`,
+                    }}
+                  >
+                    <div
+                      className="w-12 h-1 rounded-full mb-5 group-hover:w-full transition-all duration-500"
+                      style={{ backgroundColor: primary }}
+                    />
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], stepNumber: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none", color: primary }}
+                          className={`text-4xl sm:text-5xl font-black tracking-tighter opacity-90 group-hover:opacity-100 transition-opacity ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: stepNum }}
+                        />
+
+                        {item.badgeText && (
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], badgeText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: `${primary}15`,
+                              color: primary,
+                              borderColor: `${primary}35`,
+                              borderRadius: theme.borderRadius === "0px" ? "0px" : (theme.borderRadius || "9999px"),
+                            }}
+                            className={`px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest border ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: headingTextColor,
+                            fontFamily: theme.headingFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-lg sm:text-xl font-bold tracking-tight ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: bodyTextColor,
+                            fontFamily: theme.bodyFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      </div>
+                    </div>
+
+                    {item.buttonText && (
+                      <div
+                        className="pt-4 mt-4 border-t flex items-center justify-between text-xs font-bold"
+                        style={{
+                          borderColor: isDarkSection ? `${primary}20` : "rgba(0,0,0,0.08)",
+                          color: primary,
+                        }}
+                      >
+                        <span
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], buttonText: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{ outline: "none" }}
+                          className={interactive ? "cursor-text" : ""}
+                          dangerouslySetInnerHTML={{ __html: item.buttonText }}
+                        />
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" style={{ color: primary }} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : variant === "hover-expand-stack" ? (
+            <div className={`grid gap-5 sm:gap-6 ${
+              isMobile
+                ? "grid-cols-1"
+                : isTablet
+                ? "grid-cols-2"
+                : items.length === 4
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                : items.length >= 5
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {items.map((item: any, i: number) => {
+                const isFeatured = i === 1 || item.badgeText?.toLowerCase().includes("popular");
+                const effectiveRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px");
+                const innerRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "9999px" : "14px";
+
+                const featuredBg = (theme.secondaryColor && isDarkColor(theme.secondaryColor) === true)
+                  ? theme.secondaryColor
+                  : (isDarkColor(primary) === true ? primary : "#0f172a");
+
+                const cardBg = isFeatured
+                  ? featuredBg
+                  : isDarkSection
+                  ? (theme.secondaryColor && isDarkColor(theme.secondaryColor) === true ? `${theme.secondaryColor}e6` : "rgba(15, 23, 42, 0.85)")
+                  : "rgba(255, 255, 255, 0.95)";
+
+                const isCardDark = isDarkColor(cardBg) ?? (isFeatured || isDarkSection);
+                const headingColor = isCardDark ? "#ffffff" : headingTextColor;
+                const descColor = isCardDark ? "rgba(255, 255, 255, 0.85)" : bodyTextColor;
+                const statColor = isCardDark ? "#ffffff" : primary;
+
+                const isCardPrimaryBg = isFeatured && (cardBg === primary || cardBg === theme.primaryColor);
+
+                const badgeBg = isCardPrimaryBg
+                  ? "#ffffff"
+                  : isFeatured
+                  ? primary
+                  : `${primary}15`;
+
+                const badgeColor = isCardPrimaryBg ? primary : isFeatured ? "#ffffff" : primary;
+                const badgeBorder = isCardPrimaryBg ? "#ffffff" : isFeatured ? primary : `${primary}35`;
+
+                const buttonBg = isCardPrimaryBg
+                  ? "#ffffff"
+                  : isFeatured
+                  ? primary
+                  : `${primary}15`;
+
+                const buttonColor = isCardPrimaryBg ? primary : isFeatured ? "#ffffff" : primary;
+                const buttonBorder = isCardPrimaryBg ? "1px solid #ffffff" : isFeatured ? `1px solid ${primary}` : `1px solid ${primary}35`;
+
+                const cardBorder = isFeatured
+                  ? primary
+                  : isDarkSection
+                  ? `${primary}35`
+                  : `${primary}25`;
+
+                return (
+                  <div
+                    key={i}
+                    className={`group relative flex flex-col justify-between p-6 sm:p-7 border transition-all duration-300 hover:-translate-y-0.5 ${
+                      isFeatured ? "shadow-xl z-10" : "shadow-md hover:shadow-xl"
+                    }`}
+                    style={{
+                      backgroundColor: cardBg,
+                      borderColor: cardBorder,
+                      borderRadius: effectiveRadius,
+                      fontFamily: theme.fontFamily || "inherit",
+                      boxShadow: isFeatured ? `0 20px 45px -15px ${primary}40` : undefined,
+                    }}
+                  >
+                    <div className="space-y-4">
+                      {item.badgeText && (
+                        <div className="flex items-center justify-end">
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], badgeText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{
+                              outline: "none",
+                              backgroundColor: badgeBg,
+                              color: badgeColor,
+                              borderColor: badgeBorder,
+                              borderRadius: theme.borderRadius === "0px" ? "0px" : (theme.borderRadius || "9999px"),
+                            }}
+                            className={`px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider border shadow-xs ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.badgeText }}
+                          />
+                        </div>
+                      )}
+
+                      {item.stat && (
+                        <div className="flex items-baseline gap-1.5 pt-1">
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], stat: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none", color: statColor }}
+                            className={`text-3xl sm:text-4xl font-black tracking-tight ${
+                              interactive ? "cursor-text" : ""
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.stat }}
+                          />
+                          {item.metric && (
+                            <span
+                              contentEditable={interactive}
+                              suppressContentEditableWarning
+                              onBlur={(e) => {
+                                const next = e.currentTarget.innerHTML;
+                                const nextItems = [...items];
+                                nextItems[i] = { ...nextItems[i], metric: next };
+                                onUpdateProps?.({ items: nextItems });
+                              }}
+                              style={{ outline: "none", color: isCardDark ? "rgba(255,255,255,0.7)" : bodyTextColor }}
+                              className={`text-xs font-bold ${interactive ? "cursor-text" : ""}`}
+                              dangerouslySetInnerHTML={{ __html: item.metric }}
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5">
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: headingColor,
+                            fontFamily: theme.headingFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-lg sm:text-xl font-bold tracking-tight ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: descColor,
+                            fontFamily: theme.bodyFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      </div>
+                    </div>
+
+                    {item.buttonText && (
+                      <div className="pt-6 mt-4">
+                        <button
+                          type="button"
+                          className="w-full py-3 px-4 text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md hover:opacity-90"
+                          style={{
+                            backgroundColor: buttonBg,
+                            color: buttonColor,
+                            border: buttonBorder,
+                            borderRadius: theme.borderRadius || "12px",
+                          }}
+                        >
+                          <span
+                            contentEditable={interactive}
+                            suppressContentEditableWarning
+                            onBlur={(e) => {
+                              const next = e.currentTarget.innerHTML;
+                              const nextItems = [...items];
+                              nextItems[i] = { ...nextItems[i], buttonText: next };
+                              onUpdateProps?.({ items: nextItems });
+                            }}
+                            style={{ outline: "none" }}
+                            className={interactive ? "cursor-text" : ""}
+                            dangerouslySetInnerHTML={{ __html: item.buttonText }}
+                          />
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             /* Glass Cards / Modern Service Cards default fallback */
             <div className={`grid gap-3.5 sm:gap-4 ${
               isMobile ? "grid-cols-1" : isTablet ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             }`}>
-              {items.map((item: any, i: number) => (
-                <div
-                  key={i}
-                  className={`group relative flex flex-col justify-between p-4 sm:p-6 rounded-3xl border backdrop-blur-md transition-all duration-300 text-left space-y-3.5 ${
-                    isDarkSection ? "border-border/80 bg-card/95 hover:shadow-xl" : "border-border/70 bg-card/80 shadow-xs hover:shadow-xl"
-                  }`}
-                  style={{
-                    borderRadius: theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px"),
-                  }}
-                >
-                  <div className="space-y-2.5 sm:space-y-4">
-                    {item.badgeText && (
-                      <div className="flex items-center justify-start">
-                        <span
-                          className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border shadow-2xs"
-                          style={{
-                            backgroundColor: isDarkSection ? `${primary}25` : `${primary}12`,
-                            color: isDarkSection ? "#ffffff" : primary,
-                            borderColor: isDarkSection ? `${primary}45` : `${primary}25`,
+              {items.map((item: any, i: number) => {
+                const effectiveRadius = theme.borderRadius === "0px" ? "0px" : theme.borderRadius === "9999px" ? "24px" : (theme.borderRadius || "24px");
+                return (
+                  <div
+                    key={i}
+                    className={`group relative flex flex-col justify-between p-4 sm:p-6 border backdrop-blur-md transition-all duration-300 text-left space-y-3.5 ${
+                      isDarkSection ? "bg-card/95 hover:shadow-xl" : "bg-card/80 shadow-xs hover:shadow-xl"
+                    }`}
+                    style={{
+                      borderRadius: effectiveRadius,
+                      fontFamily: theme.fontFamily || "inherit",
+                      borderColor: isDarkSection ? `${primary}30` : `${primary}20`,
+                    }}
+                  >
+                    <div className="space-y-2.5 sm:space-y-4">
+                      {item.badgeText && (
+                        <div className="flex items-center justify-start">
+                          <span
+                            className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full border shadow-2xs"
+                            style={{
+                              backgroundColor: isDarkSection ? `${primary}25` : `${primary}12`,
+                              color: isDarkSection ? "#ffffff" : primary,
+                              borderColor: isDarkSection ? `${primary}45` : `${primary}25`,
+                            }}
+                          >
+                            {item.badgeText}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5">
+                        <h3
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], title: next };
+                            onUpdateProps?.({ items: nextItems });
                           }}
-                        >
-                          {item.badgeText}
-                        </span>
+                          style={{
+                            outline: "none",
+                            color: headingTextColor,
+                            fontFamily: theme.headingFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-lg sm:text-xl font-bold tracking-tight ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.title }}
+                        />
+                        <p
+                          contentEditable={interactive}
+                          suppressContentEditableWarning
+                          onBlur={(e) => {
+                            const next = e.currentTarget.innerHTML;
+                            const nextItems = [...items];
+                            nextItems[i] = { ...nextItems[i], description: next };
+                            onUpdateProps?.({ items: nextItems });
+                          }}
+                          style={{
+                            outline: "none",
+                            color: bodyTextColor,
+                            fontFamily: theme.bodyFontFamily || theme.fontFamily || "inherit",
+                          }}
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            interactive ? "cursor-text" : ""
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                      </div>
+                    </div>
+
+                    {item.buttonText && (
+                      <div
+                        className="pt-3 border-t flex items-center gap-1.5 text-xs font-bold group-hover:translate-x-1 transition-transform"
+                        style={{
+                          borderColor: isDarkSection ? `${primary}20` : "rgba(0,0,0,0.08)",
+                          color: primary,
+                        }}
+                      >
+                        <span>{item.buttonText}</span>
+                        <ArrowRight className="h-3.5 w-3.5" style={{ color: primary }} />
                       </div>
                     )}
-
-                    <div className="space-y-1.5">
-                      <h3
-                        contentEditable={interactive}
-                        suppressContentEditableWarning
-                        onBlur={(e) => {
-                          const next = e.currentTarget.innerHTML;
-                          const nextItems = [...items];
-                          nextItems[i] = { ...nextItems[i], title: next };
-                          onUpdateProps?.({ items: nextItems });
-                        }}
-                        style={{ outline: "none", color: headingTextColor }}
-                        className={`text-lg sm:text-xl font-bold tracking-tight ${
-                          interactive ? "cursor-text" : ""
-                        }`}
-                        dangerouslySetInnerHTML={{ __html: item.title }}
-                      />
-                      <p
-                        contentEditable={interactive}
-                        suppressContentEditableWarning
-                        onBlur={(e) => {
-                          const next = e.currentTarget.innerHTML;
-                          const nextItems = [...items];
-                          nextItems[i] = { ...nextItems[i], description: next };
-                          onUpdateProps?.({ items: nextItems });
-                        }}
-                        style={{ outline: "none", color: bodyTextColor }}
-                        className={`text-xs sm:text-sm leading-relaxed ${
-                          interactive ? "cursor-text" : ""
-                        }`}
-                        dangerouslySetInnerHTML={{ __html: item.description }}
-                      />
-                    </div>
                   </div>
-
-                  {item.buttonText && (
-                    <div className={`pt-3 border-t flex items-center gap-1.5 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform ${
-                      isDarkSection ? "border-slate-800" : "border-border/40"
-                    }`}>
-                      <span>{item.buttonText}</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </Center>

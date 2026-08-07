@@ -24,7 +24,7 @@ export const PALETTE: PaletteItem[] = [
   // CONTENT
   { type: "features", label: "Features", description: "Icon feature grid", icon: "▦", category: "content" },
   { type: "card-grid", label: "Cards", description: "Card grid section", icon: "▤", category: "content" },
-  { type: "stats", label: "Stats", description: "Key metrics row", icon: "＃", category: "content" },
+  { type: "empty-layout", label: "Empty Layout", description: "Customizable blank section container", icon: "▢", category: "layout" },
   { type: "testimonial", label: "Testimonial", description: "Quote + author", icon: "❝", category: "content" },
   { type: "heading", label: "Heading", description: "Section title", icon: "H", category: "content" },
   { type: "text", label: "Text", description: "Paragraph body copy", icon: "¶", category: "content" },
@@ -487,44 +487,6 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
   ],
   "card-grid": [
     {
-      id: "bento-card-stack",
-      name: "Dribbble Bento Card Stack",
-      description: "Multi-card bento grid with gradient glow, metric highlights, and action buttons.",
-      badge: "Dribbble Trending",
-      previewType: "grid",
-      applyProps: {
-        variant: "bento-card-stack",
-        heading: "Powering the next generation of web apps",
-        subheading: "Discover why top teams build their digital experiences with CraftSite.",
-        items: [
-          {
-            title: "Pro Builder Workspace",
-            description: "Drag, drop, reorder, and edit any section with instant visual feedback.",
-            icon: "sparkles",
-            badgeText: "FEATURED",
-            imageUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80",
-          },
-          {
-            title: "Instant Theme Engine",
-            description: "Custom primary colors, dark modes, and border radius presets.",
-            icon: "zap",
-            badgeText: "PRESETS",
-          },
-          {
-            title: "Production Ready",
-            description: "Deploy live or export clean code with zero vendor lock-in.",
-            icon: "shield",
-            badgeText: "1-CLICK EXPORT",
-          },
-        ],
-      },
-      applyStyle: {
-        backgroundColor: "transparent",
-        paddingY: "80px",
-        paddingX: "32px",
-      },
-    },
-    {
       id: "modern-service-cards",
       name: "3-Column Elevated Service Cards",
       description: "3-column service card grid with category pill badges, top accent borders, icon headers, and Learn More links.",
@@ -552,6 +514,138 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
             description: "Export clean Next.js + Tailwind React components ready for your codebase.",
             icon: "shield",
             badgeText: "DEV READY",
+          },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+      },
+    },
+    {
+      id: "visual-cover-cards",
+      name: "Visual Showcase & Case Study Cards",
+      description: "Visual-first card layout featuring high-res cover image zoom, floating category pills, sleek titles, and interactive action links.",
+      badge: "Visual Grid",
+      previewType: "grid",
+      applyProps: {
+        variant: "visual-cover-cards",
+        heading: "Selected Case Studies & Showcase",
+        subheading: "Explore real-world web applications and design systems built with CraftSite.",
+        items: [
+          {
+            title: "Smart AI Workflow Platform",
+            description: "Next-gen insights dashboard featuring real-time data streaming and custom AI summaries.",
+            icon: "sparkles",
+            imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+            badgeText: "AI PLATFORM",
+            buttonText: "Explore Project",
+          },
+          {
+            title: "E-Commerce Mobile Storefront",
+            description: "Ultra-fast mobile shopping experience built with Next.js, Tailwind, and headless Shopify API.",
+            icon: "zap",
+            imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
+            badgeText: "MOBILE APP",
+            buttonText: "View Live Store",
+          },
+          {
+            title: "Design System & React Kit",
+            description: "Comprehensive Figma component library synced directly with production React elements.",
+            icon: "briefcase",
+            imageUrl: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80",
+            badgeText: "DESIGN SYSTEM",
+            buttonText: "Download Kit",
+          },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+      },
+    },
+    {
+      id: "numbered-step-cards",
+      name: "Editorial Numbered Step Cards",
+      description: "Modern editorial card grid with oversized step numbers (01, 02, 03), top glowing accent bars, and structured workflow steps.",
+      badge: "Editorial",
+      previewType: "boxed",
+      applyProps: {
+        variant: "numbered-step-cards",
+        heading: "How it works in 3 simple steps",
+        subheading: "From initial design concept to production deployment in minutes.",
+        items: [
+          {
+            stepNumber: "01",
+            title: "Connect & Import",
+            description: "Link your custom domain or GitHub repository in 30 seconds with automatic framework detection.",
+            badgeText: "STEP 01",
+            icon: "sparkles",
+            buttonText: "Learn step 1",
+          },
+          {
+            stepNumber: "02",
+            title: "Customize & Style",
+            description: "Tweak design tokens, edit copy visually, and fine-tune responsive breakpoints effortlessly.",
+            badgeText: "STEP 02",
+            icon: "zap",
+            buttonText: "Learn step 2",
+          },
+          {
+            stepNumber: "03",
+            title: "Deploy & Scale",
+            description: "Publish to global edge CDN with automated SSL, custom domain mapping, and continuous CI/CD.",
+            badgeText: "STEP 03",
+            icon: "shield",
+            buttonText: "Learn step 3",
+          },
+        ],
+      },
+      applyStyle: {
+        backgroundColor: "transparent",
+        paddingY: "80px",
+        paddingX: "32px",
+      },
+    },
+    {
+      id: "hover-expand-stack",
+      name: "Dribbble Neon Gradient Feature Cards",
+      description: "Dribbble-inspired neon gradient cards with glowing icon headers, pill feature tags, and call-to-action buttons.",
+      badge: "Gradient Glow",
+      previewType: "floating",
+      applyProps: {
+        variant: "hover-expand-stack",
+        heading: "Choose the perfect build plan",
+        subheading: "Scalable features and predictable pricing tailored to your growth.",
+        items: [
+          {
+            title: "Starter Builder",
+            description: "Everything you need to build and publish your first high-converting landing page.",
+            icon: "zap",
+            stat: "$19",
+            metric: "/ month",
+            badgeText: "STARTER",
+            buttonText: "Start 14-Day Trial",
+          },
+          {
+            title: "Pro Agency Workspace",
+            description: "Full design system control, custom domain routing, and priority AI generation.",
+            icon: "sparkles",
+            stat: "$49",
+            metric: "/ month",
+            badgeText: "MOST POPULAR",
+            buttonText: "Get Pro Access",
+          },
+          {
+            title: "Enterprise Infrastructure",
+            description: "Dedicated edge nodes, SSO authentication, custom SLA, and dedicated manager support.",
+            icon: "shield",
+            stat: "Custom",
+            metric: "tailored billing",
+            badgeText: "ENTERPRISE",
+            buttonText: "Contact Sales",
           },
         ],
       },
@@ -854,6 +948,40 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
     },
   ],
 
+  "empty-layout": [
+    {
+      id: "blank-canvas-container",
+      name: "Blank Canvas (Grid / Flex)",
+      description: "Clean empty container. Switch between Grid or Flex mode and add any components.",
+      badge: "Blank Canvas",
+      previewType: "boxed",
+      applyProps: {
+        variant: "blank-canvas-container",
+        heading: "",
+        subheading: "",
+        layoutMode: "grid",
+        columns: 3,
+        items: [],
+      },
+      applyStyle: { backgroundColor: "transparent", paddingY: "64px", paddingX: "32px" },
+    },
+    {
+      id: "flex-container-layout",
+      name: "Flex Row Layout Box",
+      description: "Empty flexbox container to align buttons, badges, images, or text blocks horizontally.",
+      badge: "Flexbox Layout",
+      previewType: "floating",
+      applyProps: {
+        variant: "flex-container-layout",
+        heading: "",
+        subheading: "",
+        layoutMode: "flex",
+        flexJustify: "center",
+        items: [],
+      },
+      applyStyle: { backgroundColor: "transparent", paddingY: "64px", paddingX: "32px" },
+    },
+  ],
   stats: [
     {
       id: "dark-stats-bar",
@@ -862,14 +990,6 @@ export const COMPONENT_VARIANTS: Record<string, ComponentVariant[]> = {
       previewType: "grid",
       applyProps: { columns: 4 },
       applyStyle: { backgroundColor: "#0f172a", textColor: "#f8fafc", paddingY: "48px", paddingX: "32px" },
-    },
-    {
-      id: "light-stats-grid",
-      name: "Light Stat Cards",
-      description: "Clean light background metrics grid.",
-      previewType: "boxed",
-      applyProps: { columns: 4 },
-      applyStyle: { backgroundColor: "#ffffff", textColor: "#0f172a", paddingY: "48px", paddingX: "32px" },
     },
   ],
 
@@ -1167,23 +1287,23 @@ export function createComponent(type: ComponentType, variantId?: string): Builde
         },
       };
       break;
+    case "empty-layout":
     case "stats":
       base = {
         id,
-        type,
+        type: "empty-layout",
         props: {
-          items: [
-            { title: "12k+", description: "Active builders", icon: "" },
-            { title: "48k", description: "Pages published", icon: "" },
-            { title: "99.9%", description: "Uptime", icon: "" },
-            { title: "4.9★", description: "Average rating", icon: "" },
-          ],
-          columns: 4,
+          variant: "blank-canvas-container",
+          heading: "",
+          subheading: "",
+          layoutMode: "grid",
+          columns: 3,
+          items: [],
         },
         style: {
-          backgroundColor: "#0f172a",
-          textColor: "#f8fafc",
-          paddingY: "48px", paddingX: "32px",
+          backgroundColor: "transparent",
+          paddingY: "64px",
+          paddingX: "32px",
           textAlign: "center",
         },
       };

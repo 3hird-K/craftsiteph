@@ -452,6 +452,78 @@ function RealisticLayoutPreview({
         </div>
       );
 
+    case "visual-cover-cards":
+      return (
+        <div
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-1 bg-muted/40 border border-border/50 text-[8px] space-y-1 overflow-hidden" style={{ borderRadius: navRadius }}>
+            <div className="h-6 w-full bg-primary/20 rounded flex items-center justify-center text-[7px] font-bold text-primary">Image</div>
+            <span className="font-bold block text-[8px] truncate" style={{ color: cardTextColor }}>AI Workflow</span>
+          </div>
+          <div className="p-1 bg-muted/40 border border-border/50 text-[8px] space-y-1 overflow-hidden" style={{ borderRadius: navRadius }}>
+            <div className="h-6 w-full bg-primary/20 rounded flex items-center justify-center text-[7px] font-bold text-primary">Image</div>
+            <span className="font-bold block text-[8px] truncate" style={{ color: cardTextColor }}>Mobile App</span>
+          </div>
+          <div className="p-1 bg-muted/40 border border-border/50 text-[8px] space-y-1 overflow-hidden" style={{ borderRadius: navRadius }}>
+            <div className="h-6 w-full bg-primary/20 rounded flex items-center justify-center text-[7px] font-bold text-primary">Image</div>
+            <span className="font-bold block text-[8px] truncate" style={{ color: cardTextColor }}>Design Kit</span>
+          </div>
+        </div>
+      );
+
+    case "numbered-step-cards":
+      return (
+        <div
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-1.5 bg-muted/30 border-t-2 border-primary text-[8px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-[10px] font-black text-primary block leading-none">01</span>
+            <span className="font-bold block text-[7px] truncate" style={{ color: cardTextColor }}>Connect</span>
+          </div>
+          <div className="p-1.5 bg-muted/30 border-t-2 border-primary text-[8px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-[10px] font-black text-primary block leading-none">02</span>
+            <span className="font-bold block text-[7px] truncate" style={{ color: cardTextColor }}>Customize</span>
+          </div>
+          <div className="p-1.5 bg-muted/30 border-t-2 border-primary text-[8px] space-y-0.5" style={{ borderRadius: navRadius }}>
+            <span className="text-[10px] font-black text-primary block leading-none">03</span>
+            <span className="font-bold block text-[7px] truncate" style={{ color: cardTextColor }}>Deploy</span>
+          </div>
+        </div>
+      );
+
+    case "hover-expand-stack":
+      return (
+        <div
+          className={`grid grid-cols-3 gap-1.5 p-2 border ${borderStyle} transition-all w-full`}
+          style={{ backgroundColor: cardBg, color: cardTextColor, borderRadius: navRadius }}
+        >
+          <div className="p-1.5 bg-card border border-border/80 text-[8px] space-y-1 flex flex-col justify-between" style={{ borderRadius: navRadius }}>
+            <div>
+              <span className="text-[7px] font-extrabold text-muted-foreground uppercase block">Starter</span>
+              <span className="font-black block text-[9px] text-primary">$19</span>
+            </div>
+            <div className="h-1.5 w-full bg-primary/20 rounded-full" />
+          </div>
+          <div className="p-1.5 bg-primary/10 border border-primary/40 text-[8px] space-y-1 flex flex-col justify-between" style={{ borderRadius: navRadius }}>
+            <div>
+              <span className="text-[7px] font-extrabold text-primary uppercase block">Pro Plan</span>
+              <span className="font-black block text-[9px] text-primary">$49</span>
+            </div>
+            <div className="h-1.5 w-full bg-primary rounded-full" />
+          </div>
+          <div className="p-1.5 bg-card border border-border/80 text-[8px] space-y-1 flex flex-col justify-between" style={{ borderRadius: navRadius }}>
+            <div>
+              <span className="text-[7px] font-extrabold text-muted-foreground uppercase block">Enterprise</span>
+              <span className="font-black block text-[9px] text-primary">Custom</span>
+            </div>
+            <div className="h-1.5 w-full bg-muted rounded-full" />
+          </div>
+        </div>
+      );
+
     case "split-feature-showcase":
       return (
         <div

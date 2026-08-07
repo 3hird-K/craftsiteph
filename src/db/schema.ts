@@ -42,10 +42,20 @@ export type ComponentProps = {
   scrollAnimationDuration?: string;
   imageUrl?: string;
   imageAlt?: string;
-  imageBorderRadius?: string;
-  imagePosition?: "left" | "right";
-  reverseLayout?: boolean;
-  items?: { title: string; description: string; icon?: string }[];
+  layoutMode?: "grid" | "flex";
+  flexJustify?: "start" | "center" | "end" | "between";
+  items?: {
+    type?: string;
+    title?: string;
+    description?: string;
+    icon?: string;
+    imageUrl?: string;
+    badgeText?: string;
+    stat?: string;
+    metric?: string;
+    buttonText?: string;
+    stepNumber?: string;
+  }[];
   links?: { label: string; href: string }[];
   columns?: number | { title: string; links: string[] }[];
   tagline?: string;
@@ -91,7 +101,8 @@ export type BuilderComponent = {
     | "spacer"
     | "divider"
     | "form"
-    | "stats";
+    | "stats"
+    | "empty-layout";
   props: ComponentProps;
   style: ComponentStyle;
 };

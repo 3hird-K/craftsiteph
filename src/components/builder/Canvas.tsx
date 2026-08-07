@@ -469,6 +469,147 @@ export function Canvas({
                           <LayoutGrid className="h-3 w-3" /> Layouts
                         </button>
                       )}
+                      {c.type === "card-grid" && (
+                        <div className="flex items-center gap-1 bg-muted/90 border border-border/80 rounded-full p-0.5 text-xs shrink-0 shadow-xs">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const currentItems = (c.props.items || []).slice(0, 4);
+                              let nextItems = [...currentItems];
+                              if (nextItems.length !== 3) {
+                                if (nextItems.length < 3) {
+                                  while (nextItems.length < 3) {
+                                    const idx = nextItems.length + 1;
+                                    nextItems.push({
+                                      title: `Step 0${idx}`,
+                                      description: "Customize design tokens, edit copy visually, and fine-tune responsive breakpoints.",
+                                      stepNumber: `0${idx}`,
+                                      stat: idx === 1 ? "$19" : idx === 2 ? "$49" : "$99",
+                                      metric: "/ month",
+                                      badgeText: idx === 1 ? "STARTER" : idx === 2 ? "POPULAR" : "PRO",
+                                      buttonText: "Learn more",
+                                    });
+                                  }
+                                } else {
+                                  nextItems = nextItems.slice(0, 3);
+                                }
+                                onUpdateProps?.(c.id, { items: nextItems });
+                              }
+                            }}
+                            className={`px-2.5 py-0.5 text-[11px] font-extrabold rounded-full transition-all cursor-pointer ${
+                              (c.props.items || []).length === 3
+                                ? "bg-primary text-white shadow-xs"
+                                : "hover:bg-background text-muted-foreground"
+                            }`}
+                            title="Set 3 Cards Grid"
+                          >
+                            3 Cards
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const currentItems = (c.props.items || []).slice(0, 4);
+                              let nextItems = [...currentItems];
+                              if (nextItems.length !== 4) {
+                                if (nextItems.length < 4) {
+                                  while (nextItems.length < 4) {
+                                    const idx = nextItems.length + 1;
+                                    nextItems.push({
+                                      title: idx === 4 ? "Enterprise Scale" : `Step 0${idx}`,
+                                      description: "Dedicated edge infrastructure, custom SLA guarantees, and priority support.",
+                                      stepNumber: `0${idx}`,
+                                      stat: idx === 4 ? "Custom" : "$99",
+                                      metric: idx === 4 ? "contact us" : "/ month",
+                                      badgeText: idx === 4 ? "ENTERPRISE" : "PRO",
+                                      buttonText: idx === 4 ? "Contact Sales" : "Learn more",
+                                    });
+                                  }
+                                } else {
+                                  nextItems = nextItems.slice(0, 4);
+                                }
+                                onUpdateProps?.(c.id, { items: nextItems.slice(0, 4) });
+                              }
+                            }}
+                            className={`px-2.5 py-0.5 text-[11px] font-extrabold rounded-full transition-all cursor-pointer ${
+                              (c.props.items || []).length === 4
+                                ? "bg-primary text-white shadow-xs"
+                                : "hover:bg-background text-muted-foreground"
+                            }`}
+                            title="Set 4 Cards Grid (Max 4 Cards)"
+                          >
+                            4 Cards
+                          </button>
+                        </div>
+                      )}
+                      {c.type === "empty-layout" && (
+                        <div className="flex items-center gap-1 bg-muted/90 border border-border/80 rounded-full p-0.5 text-xs shrink-0 shadow-xs">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const currentMode = c.props.layoutMode || "grid";
+                              onUpdateProps?.(c.id, { layoutMode: currentMode === "grid" ? "flex" : "grid" });
+                            }}
+                            className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer"
+                            title="Toggle between Grid and Flexbox layout mode"
+                          >
+                            Mode: {(c.props.layoutMode || "grid").toUpperCase()}
+                          </button>
+
+                          {(c.props.layoutMode || "grid") === "grid" ? (
+                            <>
+                              <span className="text-[10px] font-extrabold uppercase text-muted-foreground px-1 hidden sm:inline">Cols:</span>
+                              {[1, 2, 3, 4].map((num) => (
+                                <button
+                                  key={num}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onUpdateProps?.(c.id, { columns: num });
+                                  }}
+                                  className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all cursor-pointer ${
+                                    (c.props.columns || 3) === num
+                                      ? "bg-primary text-white shadow-xs"
+                                      : "hover:bg-background text-muted-foreground"
+                                  }`}
+                                  title={`Set ${num} Column Grid`}
+                                >
+                                  {num} Col
+                                </button>
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-[10px] font-extrabold uppercase text-muted-foreground px-1 hidden sm:inline">Align:</span>
+                              {[
+                                { label: "Left", val: "start" },
+                                { label: "Center", val: "center" },
+                                { label: "Right", val: "end" },
+                                { label: "Between", val: "between" },
+                              ].map((opt) => (
+                                <button
+                                  key={opt.val}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onUpdateProps?.(c.id, { flexJustify: opt.val as any });
+                                  }}
+                                  className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full transition-all cursor-pointer ${
+                                    (c.props.flexJustify || "center") === opt.val
+                                      ? "bg-primary text-white shadow-xs"
+                                      : "hover:bg-background text-muted-foreground"
+                                  }`}
+                                  title={`Flex align ${opt.label}`}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                      )}
                       {isTwoColumnLayout(c) && (
                         <button
                           type="button"

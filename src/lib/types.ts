@@ -49,7 +49,20 @@ export type ComponentProps = {
   imageLayout?: "single" | "split" | "bento" | "background";
   imagePosition?: "left" | "right";
   reverseLayout?: boolean;
-  items?: { title: string; description: string; icon?: string; imageUrl?: string; badgeText?: string }[];
+  layoutMode?: "grid" | "flex";
+  flexJustify?: "start" | "center" | "end" | "between";
+  items?: {
+    type?: string;
+    title?: string;
+    description?: string;
+    icon?: string;
+    imageUrl?: string;
+    badgeText?: string;
+    stat?: string;
+    metric?: string;
+    buttonText?: string;
+    stepNumber?: string;
+  }[];
   links?: { label: string; href: string; variant?: "default" | "muted" | "bold" | "button" | string; icon?: string }[];
   columns?: number | { title: string; links: string[] }[];
   tagline?: string;
@@ -111,7 +124,8 @@ export type ComponentType =
   | "spacer"
   | "divider"
   | "form"
-  | "stats";
+  | "stats"
+  | "empty-layout";
 
 export type BuilderComponent = {
   id: string;
